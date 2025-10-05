@@ -63,7 +63,7 @@ export class AdminService {
         description: 'A real-time text sharing platform that allows users to share unlimited text across devices using secure 4-digit codes. Features one-click copy, instant sharing, and retrieval with beautiful UI. Built with Angular and modern web technologies.',
         technologies: ['Angular', 'TypeScript', 'Bootstrap', 'RxJS', 'Local Storage API', 'Clipboard API'],
         imageUrl: 'assets/images/online-clipboard.jpg',
-        link: '/online-clipboard',
+        link: '/#/online-clipboard',
         githubLink: 'https://github.com/thematrixxworld/online-clipboard',
         category: 'Web Application',
         featured: true

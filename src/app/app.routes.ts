@@ -26,7 +26,7 @@ export const routes: Routes = [
   },
   { 
     path: 'online-clipboard', 
-    component: OnlineClipboardComponent,
+    loadComponent: () => import('./components/online-clipboard/online-clipboard.component').then(m => m.OnlineClipboardComponent),
     title: 'Online Clipboard - Share Text Across Devices'
   },
   { 

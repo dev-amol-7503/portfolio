@@ -1,9 +1,10 @@
 // components/online-clipboard/online-clipboard.component.ts
-import { Component, OnInit, OnDestroy, ElementRef, ViewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy, ElementRef, ViewChild, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
+import { FirebaseClipboardService } from '../../services/firebase-clipboard.service';
 
 interface ClipboardData {
   id: string;
@@ -43,6 +44,10 @@ export class OnlineClipboardComponent implements OnInit, OnDestroy {
   // Performance optimization
   private readonly MAX_TEXT_SIZE = 10 * 1024 * 1024; // 10MB
 
+  // Services
+  private toastr = inject(ToastrService);
+  private firebaseClipboard = inject(FirebaseClipboardService);
+
   // Programming languages with better colors
   languages = [
     { value: 'auto', name: 'Auto Detect', icon: 'fas fa-magic', color: '#FF6B6B', bgColor: 'rgba(255, 107, 107, 0.1)' },
@@ -70,43 +75,18 @@ export class OnlineClipboardComponent implements OnInit, OnDestroy {
     sql: /SELECT |INSERT |UPDATE |DELETE |FROM |WHERE |JOIN /
   };
 
-  constructor(private toastr: ToastrService) {}
-
   ngOnInit() {
-    this.loadFromLocalStorage();
+    // localStorage wala code remove karein
   }
 
   ngOnDestroy() {
     this.stopCountdown();
   }
 
-  private loadFromLocalStorage() {
-    if (typeof window !== 'undefined') {
-      const savedData = localStorage.getItem('onlineClipboardStorage');
-      if (savedData) {
-        try {
-          const parsedData = JSON.parse(savedData);
-          this.cleanupExpiredEntries(parsedData);
-        } catch (e) {
-          console.error('Failed to load clipboard data:', e);
-        }
-      }
-    }
-  }
+  // Remove these localStorage methods completely:
+  // private loadFromLocalStorage() {}
+  // private cleanupExpiredEntries() {}
 
-  private cleanupExpiredEntries(storageData: any[]) {
-    const now = new Date();
-    const validData = storageData.filter(([code, data]: [string, ClipboardData]) => {
-      const expiryDate = new Date(data.expires_at);
-      return now <= expiryDate;
-    });
-    
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('onlineClipboardStorage', JSON.stringify(validData));
-    }
-  }
-
-  // Add this missing property
   get isTextTooLong(): boolean {
     return this.textToShare.length > this.MAX_TEXT_SIZE;
   }
@@ -221,10 +201,6 @@ export class OnlineClipboardComponent implements OnInit, OnDestroy {
       .trim();
   }
 
-  private generateCode(): string {
-    return Math.floor(1000 + Math.random() * 9000).toString();
-  }
-
   private startCountdown() {
     this.countdown = 120;
     this.stopCountdown();
@@ -245,6 +221,7 @@ export class OnlineClipboardComponent implements OnInit, OnDestroy {
     }
   }
 
+  // UPDATED: Firebase use karein
   async shareText() {
     if (!this.textToShare.trim()) {
       this.toastr.warning('Please enter some code to share');
@@ -262,21 +239,8 @@ export class OnlineClipboardComponent implements OnInit, OnDestroy {
       const language = this.selectedLanguage === 'auto' ? 
         this.detectLanguage(this.textToShare) : this.selectedLanguage;
       
-      const code = this.generateCode();
-      
-      const clipboardData: ClipboardData = {
-        id: code,
-        text: this.textToShare,
-        created_at: new Date().toISOString(),
-        expires_at: new Date(Date.now() + 2 * 60 * 1000).toISOString(),
-        size: this.textToShare.length,
-        language: language
-      };
-
-      // Save to localStorage
-      const existingData = JSON.parse(localStorage.getItem('onlineClipboardStorage') || '[]');
-      existingData.push([code, clipboardData]);
-      localStorage.setItem('onlineClipboardStorage', JSON.stringify(existingData));
+      // Firebase use karein - localStorage ki jagah
+      const code = await this.firebaseClipboard.shareText(this.textToShare, language);
 
       this.generatedCode = code;
       this.startCountdown();
@@ -286,12 +250,14 @@ export class OnlineClipboardComponent implements OnInit, OnDestroy {
       await this.copyToClipboard(code);
       
     } catch (error) {
+      console.error('Share error:', error);
       this.toastr.error('Failed to share code');
     } finally {
       this.isLoading = false;
     }
   }
 
+  // UPDATED: Firebase use karein
   async retrieveText() {
     if (!this.retrievalCode.trim()) {
       this.toastr.warning('Please enter a retrieval code');
@@ -308,35 +274,28 @@ export class OnlineClipboardComponent implements OnInit, OnDestroy {
     this.isLoading = true;
 
     try {
-      const existingData = JSON.parse(localStorage.getItem('onlineClipboardStorage') || '[]');
-      const foundData = existingData.find(([code, data]: [string, ClipboardData]) => code === this.retrievalCode);
+      // Firebase use karein - localStorage ki jagah
+      const result = await this.firebaseClipboard.retrieveText(this.retrievalCode);
       
-      if (!foundData) {
+      if (!result) {
         this.toastr.error('Invalid code or code has expired');
         this.sharedText = '';
         return;
       }
 
-      const clipboardData: ClipboardData = foundData[1];
-      const expiryDate = new Date(clipboardData.expires_at);
-      
-      if (new Date() > expiryDate) {
-        this.toastr.error('This code has expired');
-        this.sharedText = '';
-        return;
-      }
-
-      this.sharedText = clipboardData.text;
-      this.autoDetectedLanguage = clipboardData.language;
+      this.sharedText = result.text;
+      this.autoDetectedLanguage = result.language;
       this.toastr.success('Code retrieved successfully!');
       
     } catch (error) {
+      console.error('Retrieve error:', error);
       this.toastr.error('Failed to retrieve code');
     } finally {
       this.isLoading = false;
     }
   }
 
+  // Copy to clipboard method same rahega
   async copyToClipboard(text: string) {
     try {
       if (navigator.clipboard && window.isSecureContext) {
