@@ -26,11 +26,11 @@ interface ClipboardData {
   providedIn: 'root'
 })
 export class FirebaseClipboardService {
-  private firestore = inject(Firestore); // ✅ Firestore service inject karo
+  private firestore = inject(Firestore);
   private toastr = inject(ToastrService);
-  private cleanupTimeouts = new Map<string, NodeJS.Timeout>();
+  private cleanupTimeouts = new Map<string, any>(); // ✅ Change NodeJS.Timeout to any
 
-  // ✅ Generate unique code method add karo
+  // Generate unique code
   private generateCode(): string {
     return Math.floor(1000 + Math.random() * 9000).toString();
   }
@@ -38,7 +38,7 @@ export class FirebaseClipboardService {
   // Share method with auto-cleanup
   async shareText(text: string, language: string): Promise<string> {
     try {
-      const code = this.generateCode(); // ✅ Ab yeh method available hai
+      const code = this.generateCode();
       
       const clipboardData: ClipboardData = {
         text: text,
@@ -48,7 +48,7 @@ export class FirebaseClipboardService {
         size: text.length
       };
 
-      const docRef = doc(this.firestore, 'clipboard', code); // ✅ Ab firestore available hai
+      const docRef = doc(this.firestore, 'clipboard', code);
       await setDoc(docRef, clipboardData);
       
       console.log('✅ Document saved with code:', code);
@@ -127,7 +127,7 @@ export class FirebaseClipboardService {
     }
   }
 
-  // Bulk cleanup on app start
+  // Bulk cleanup on app start (Optional - agar indexes ka issue ho toh comment out karo)
   async cleanupAllExpired() {
     try {
       const clipboardRef = collection(this.firestore, 'clipboard');
@@ -156,11 +156,12 @@ export class FirebaseClipboardService {
     }
   }
 
-  // Constructor mein bulk cleanup call karo
+  // Constructor - agar bulk cleanup use karna hai toh
   constructor() {
-    this.cleanupAllExpired().catch(error => {
-      console.error('Initial cleanup error:', error);
-    });
+    // Optional: Agar indexes ka issue ho toh yeh line comment out karo
+    // this.cleanupAllExpired().catch(error => {
+    //   console.error('Initial cleanup error:', error);
+    // });
   }
 
   // Manual cleanup for testing

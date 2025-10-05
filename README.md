@@ -25,3 +25,13 @@ Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To u
 ## Further help
 
 To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+
+
+ng build --configuration production --base-href "https://dev-amol-7503.github.io/portfolio/"
+
+xcopy "dist\amol-portfolio\browser\*" "dist\amol-portfolio\" /E /Y
+
+xcopy "dist\amol-portfolio\browser\*" "dist\amol-portfolio\" /E /Y
+
+npx angular-cli-ghpages --dir=dist/amol-portfolio
+
