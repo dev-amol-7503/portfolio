@@ -39,11 +39,11 @@
     font-size: 1.5rem;
     transform: translateX(-50%);
     margin-left: 30px;
-    box-shadow: 0 0 0 5px rgba(0, 123, 255, 0.1);
+    box-shadow: 0 0 0 5px rgba(37, 99, 235, 0.1);
   }
   
   .timeline-content {
-    background: white;
+    background: var(--theme-bg);
     border-radius: 10px;
     padding: 25px;
     box-shadow: 0 5px 25px rgba(0, 0, 0, 0.05);
@@ -58,7 +58,7 @@
       height: 0;
       border-top: 15px solid transparent;
       border-bottom: 15px solid transparent;
-      border-right: 15px solid white;
+      border-right: 15px solid var(--theme-bg);
     }
   }
   
@@ -67,7 +67,7 @@
     
     .timeline-position {
       font-weight: 600;
-      color: #333;
+      color: var(--theme-text);
       margin-bottom: 5px;
     }
     
@@ -84,19 +84,19 @@
       
       span {
         font-weight: 500;
-        color: #555;
+        color: var(--theme-text-secondary);
       }
     }
     
     .timeline-period {
-      color: #777;
+      color: var(--theme-text-secondary);
       font-size: 0.9rem;
     }
   }
   
   .timeline-body {
     .timeline-description {
-      color: #666;
+      color: var(--theme-text-secondary);
       margin-bottom: 15px;
     }
     
@@ -106,7 +106,7 @@
       
       li {
         margin-bottom: 8px;
-        color: #555;
+        color: var(--theme-text-secondary);
       }
     }
     
@@ -116,7 +116,7 @@
       gap: 8px;
       
       .tech-badge {
-        background: rgba(0, 123, 255, 0.1);
+        background: rgba(37, 99, 235, 0.1);
         color: var(--bs-primary);
         padding: 3px 10px;
         border-radius: 20px;
@@ -130,34 +130,16 @@
 .dark-theme {
   .experience-section {
     .timeline-content {
-      background-color: #2a2a2a;
+      background: #1e293b;
       
       &:before {
-        border-right-color: #2a2a2a;
-      }
-    }
-    
-    .timeline-header {
-      .timeline-position {
-        color: #e0e0e0;
-      }
-      
-      .timeline-company span {
-        color: #b0b0b0;
+        border-right-color: #1e293b;
       }
     }
     
     .timeline-body {
-      .timeline-description {
-        color: #b0b0b0;
-      }
-      
-      .timeline-responsibilities li {
-        color: #b0b0b0;
-      }
-      
       .tech-badge {
-        background: rgba(0, 123, 255, 0.2);
+        background: rgba(37, 99, 235, 0.2);
       }
     }
   }

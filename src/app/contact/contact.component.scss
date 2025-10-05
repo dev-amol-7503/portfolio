@@ -1,7 +1,7 @@
 .contact-section {
   .contact-info {
     .contact-description {
-      color: #666;
+      color: var(--theme-text-secondary);
       font-size: 1.1rem;
       line-height: 1.8;
     }
@@ -13,7 +13,7 @@
       .contact-icon {
         width: 50px;
         height: 50px;
-        background: rgba(0, 123, 255, 0.1);
+        background: rgba(37, 99, 235, 0.1);
         border-radius: 50%;
         display: flex;
         align-items: center;
@@ -26,12 +26,12 @@
       
       .contact-label {
         font-weight: 600;
-        color: #333;
+        color: var(--theme-text);
         margin-bottom: 5px;
       }
       
       .contact-value {
-        color: #666;
+        color: var(--theme-text-secondary);
         margin-bottom: 0;
       }
     }
@@ -44,7 +44,7 @@
         width: 45px;
         height: 45px;
         border-radius: 50%;
-        background: rgba(0, 123, 255, 0.1);
+        background: rgba(37, 99, 235, 0.1);
         color: var(--bs-primary);
         display: flex;
         align-items: center;
@@ -62,25 +62,27 @@
   }
   
   .contact-form {
-    background: white;
+    background: var(--theme-bg);
     padding: 30px;
     border-radius: 10px;
     box-shadow: 0 5px 25px rgba(0, 0, 0, 0.05);
     
     .form-label {
       font-weight: 500;
-      color: #555;
+      color: var(--theme-text);
     }
     
     .form-control {
       padding: 12px 15px;
       border-radius: 8px;
-      border: 1px solid #ddd;
+      border: 1px solid rgba(0, 0, 0, 0.1);
       transition: all 0.3s ease;
+      background: var(--theme-bg);
+      color: var(--theme-text);
       
       &:focus {
         border-color: var(--bs-primary);
-        box-shadow: 0 0 0 0.25rem rgba(0, 123, 255, 0.25);
+        box-shadow: 0 0 0 0.25rem rgba(37, 99, 235, 0.25);
       }
     }
     
@@ -97,29 +99,15 @@
 
 .dark-theme {
   .contact-section {
-    .contact-description, .contact-value {
-      color: #b0b0b0;
-    }
-    
-    .contact-label {
-      color: #e0e0e0 !important;
-    }
-    
     .contact-form {
-      background-color: #2a2a2a;
-      
-      .form-label {
-        color: #e0e0e0;
-      }
+      background: #1e293b;
       
       .form-control {
-        background-color: #333;
-        border-color: #444;
-        color: #e0e0e0;
+        background: #334155;
+        border-color: #475569;
         
         &:focus {
-          background-color: #333;
-          color: #e0e0e0;
+          background: #334155;
         }
       }
     }

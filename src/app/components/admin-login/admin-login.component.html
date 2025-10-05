@@ -1,0 +1,62 @@
+<div class="admin-login-container">
+  <div class="login-card">
+    <div class="login-header">
+      <h2><i class="fas fa-lock me-2"></i>Admin Login</h2>
+    </div>
+
+    <form (ngSubmit)="onSubmit()" class="login-form">
+      <div class="form-group">
+        <label for="username" class="form-label">Username</label>
+        <div class="input-group">
+          <span class="input-group-text">
+            <i class="fas fa-user"></i>
+          </span>
+          <input
+            type="text"
+            id="username"
+            class="form-control"
+            [(ngModel)]="username"
+            name="username"
+            placeholder="Enter admin username"
+            required
+          >
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="password" class="form-label">Password</label>
+        <div class="input-group">
+          <span class="input-group-text">
+            <i class="fas fa-key"></i>
+          </span>
+          <input
+            [type]="showPassword ? 'text' : 'password'"
+            id="password"
+            class="form-control"
+            [(ngModel)]="password"
+            name="password"
+            placeholder="Enter admin password"
+            required
+          >
+          <button type="button" class="btn btn-outline-secondary" (click)="togglePasswordVisibility()">
+            <i class="fas" [class.fa-eye]="!showPassword" [class.fa-eye-slash]="showPassword"></i>
+          </button>
+        </div>
+      </div>
+
+      <button 
+        type="submit" 
+        class="btn btn-primary w-100 login-btn"
+        [disabled]="isLoggingIn"
+      >
+        <span *ngIf="!isLoggingIn">
+          <i class="fas fa-sign-in-alt me-2"></i>Login
+        </span>
+        <span *ngIf="isLoggingIn">
+          <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+          Logging in...
+        </span>
+      </button>
+    </form>
+  </div>
+</div>

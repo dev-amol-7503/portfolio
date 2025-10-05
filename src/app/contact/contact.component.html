@@ -15,7 +15,7 @@
               </div>
               <div class="contact-text">
                 <h5 class="contact-label">Location</h5>
-                <p class="contact-value">Pune, Maharashtra, India</p>
+                <p class="contact-value">{{ personalInfo.location || 'Pune, Maharashtra, India' }}</p>
               </div>
             </div>
             
@@ -25,7 +25,7 @@
               </div>
               <div class="contact-text">
                 <h5 class="contact-label">Email</h5>
-                <p class="contact-value">amolnagare279&#64;gmail.com</p>
+                <p class="contact-value">{{ personalInfo.email || 'amolnagare279@gmail.com' }}</p>
               </div>
             </div>
             
@@ -35,7 +35,7 @@
               </div>
               <div class="contact-text">
                 <h5 class="contact-label">Phone</h5>
-                <p class="contact-value">+91 9975607503</p>
+                <p class="contact-value">{{ personalInfo.phone || '+91 9975607503' }}</p>
               </div>
             </div>
           </div>

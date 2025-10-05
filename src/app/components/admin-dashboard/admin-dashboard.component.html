@@ -1,0 +1,241 @@
+<div class="admin-dashboard-container">
+  <div class="dashboard-header">
+    <div class="container">
+      <div class="row align-items-center">
+        <div class="col">
+          <h1><i class="fas fa-tachometer-alt me-2"></i>Admin Dashboard</h1>
+          <p class="text-muted mb-0">Manage your portfolio content</p>
+        </div>
+        <div class="col-auto">
+          <div class="d-flex gap-2">
+            <button class="btn btn-outline-primary" (click)="toggleEditMode()">
+              <i class="fas" [class.fa-edit]="!isEditMode" [class.fa-check]="isEditMode"></i>
+              {{ isEditMode ? 'Editing' : 'Edit Mode' }}
+            </button>
+            <button class="btn btn-outline-danger" (click)="logout()">
+              <i class="fas fa-sign-out-alt me-1"></i>Logout
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="dashboard-content">
+    <div class="container">
+      <!-- Navigation Tabs -->
+      <ul class="nav nav-tabs mb-4">
+        <li class="nav-item">
+          <button class="nav-link" [class.active]="activeTab === 'overview'" 
+                  (click)="switchTab('overview')">
+            <i class="fas fa-chart-bar me-2"></i>Overview
+          </button>
+        </li>
+        <li class="nav-item">
+          <button class="nav-link" [class.active]="activeTab === 'projects'" 
+                  (click)="switchTab('projects')">
+            <i class="fas fa-project-diagram me-2"></i>Projects
+          </button>
+        </li>
+        <li class="nav-item">
+          <button class="nav-link" [class.active]="activeTab === 'testimonials'" 
+                  (click)="switchTab('testimonials')">
+            <i class="fas fa-comments me-2"></i>Testimonials
+          </button>
+        </li>
+        <li class="nav-item">
+          <button class="nav-link" [class.active]="activeTab === 'skills'" 
+                  (click)="switchTab('skills')">
+            <i class="fas fa-code me-2"></i>Skills
+          </button>
+        </li>
+      </ul>
+
+      <!-- Overview Tab -->
+      <div *ngIf="activeTab === 'overview'" class="tab-content">
+        <div class="row">
+          <div class="col-md-3 mb-4">
+            <div class="stat-card">
+              <div class="stat-icon bg-primary">
+                <i class="fas fa-project-diagram"></i>
+              </div>
+              <div class="stat-info">
+                <h3>{{ portfolioData.projects?.length || 0 }}</h3>
+                <p>Projects</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3 mb-4">
+            <div class="stat-card">
+              <div class="stat-icon bg-success">
+                <i class="fas fa-comments"></i>
+              </div>
+              <div class="stat-info">
+                <h3>{{ portfolioData.testimonials?.length || 0 }}</h3>
+                <p>Testimonials</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3 mb-4">
+            <div class="stat-card">
+              <div class="stat-icon bg-warning">
+                <i class="fas fa-code"></i>
+              </div>
+              <div class="stat-info">
+                <h3>{{ portfolioData.skills?.length || 0 }}</h3>
+                <p>Skills</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3 mb-4">
+            <div class="stat-card">
+              <div class="stat-icon bg-info">
+                <i class="fas fa-briefcase"></i>
+              </div>
+              <div class="stat-info">
+                <h3>{{ portfolioData.experiences?.length || 0 }}</h3>
+                <p>Experiences</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Projects Tab -->
+      <div *ngIf="activeTab === 'projects'" class="tab-content">
+        <div class="card">
+          <div class="card-header">
+            <h5 class="card-title mb-0">Manage Projects</h5>
+          </div>
+          <div class="card-body">
+            <!-- Add Project Form -->
+            <div class="add-form mb-4">
+              <h6>Add New Project</h6>
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <input type="text" class="form-control" placeholder="Project Title" 
+                         [(ngModel)]="newProject.title">
+                </div>
+                <div class="col-md-6">
+                  <input type="text" class="form-control" placeholder="Technologies (comma separated)" 
+                         [(ngModel)]="newProject.technologies">
+                </div>
+                <div class="col-12">
+                  <textarea class="form-control" placeholder="Project Description" 
+                            [(ngModel)]="newProject.description" rows="3"></textarea>
+                </div>
+                <div class="col-md-6">
+                  <input type="text" class="form-control" placeholder="Project Link" 
+                         [(ngModel)]="newProject.link">
+                </div>
+                <div class="col-md-6">
+                  <input type="text" class="form-control" placeholder="GitHub Link" 
+                         [(ngModel)]="newProject.githubLink">
+                </div>
+                <div class="col-12">
+                  <button class="btn btn-primary" (click)="addProject()">
+                    <i class="fas fa-plus me-2"></i>Add Project
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Projects List -->
+            <div class="projects-list">
+              <h6>Existing Projects</h6>
+              <div class="list-group">
+                <div *ngFor="let project of portfolioData.projects" class="list-group-item">
+                  <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                      <h6 class="mb-1">{{ project.title }}</h6>
+                      <p class="mb-1 text-muted">{{ project.description | slice:0:100 }}...</p>
+                      <small class="text-muted">Technologies: {{ project.technologies.join(', ') }}</small>
+                    </div>
+                    <div class="btn-group">
+                      <button class="btn btn-sm btn-outline-primary">
+                        <i class="fas fa-edit"></i>
+                      </button>
+                      <button class="btn btn-sm btn-outline-danger" (click)="deleteProject(project.id)">
+                        <i class="fas fa-trash"></i>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Testimonials Tab -->
+      <div *ngIf="activeTab === 'testimonials'" class="tab-content">
+        <div class="card">
+          <div class="card-header">
+            <h5 class="card-title mb-0">Manage Testimonials</h5>
+          </div>
+          <div class="card-body">
+            <!-- Add Testimonial Form -->
+            <div class="add-form mb-4">
+              <h6>Add New Testimonial</h6>
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <input type="text" class="form-control" placeholder="Name" 
+                         [(ngModel)]="newTestimonial.name">
+                </div>
+                <div class="col-md-6">
+                  <input type="text" class="form-control" placeholder="Position" 
+                         [(ngModel)]="newTestimonial.position">
+                </div>
+                <div class="col-12">
+                  <textarea class="form-control" placeholder="Testimonial Text" 
+                            [(ngModel)]="newTestimonial.text" rows="3"></textarea>
+                </div>
+                <div class="col-12">
+                  <button class="btn btn-primary" (click)="addTestimonial()">
+                    <i class="fas fa-plus me-2"></i>Add Testimonial
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Testimonials List -->
+            <div class="testimonials-list">
+              <h6>Existing Testimonials</h6>
+              <div class="list-group">
+                <div *ngFor="let testimonial of portfolioData.testimonials" class="list-group-item">
+                  <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                      <h6 class="mb-1">{{ testimonial.name }}</h6>
+                      <p class="mb-1 text-muted">{{ testimonial.position }}</p>
+                      <p class="mb-1">{{ testimonial.text | slice:0:100 }}...</p>
+                    </div>
+                    <div class="btn-group">
+                      <button class="btn btn-sm btn-outline-primary">
+                        <i class="fas fa-edit"></i>
+                      </button>
+                      <button class="btn btn-sm btn-outline-danger" (click)="deleteTestimonial(testimonial.id)">
+                        <i class="fas fa-trash"></i>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Skills Tab -->
+      <div *ngIf="activeTab === 'skills'" class="tab-content">
+        <div class="card">
+          <div class="card-header">
+            <h5 class="card-title mb-0">Manage Skills</h5>
+          </div>
+          <div class="card-body">
+            <p class="text-muted">Skills management coming soon...</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

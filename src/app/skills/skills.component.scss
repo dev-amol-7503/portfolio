@@ -18,7 +18,7 @@
     }
     
     .section-subtitle {
-      color: #666;
+      color: var(--theme-text-secondary);
       max-width: 700px;
       margin: 0 auto;
     }
@@ -27,7 +27,7 @@
   .skill-item {
     .progress {
       border-radius: 5px;
-      background-color: #f0f0f0;
+      background-color: var(--theme-surface);
       
       .progress-bar {
         border-radius: 5px;
@@ -37,16 +37,19 @@
   }
   
   .category-card {
-    background-color: white;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05), 
-                0 4px 6px rgba(0, 0, 0, 0.05),
-                0 6px 16px rgba(0, 0, 0, 0.05);
-
+    background-color: var(--theme-bg);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    border-radius: 12px;
+    transition: transform 0.3s ease;
+  
+    &:hover {
+      transform: translateY(-5px);
+    }
   
     .category-icon {
       width: 60px;
       height: 60px;
-      background: rgba(0, 123, 255, 0.1);
+      background: rgba(37, 99, 235, 0.1);
       border-radius: 50%;
       display: flex;
       align-items: center;
@@ -56,7 +59,7 @@
     }
     
     .category-title {
-      color: #333;
+      color: var(--theme-text);
       font-weight: 600;
     }
     
@@ -68,7 +71,7 @@
         position: relative;
         padding-left: 20px;
         margin-bottom: 8px;
-        color: #666;
+        color: var(--theme-text-secondary);
         
         &:before {
           content: '▹';
@@ -83,24 +86,8 @@
 
 .dark-theme {
   .skills-section {
-    .section-subtitle {
-      color: #b0b0b0;
-    }
-    
     .progress {
-      background-color: #333 !important;
-    }
-    
-    .category-card {
-      background-color: #2a2a2a;
-      
-      .category-title {
-        color: #e0e0e0;
-      }
-      
-      .category-skills li {
-        color: #b0b0b0;
-      }
+      background-color: #334155 !important;
     }
   }
 }

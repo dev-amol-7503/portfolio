@@ -20,14 +20,8 @@
   
   .stat-label {
     font-size: 0.9rem;
-    color: #666;
+    color: var(--theme-text-secondary);
     font-weight: 500;
-  }
-}
-
-.dark-theme {
-  .stat-label {
-    color: #b0b0b0 !important;
   }
 }
 

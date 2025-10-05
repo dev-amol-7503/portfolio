@@ -1,0 +1,302 @@
+<div class="online-clipboard-container">
+  <!-- Background Animation -->
+  <div class="background-animation"></div>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <div class="container-fluid">
+      
+      <!-- Tab Navigation -->
+      <div class="tab-navigation">
+        <div class="nav nav-tabs">
+          <button class="nav-link" [class.active]="activeTab === 'share'" (click)="switchTab('share')">
+            <i class="fas fa-share-alt"></i>
+            Share Code
+          </button>
+          <button class="nav-link" [class.active]="activeTab === 'retrieve'" (click)="switchTab('retrieve')">
+            <i class="fas fa-download"></i>
+            Retrieve Code
+          </button>
+        </div>
+      </div>
+
+      <!-- Share Tab - Split Layout -->
+      <div *ngIf="activeTab === 'share'" class="tab-content share-tab">
+        <div class="split-layout">
+          
+          <!-- Left Side - Code Input -->
+          <div class="left-panel">
+            <div class="panel-header">
+              <div class="logo-section">
+                <div class="app-logo">
+                  <i class="fas fa-rocket"></i>
+                </div>
+                <div class="app-info">
+                  <h1>MatrixClip</h1>
+                </div>
+              </div>
+              <div class="language-selector">
+                <select class="form-select" [(ngModel)]="selectedLanguage" (change)="onTextChange()">
+                  <option *ngFor="let lang of languages" [value]="lang.value">
+                    {{ lang.name }}
+                  </option>
+                </select>
+              </div>
+            </div>
+
+            <div class="code-editor-container">
+              <div class="editor-toolbar">
+                <div class="toolbar-left">
+                  <span class="language-badge" [style.background]="getLanguageColor(currentLanguage)">
+                    <i [class]="getLanguageIcon(currentLanguage)"></i>
+                    {{ getLanguageName(currentLanguage) }}
+                  </span>
+                </div>
+                <div class="toolbar-right">
+                  <button class="tool-btn" (click)="pasteFromClipboard()" title="Paste from clipboard">
+                    <i class="fas fa-paste"></i>
+                  </button>
+                  <button class="tool-btn" (click)="formatCode()" [disabled]="!textToShare" title="Format code">
+                    <i class="fas fa-indent"></i>
+                  </button>
+                  <button class="tool-btn" (click)="clearFields()" [disabled]="!textToShare" title="Clear code">
+                    <i class="fas fa-eraser"></i>
+                  </button>
+                </div>
+              </div>
+
+              <div class="editor-area">
+                <textarea #textArea
+                          class="code-textarea"
+                          [(ngModel)]="textToShare"
+                          (input)="onTextChange()"
+                          (dblclick)="onDoubleClick($event)"
+                          placeholder="Paste your code here or start typing..."></textarea>
+              </div>
+
+              <div class="editor-footer">
+                <div class="file-stats">
+                  <span class="stat">
+                    <i class="fas fa-text-height"></i>
+                    {{ characterCount | number }} chars
+                  </span>
+                  <span class="stat">
+                    <i class="fas fa-code-branch"></i>
+                    {{ lineCount }} lines
+                  </span>
+                  <span class="stat">
+                    <i class="fas fa-weight-hanging"></i>
+                    {{ getFileSize() }}
+                  </span>
+                  <span *ngIf="isTextTooLong" class="stat error">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    Max 10MB
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <div class="action-section">
+              <button class="btn btn-primary btn-lg generate-btn" 
+                      (click)="shareText()"
+                      [disabled]="!textToShare.trim() || isLoading || isTextTooLong">
+                <i class="fas fa-bolt" *ngIf="!isLoading"></i>
+                <div class="spinner" *ngIf="isLoading"></div>
+                {{ isLoading ? 'Generating...' : 'Generate Share Code' }}
+              </button>
+            </div>
+          </div>
+
+          <!-- Right Side - Generated Code -->
+          <div class="right-panel" *ngIf="generatedCode">
+            <div class="share-result">
+              <div class="result-header">
+                <h3>
+                  <i class="fas fa-check-circle text-success"></i>
+                  Code Ready to Share!
+                </h3>
+                <div class="countdown-timer">
+                  <div class="timer-circle">
+                    <svg width="50" height="50" viewBox="0 0 44 44">
+                      <circle cx="22" cy="22" r="20" fill="none" stroke="#e2e8f0" stroke-width="3"></circle>
+                      <circle cx="22" cy="22" r="20" fill="none" stroke="#10b981" stroke-width="3" 
+                              [attr.stroke-dasharray]="126"
+                              [attr.stroke-dashoffset]="126 - (126 * countdown / 120)"></circle>
+                    </svg>
+                    <span class="timer-text">{{ formatTime(countdown) }}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="share-code-section">
+                <p class="instruction">Share this 4-digit code to access your code:</p>
+                
+                <div class="code-display">
+                  <div class="code-value">{{ generatedCode }}</div>
+                  <button class="btn btn-success copy-btn" 
+                          (click)="copyToClipboard(generatedCode)"
+                          [class.copied]="isCopied">
+                    <i class="fas" [class.fa-copy]="!isCopied" [class.fa-check]="isCopied"></i>
+                    {{ isCopied ? 'Copied!' : 'Copy Code' }}
+                  </button>
+                </div>
+
+                <div class="code-details">
+                  <div class="detail-item">
+                    <i class="fas fa-clock text-warning"></i>
+                    <span>Expires in 2 minutes</span>
+                  </div>
+                  <div class="detail-item">
+                    <i [class]="getLanguageIcon(currentLanguage)" [style.color]="getLanguageColor(currentLanguage)"></i>
+                    <span>{{ getLanguageName(currentLanguage) }}</span>
+                  </div>
+                  <div class="detail-item">
+                    <i class="fas fa-file-code text-info"></i>
+                    <span>{{ getFileSize() }}</span>
+                  </div>
+                </div>
+
+                <div class="quick-tips">
+                  <h5>
+                    <i class="fas fa-lightbulb"></i>
+                    Quick Tips
+                  </h5>
+                  <ul>
+                    <li>Share the code with anyone within 2 minutes</li>
+                    <li>Code automatically expires after 2 minutes</li>
+                    <li>Supports all programming languages</li>
+                    <li>No registration required</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Empty State for Right Panel -->
+          <div class="right-panel empty-panel" *ngIf="!generatedCode">
+            <div class="empty-state">
+              <div class="empty-icon">
+                <i class="fas fa-share-alt"></i>
+              </div>
+              <h4>Ready to Share</h4>
+              <p>Generate a share code to see it here</p>
+              <div class="features-list">
+                <div class="feature-item feature-1">
+                  <i class="fas fa-bolt text-success"></i>
+                  <span>Instant sharing</span>
+                </div>
+                <div class="feature-item feature-2">
+                  <i class="fas fa-shield-alt text-primary"></i>
+                  <span>2-minute expiry</span>
+                </div>
+                <div class="feature-item feature-3">
+                  <i class="fas fa-infinity text-info"></i>
+                  <span>10MB support</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Retrieve Tab -->
+      <div *ngIf="activeTab === 'retrieve'" class="tab-content retrieve-tab">
+        <div class="retrieve-container">
+          
+          <!-- Code Input Section -->
+          <div class="retrieve-input">
+            <div class="input-header">
+              <h3>
+                <i class="fas fa-key"></i>
+                Enter Share Code
+              </h3>
+              <p>Enter the 4-digit code to retrieve the shared code snippet</p>
+            </div>
+
+            <div class="code-input-group">
+              <input type="text" 
+                     class="form-control code-input" 
+                     [(ngModel)]="retrievalCode"
+                     placeholder="Enter 4-digit code"
+                     maxlength="4"
+                     pattern="[0-9]*"
+                     inputmode="numeric"
+                     (keyup.enter)="retrieveText()">
+              <button class="btn btn-primary retrieve-btn" 
+                      (click)="retrieveText()"
+                      [disabled]="!retrievalCode.trim() || isLoading">
+                <i class="fas fa-download" *ngIf="!isLoading"></i>
+                <div class="spinner" *ngIf="isLoading"></div>
+                {{ isLoading ? 'Retrieving...' : 'Retrieve Code' }}
+              </button>
+            </div>
+          </div>
+
+          <!-- Retrieved Code Section -->
+          <div class="retrieved-code" *ngIf="sharedText">
+            <div class="code-result">
+              <div class="result-header">
+                <div class="header-left">
+                  <span class="language-badge" [style.background]="getLanguageColor(autoDetectedLanguage)">
+                    <i [class]="getLanguageIcon(autoDetectedLanguage)"></i>
+                    {{ getLanguageName(autoDetectedLanguage) }}
+                  </span>
+                  <h4>Retrieved Code</h4>
+                </div>
+                <div class="header-actions">
+                  <button class="btn btn-success" (click)="copyToClipboard(sharedText)">
+                    <i class="fas fa-copy"></i>
+                    Copy Code
+                  </button>
+                  <button class="btn btn-outline-secondary" (click)="sharedText = ''">
+                    <i class="fas fa-times"></i>
+                    Clear
+                  </button>
+                </div>
+              </div>
+
+              <div class="code-content">
+                <textarea #resultArea
+                          class="result-textarea"
+                          [value]="sharedText"
+                          (dblclick)="onDoubleClick($event)"
+                          readonly
+                          (input)="autoResizeResult()"
+                          spellcheck="false"></textarea>
+              </div>
+
+              <div class="result-footer">
+                <div class="file-info">
+                  <span class="info-item">
+                    <i class="fas fa-text-height"></i>
+                    {{ sharedText.length | number }} characters
+                  </span>
+                  <span class="info-item">
+                    <i class="fas fa-code-branch"></i>
+                    {{ sharedText.split('\n').length }} lines
+                  </span>
+                  <span class="info-item">
+                    <i class="fas fa-weight-hanging"></i>
+                    {{ getFileSize() }}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Empty State for Retrieve -->
+          <div class="empty-retrieve" *ngIf="!sharedText && retrievalCode && !isLoading">
+            <div class="empty-content">
+              <i class="fas fa-search fa-3x text-muted"></i>
+              <h5>No Code Found</h5>
+              <p class="text-muted">Please check the code and try again</p>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </main>
+</div>

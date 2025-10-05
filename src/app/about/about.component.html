@@ -12,35 +12,45 @@
       </div>
       <div class="col-lg-6">
         <h2 class="section-title mb-4">About Me</h2>
-        <p class="about-text mb-4">
-          I'm a passionate Full Stack Developer with 3+ years of experience building scalable web and mobile applications. 
-          My expertise lies in Angular, Spring Boot, Docker, Jenkins, and Android development.
-        </p>
+        
+        <!-- Editable About Text -->
+        <div *ngIf="!isEditMode" class="about-text mb-4">
+          <p>{{ personalInfo.about || 'I\'m a passionate Full Stack Developer with 3+ years of experience building scalable web and mobile applications. My expertise lies in Angular, Spring Boot, Docker, Jenkins, and Android development.' }}</p>
+        </div>
+        
+        <div *ngIf="isEditMode" class="edit-about mb-4">
+          <textarea class="form-control" rows="4" 
+                    [(ngModel)]="personalInfo.about"
+                    placeholder="Enter about description..."></textarea>
+          <button class="btn btn-primary btn-sm mt-2" (click)="updatePersonalInfo()">
+            <i class="fas fa-save me-1"></i>Save
+          </button>
+        </div>
         
         <div class="about-details mb-4">
           <div class="row">
             <div class="col-md-6 mb-3">
               <div class="detail-item">
                 <i class="fas fa-user-tie text-primary me-2"></i>
-                <span><strong>Name:</strong> Amol Nagare</span>
+                <span><strong>Name:</strong> {{ personalInfo.name || 'Amol Nagare' }}</span>
               </div>
             </div>
             <div class="col-md-6 mb-3">
               <div class="detail-item">
                 <i class="fas fa-envelope text-primary me-2"></i>
-                <span><strong>Email:</strong> amolnagare279&#64;gmail.com</span>
+                <span><strong>Email:</strong> {{ personalInfo.email || 'amolnagare279@gmail.com' }}</span>
               </div>
             </div>
             <div class="col-md-6 mb-3">
               <div class="detail-item">
                 <i class="fas fa-phone-alt text-primary me-2"></i>
-                <span><strong>Phone:</strong> +91 9975607503</span>
+                <span><strong>Phone:</strong> {{ personalInfo.phone || '+91 9975607503' }}</span>
               </div>
             </div>
             <div class="col-md-6 mb-3">
               <div class="detail-item">
                 <i class="fas fa-map-marker-alt text-primary me-2"></i>
-                <span><strong>Location:</strong> Pune, India</span>
+                <span><strong>Location:</strong> {{ personalInfo.location || 'Pune, India' }}</span>
               </div>
             </div>
           </div>

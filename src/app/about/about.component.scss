@@ -38,7 +38,20 @@
   .about-text {
     font-size: 1.1rem;
     line-height: 1.8;
-    color: #666;
+    color: var(--theme-text-secondary);
+  }
+  
+  .edit-about {
+    .form-control {
+      background: var(--theme-bg);
+      border: 1px solid rgba(0, 0, 0, 0.1);
+      color: var(--theme-text);
+      
+      &:focus {
+        border-color: var(--bs-primary);
+        box-shadow: 0 0 0 0.2rem rgba(37, 99, 235, 0.25);
+      }
+    }
   }
   
   .detail-item {
@@ -47,12 +60,12 @@
     margin-bottom: 0.5rem;
     
     span {
-      color: #555;
+      color: var(--theme-text-secondary);
     }
   }
   
   .education-section {
-    background-color: rgba(0, 123, 255, 0.05);
+    background-color: rgba(37, 99, 235, 0.05);
     padding: 1.5rem;
     border-radius: 10px;
     margin-top: 2rem;
@@ -73,6 +86,7 @@
       h6 {
         font-weight: 600;
         margin-bottom: 0.25rem;
+        color: var(--theme-text);
       }
     }
   }
@@ -81,26 +95,20 @@
 .dark-theme {
   .about-section {
     .about-text, .detail-item span {
-      color: #e0e0e0;
+      color: var(--theme-text-secondary);
     }
     
     .education-section {
-      background-color: rgba(0, 123, 255, 0.1);
+      background-color: rgba(37, 99, 235, 0.1);
 
       .percentage-badge {
         font-size: 1rem;
         padding: 0.35rem 0.75rem;
         border-radius: 1rem;
       }
-      .bg-success {
-        background-color: #28a745 !important;
-      }
-      .bg-warning {
-        background-color: #ffc107 !important;
-      }
       
       .text-muted {
-        color: #b0b0b0 !important;
+        color: var(--theme-text-secondary) !important;
       }
     }
   }

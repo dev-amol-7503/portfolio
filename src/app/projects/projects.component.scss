@@ -16,6 +16,35 @@
     }
   }
 
+  .add-project-form {
+    .card {
+      background: var(--theme-bg);
+      border: 1px solid rgba(0, 0, 0, 0.08);
+      border-radius: 12px;
+      
+      .card-header {
+        background: rgba(0, 0, 0, 0.02);
+        border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+        
+        .card-title {
+          color: var(--theme-text);
+          font-weight: 600;
+        }
+      }
+      
+      .form-control {
+        background: var(--theme-bg);
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        color: var(--theme-text);
+        
+        &:focus {
+          border-color: var(--bs-primary);
+          box-shadow: 0 0 0 0.2rem rgba(37, 99, 235, 0.25);
+        }
+      }
+    }
+  }
+
   .tabs-wrapper {
     position: relative;
     justify-items: center;
@@ -93,12 +122,21 @@
   }
 
   .project-card {
-    background: white;
+    background: var(--theme-bg);
     overflow: hidden;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05), 
-    0 4px 6px rgba(0, 0, 0, 0.05),
-    0 6px 16px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
     border: 1px solid rgba(0, 0, 0, 0.05);
+    border-radius: 12px;
+    transition: all 0.3s ease;
+    
+    &:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+    }
+    
+    &.editable {
+      border: 2px dashed var(--bs-primary);
+    }
     
     .project-image {
       position: relative;
@@ -126,8 +164,24 @@
         flex-direction: column;
       }
       
+      .edit-controls {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        
+        .btn {
+          margin-left: 5px;
+        }
+      }
+      
       &:hover {
         .project-overlay {
+          opacity: 1;
+        }
+        
+        .edit-controls {
           opacity: 1;
         }
         
@@ -142,12 +196,12 @@
       
       .project-title {
         font-weight: 700;
-        color: #333;
+        color: var(--theme-text);
         margin-bottom: 10px;
       }
       
       .project-description {
-        color: #666;
+        color: var(--theme-text-secondary);
         font-size: 0.9rem;
         margin-bottom: 15px;
       }
@@ -158,7 +212,7 @@
         gap: 8px;
         
         .tech-badge {
-          background: rgba(0, 123, 255, 0.1);
+          background: rgba(37, 99, 235, 0.1);
           color: var(--bs-primary);
           padding: 5px 12px;
           border-radius: 20px;
@@ -177,15 +231,19 @@
   }
 
   .post-card {
-    background: white;
+    background: var(--theme-bg);
     cursor: pointer;
     padding: 20px;
-    border: #000000;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05), 
-                0 4px 6px rgba(0, 0, 0, 0.05),
-                0 6px 16px rgba(0, 0, 0, 0.05);
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
     border: 1px solid rgba(0, 0, 0, 0.05);
     position: relative;
+    transition: all 0.3s ease;
+    
+    &:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 25px rgba(0, 0, 0, 0.12);
+    }
     
     .platform-icon {
       width: 40px;
@@ -200,12 +258,12 @@
     
     .post-title {
       font-weight: 700;
-      color: #333;
+      color: var(--theme-text);
       margin-bottom: 15px;
     }
     
     .post-description {
-      color: #666;
+      color: var(--theme-text-secondary);
       font-size: 0.9rem;
       margin-bottom: 15px;
     }
@@ -225,7 +283,6 @@
     }
   }
 
-  // Keep hover effects only for buttons
   .btn {
     transition: all 0.3s ease;
     
@@ -268,6 +325,28 @@
   
     .project-card, .post-card {
       margin-bottom: 20px;
+    }
+  }
+}
+
+.dark-theme {
+  .projects-section {
+    .add-project-form .card {
+      background: #1e293b;
+      border-color: #334155;
+      
+      .card-header {
+        background: rgba(255, 255, 255, 0.05);
+        border-bottom-color: #334155;
+      }
+    }
+    
+    .tabs-wrapper::before {
+      background: rgba(255, 255, 255, 0.1);
+    }
+    
+    .nav-pills .nav-link {
+      background: rgba(255, 255, 255, 0.1);
     }
   }
 }
