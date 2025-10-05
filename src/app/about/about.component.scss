@@ -1,0 +1,121 @@
+.about-section {
+  .about-image-container {
+    max-width: 500px;
+    margin: 0 auto;
+    position: relative;
+    
+    img {
+      width: 100%;
+      border: 5px solid white;
+      box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+    }
+    
+    .experience-badge {
+      position: absolute;
+      bottom: -20px;
+      right: -20px;
+      background: var(--bs-primary);
+      color: white;
+      padding: 15px 20px;
+      border-radius: 10px;
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+      text-align: center;
+      
+      .years {
+        font-size: 1.8rem;
+        font-weight: 700;
+        display: block;
+        line-height: 1;
+      }
+      
+      .text {
+        font-size: 0.9rem;
+        display: block;
+      }
+    }
+  }
+  
+  .about-text {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    color: #666;
+  }
+  
+  .detail-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.5rem;
+    
+    span {
+      color: #555;
+    }
+  }
+  
+  .education-section {
+    background-color: rgba(0, 123, 255, 0.05);
+    padding: 1.5rem;
+    border-radius: 10px;
+    margin-top: 2rem;
+    
+    h5 {
+      color: var(--bs-primary);
+      font-weight: 600;
+    }
+    
+    .education-item {
+      padding-bottom: 0.5rem;
+      border-bottom: 1px dashed #ddd;
+      
+      &:last-child {
+        border-bottom: none;
+      }
+      
+      h6 {
+        font-weight: 600;
+        margin-bottom: 0.25rem;
+      }
+    }
+  }
+}
+
+.dark-theme {
+  .about-section {
+    .about-text, .detail-item span {
+      color: #e0e0e0;
+    }
+    
+    .education-section {
+      background-color: rgba(0, 123, 255, 0.1);
+
+      .percentage-badge {
+        font-size: 1rem;
+        padding: 0.35rem 0.75rem;
+        border-radius: 1rem;
+      }
+      .bg-success {
+        background-color: #28a745 !important;
+      }
+      .bg-warning {
+        background-color: #ffc107 !important;
+      }
+      
+      .text-muted {
+        color: #b0b0b0 !important;
+      }
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .about-section {
+    .about-image-container {
+      margin-bottom: 50px;
+      
+      .experience-badge {
+        bottom: -15px;
+        right: 50%;
+        transform: translateX(50%);
+      }
+    }
+  }
+}

@@ -1,0 +1,76 @@
+<section class="skills-section py-5">
+  <div class="container">
+    <div class="section-header text-center mb-5">
+      <p class="section-subtitle lead text-muted">Here are my technical skills that I've acquired over 3+ years of professional experience</p>
+    </div>
+    
+    <div class="row">
+      <div class="col-md-6" *ngFor="let skill of skills">
+        <div class="skill-item mb-4">
+          <div class="skill-header d-flex justify-content-between mb-2">
+            <h5 class="skill-name mb-0">{{ skill.name }}</h5>
+            <span class="skill-percent">{{ skill.level }}%</span>
+          </div>
+          <div class="progress" style="height: 10px;">
+            <div class="progress-bar" 
+                 role="progressbar" 
+                 [style.width]="skill.level + '%'"
+                 [attr.aria-valuenow]="skill.level"
+                 aria-valuemin="0"
+                 aria-valuemax="100"
+                 [ngStyle]="{'background-color': skill.color}"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="skill-categories mt-5">
+      <div class="row">
+        <div class="col-md-4 mb-4">
+          <div class="category-card p-4 h-100">
+            <div class="category-icon mb-3">
+              <i class="fas fa-laptop-code"></i>
+            </div>
+            <h4 class="category-title mb-3">Frontend</h4>
+            <ul class="category-skills">
+              <li>HTML5, CSS3</li>
+              <li>JavaScript, TypeScript</li>
+              <li>Angular, Bootstrap</li>
+              <li>UI/UX Design</li>
+            </ul>
+          </div>
+        </div>
+        
+        <div class="col-md-4 mb-4">
+          <div class="category-card p-4 h-100">
+            <div class="category-icon mb-3">
+              <i class="fas fa-server"></i>
+            </div>
+            <h4 class="category-title mb-3">Backend</h4>
+            <ul class="category-skills">
+              <li>Java, Spring Boot</li>
+              <li>Node.js, Express.js</li>
+              <li>RESTful APIs</li>
+              <li>Microservices</li>
+            </ul>
+          </div>
+        </div>
+        
+        <div class="col-md-4 mb-4">
+          <div class="category-card p-4 h-100">
+            <div class="category-icon mb-3">
+              <i class="fas fa-tools"></i>
+            </div>
+            <h4 class="category-title mb-3">Others</h4>
+            <ul class="category-skills">
+              <li>Docker, Jenkins</li>
+              <li>MySQL, PostgreSQL</li>
+              <li>Android Development</li>
+              <li>Git, Agile Methodologies</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

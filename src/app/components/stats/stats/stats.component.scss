@@ -1,0 +1,51 @@
+.stats-container {
+  display: flex;
+  justify-content: space-around;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.stat-item {
+  text-align: center;
+  padding: 15px;
+  min-width: 100px;
+  
+  .stat-number {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--bs-primary);
+    line-height: 1;
+    margin-bottom: 5px;
+  }
+  
+  .stat-label {
+    font-size: 0.9rem;
+    color: #666;
+    font-weight: 500;
+  }
+}
+
+.dark-theme {
+  .stat-label {
+    color: #b0b0b0 !important;
+  }
+}
+
+@media (max-width: 576px) {
+  .stats-container {
+    gap: 10px;
+  }
+  
+  .stat-item {
+    min-width: 80px;
+    padding: 10px;
+    
+    .stat-number {
+      font-size: 1.5rem;
+    }
+    
+    .stat-label {
+      font-size: 0.8rem;
+    }
+  }
+}

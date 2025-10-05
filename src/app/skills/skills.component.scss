@@ -1,0 +1,116 @@
+.skills-section {
+  .section-header {
+    .section-title {
+      position: relative;
+      display: inline-block;
+      padding-bottom: 15px;
+      
+      &:after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 80px;
+        height: 3px;
+        background: var(--bs-primary);
+      }
+    }
+    
+    .section-subtitle {
+      color: #666;
+      max-width: 700px;
+      margin: 0 auto;
+    }
+  }
+  
+  .skill-item {
+    .progress {
+      border-radius: 5px;
+      background-color: #f0f0f0;
+      
+      .progress-bar {
+        border-radius: 5px;
+        transition: width 1.5s ease-in-out;
+      }
+    }
+  }
+  
+  .category-card {
+    background-color: white;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05), 
+                0 4px 6px rgba(0, 0, 0, 0.05),
+                0 6px 16px rgba(0, 0, 0, 0.05);
+
+  
+    .category-icon {
+      width: 60px;
+      height: 60px;
+      background: rgba(0, 123, 255, 0.1);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--bs-primary);
+      font-size: 1.5rem;
+    }
+    
+    .category-title {
+      color: #333;
+      font-weight: 600;
+    }
+    
+    .category-skills {
+      list-style: none;
+      padding-left: 0;
+      
+      li {
+        position: relative;
+        padding-left: 20px;
+        margin-bottom: 8px;
+        color: #666;
+        
+        &:before {
+          content: '▹';
+          position: absolute;
+          left: 0;
+          color: var(--bs-primary);
+        }
+      }
+    }
+  }
+}
+
+.dark-theme {
+  .skills-section {
+    .section-subtitle {
+      color: #b0b0b0;
+    }
+    
+    .progress {
+      background-color: #333 !important;
+    }
+    
+    .category-card {
+      background-color: #2a2a2a;
+      
+      .category-title {
+        color: #e0e0e0;
+      }
+      
+      .category-skills li {
+        color: #b0b0b0;
+      }
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .skills-section {
+    .section-header {
+      .section-title {
+        font-size: 1.8rem;
+      }
+    }
+  }
+}

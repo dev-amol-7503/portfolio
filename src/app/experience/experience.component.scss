@@ -1,0 +1,193 @@
+.experience-section {
+  .timeline {
+    position: relative;
+    max-width: 1000px;
+    margin: 0 auto;
+    padding-left: 50px;
+    
+    &:before {
+      content: '';
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 30px;
+      width: 2px;
+      background: var(--bs-primary);
+    }
+  }
+  
+  .timeline-item {
+    position: relative;
+    margin-bottom: 30px;
+    
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+  
+  .timeline-badge {
+    position: absolute;
+    left: 0;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: var(--bs-primary);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    transform: translateX(-50%);
+    margin-left: 30px;
+    box-shadow: 0 0 0 5px rgba(0, 123, 255, 0.1);
+  }
+  
+  .timeline-content {
+    background: white;
+    border-radius: 10px;
+    padding: 25px;
+    box-shadow: 0 5px 25px rgba(0, 0, 0, 0.05);
+    position: relative;
+    
+    &:before {
+      content: '';
+      position: absolute;
+      left: -15px;
+      top: 30px;
+      width: 0;
+      height: 0;
+      border-top: 15px solid transparent;
+      border-bottom: 15px solid transparent;
+      border-right: 15px solid white;
+    }
+  }
+  
+  .timeline-header {
+    margin-bottom: 15px;
+    
+    .timeline-position {
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 5px;
+    }
+    
+    .timeline-company {
+      display: flex;
+      align-items: center;
+      margin-bottom: 5px;
+      
+      .company-logo {
+        width: 30px;
+        height: 30px;
+        object-fit: contain;
+      }
+      
+      span {
+        font-weight: 500;
+        color: #555;
+      }
+    }
+    
+    .timeline-period {
+      color: #777;
+      font-size: 0.9rem;
+    }
+  }
+  
+  .timeline-body {
+    .timeline-description {
+      color: #666;
+      margin-bottom: 15px;
+    }
+    
+    .timeline-responsibilities {
+      list-style: none;
+      padding-left: 0;
+      
+      li {
+        margin-bottom: 8px;
+        color: #555;
+      }
+    }
+    
+    .timeline-tech {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      
+      .tech-badge {
+        background: rgba(0, 123, 255, 0.1);
+        color: var(--bs-primary);
+        padding: 3px 10px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 500;
+      }
+    }
+  }
+}
+
+.dark-theme {
+  .experience-section {
+    .timeline-content {
+      background-color: #2a2a2a;
+      
+      &:before {
+        border-right-color: #2a2a2a;
+      }
+    }
+    
+    .timeline-header {
+      .timeline-position {
+        color: #e0e0e0;
+      }
+      
+      .timeline-company span {
+        color: #b0b0b0;
+      }
+    }
+    
+    .timeline-body {
+      .timeline-description {
+        color: #b0b0b0;
+      }
+      
+      .timeline-responsibilities li {
+        color: #b0b0b0;
+      }
+      
+      .tech-badge {
+        background: rgba(0, 123, 255, 0.2);
+      }
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .experience-section {
+    .timeline {
+      padding-left: 30px;
+      
+      &:before {
+        left: 15px;
+      }
+    }
+    
+    .timeline-badge {
+      width: 50px;
+      height: 50px;
+      font-size: 1.2rem;
+      margin-left: 15px;
+    }
+    
+    .timeline-content {
+      padding: 20px;
+      
+      &:before {
+        left: -10px;
+        top: 25px;
+        border-width: 10px;
+      }
+    }
+  }
+}

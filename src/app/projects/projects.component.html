@@ -1,0 +1,206 @@
+<section class="projects-section py-5 bg-light" [class.bg-light]="!isDarkTheme" [class.bg-dark]="isDarkTheme">
+  <div class="container p-0">
+    <div class="section-header text-center mb-5">
+      <p class="section-subtitle lead text-muted">Showcasing my projects, publications, and professional insights across diverse platforms.</p>
+    </div>
+
+    <!-- Animated Tabs Navigation -->
+    <div class="tabs-wrapper mb-5">
+      <ul class="nav nav-pills justify-content-center" id="projectTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+          <button class="nav-link active d-flex align-items-center" 
+                  id="projects-tab" 
+                  data-bs-toggle="pill" 
+                  data-bs-target="#projects" 
+                  type="button" 
+                  role="tab"
+                  (click)="onTabChange('projects')">
+            <i class="fas fa-code me-2"></i> Projects
+          </button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link d-flex align-items-center" 
+                  id="medium-tab" 
+                  data-bs-toggle="pill" 
+                  data-bs-target="#medium" 
+                  type="button" 
+                  role="tab"
+                  (click)="onTabChange('medium')">
+            <i class="fab fa-medium me-2"></i> Medium
+          </button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link d-flex align-items-center" 
+                  id="quora-tab" 
+                  data-bs-toggle="pill" 
+                  data-bs-target="#quora" 
+                  type="button" 
+                  role="tab"
+                  (click)="onTabChange('quora')">
+            <i class="fab fa-quora me-2"></i> Quora
+          </button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link d-flex align-items-center" 
+                  id="linkedin-tab" 
+                  data-bs-toggle="pill" 
+                  data-bs-target="#linkedin" 
+                  type="button" 
+                  role="tab"
+                  (click)="onTabChange('linkedin')">
+            <i class="fab fa-linkedin me-2"></i> Linkedin
+          </button>
+        </li>
+
+      </ul>
+    </div>
+
+    <!-- Tabs Content -->
+    <div class="tab-content" id="projectTabsContent">
+      <!-- Projects Tab -->
+      <div class="tab-pane fade show active" id="projects" role="tabpanel">
+        <div class="row g-4">
+          <div class="col-md-6" *ngFor="let project of visibleProjects">
+            <div class="project-card h-100">
+              <div class="project-image">
+                <img [src]="project.imageUrl" [alt]="project.title" class="img-fluid">
+                <div class="project-overlay d-flex flex-column">
+                  <h5 class="text-white mb-3">{{ project.title }}</h5>
+                  <div class="mt-auto">
+                    <a [href]="project.link" target="_blank" class="btn btn-primary btn-sm me-2">
+                      <i class="fas fa-external-link-alt me-1"></i>View Live
+                    </a>
+                    <a [href]="project.githubLink" target="_blank" class="btn btn-dark btn-sm" *ngIf="project.githubLink">
+                      <i class="fab fa-github me-1"></i>Code
+                    </a>
+                  </div>
+                </div>
+              </div>
+              <div class="project-body">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                  <h5 class="project-title mb-0">{{ project.title }}</h5>
+                  <span class="badge bg-primary">{{ project.category }}</span>
+                </div>
+                <p class="project-description">{{ project.description }}</p>
+                <div class="project-tech">
+                  <span class="tech-badge" *ngFor="let tech of project.technologies">
+                    <i [class]="getTechIcon(tech)"></i> {{ tech }}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="text-center mt-4" *ngIf="projects.length > 3 && visibleProjects.length < projects.length">
+          <button class="btn btn-outline-primary" (click)="showMoreProjects()">
+            View More Projects <i class="fas fa-arrow-down ms-2"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Medium Tab -->
+      <div class="tab-pane fade" id="medium" role="tabpanel">
+        <div class="row g-4">
+          <div class="col-md-6 col-lg-4" *ngFor="let post of visibleMediumPosts">
+            <div class="post-card h-100">
+              <div class="post-header d-flex align-items-center mb-3">
+                <div class="platform-icon me-3">
+                  <i class="fab fa-medium text-dark"></i>
+                </div>
+                <div>
+                  <small class="text-muted d-block">Published on {{ post.date }}</small>
+                  <small class="text-muted">{{ post.readTime }} read</small>
+                </div>
+              </div>
+              <div class="post-body">
+                <h5 class="post-title">{{ post.title }}</h5>
+                <p class="post-description">{{ post.description }}</p>
+                <div class="post-stats d-flex justify-content-between align-items-center mt-3">
+                  <span class="text-muted"><i class="fas fa-heart me-1"></i> {{ post.likes }}</span>
+                  <a [href]="post.link" target="_blank" class="btn btn-dark btn-sm stretched-link">
+                    Read Article <i class="fas fa-arrow-right ms-1"></i>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="text-center mt-4" *ngIf="mediumPosts.length > 3 && visibleMediumPosts.length < mediumPosts.length">
+          <button class="btn btn-outline-dark" (click)="showMoreMediumPosts()">
+            View More Articles <i class="fas fa-arrow-down ms-2"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Quora Tab -->
+      <div class="tab-pane fade" id="quora" role="tabpanel">
+        <div class="row g-4">
+          <div class="col-md-6 col-lg-4" *ngFor="let post of visibleQuoraPosts">
+            <div class="post-card h-100">
+              <div class="post-header d-flex align-items-center mb-3">
+                <div class="platform-icon me-3">
+                  <i class="fab fa-quora text-danger"></i>
+                </div>
+                <div>
+                  <small class="text-muted d-block">Answered on {{ post.date }}</small>
+                  <small class="text-muted">{{ post.views }} views</small>
+                </div>
+              </div>
+              <div class="post-body">
+                <h5 class="post-title">{{ post.title }}</h5>
+                <p class="post-description">{{ post.description }}</p>
+                <div class="post-stats d-flex justify-content-between align-items-center mt-3">
+                  <span class="text-muted"><i class="fas fa-thumbs-up me-1"></i> {{ post.upvotes }}</span>
+                  <a [href]="post.link" target="_blank" class="btn btn-danger btn-sm stretched-link">
+                    View Answer <i class="fas fa-arrow-right ms-1"></i>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="text-center mt-4" *ngIf="quoraPosts.length > 3 && visibleQuoraPosts.length < quoraPosts.length">
+          <button class="btn btn-outline-danger" (click)="showMoreQuoraPosts()">
+            View More Answers <i class="fas fa-arrow-down ms-2"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- LinkedIn Tab -->
+      <div class="tab-pane fade" id="linkedin" role="tabpanel">
+        <div class="row g-4">
+          <div class="col-md-6 col-lg-4" *ngFor="let post of visibleLinkedinPosts">
+            <div class="post-card h-100">
+              <div class="post-header d-flex align-items-center mb-3">
+                <div class="platform-icon me-3">
+                  <i class="fab fa-linkedin text-primary"></i>
+                </div>
+                <div>
+                  <small class="text-muted d-block">Posted on {{ post.date }}</small>
+                  <small class="text-muted">{{ post.engagement }} engagement</small>
+                </div>
+              </div>
+              <div class="post-body">
+                <h5 class="post-title">{{ post.title }}</h5>
+                <p class="post-description">{{ post.description }}</p>
+                <div class="post-stats d-flex justify-content-between align-items-center mt-3">
+                  <span class="text-muted"><i class="fas fa-comment me-1"></i> {{ post.comments }}</span>
+                  <a [href]="post.link" target="_blank" class="btn btn-primary btn-sm stretched-link">
+                    View Post <i class="fas fa-arrow-right ms-1"></i>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="text-center mt-4" *ngIf="linkedinPosts.length > 3 && visibleLinkedinPosts.length < linkedinPosts.length">
+          <button class="btn btn-outline-primary" (click)="showMoreLinkedinPosts()">
+            View More Posts <i class="fas fa-arrow-down ms-2"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Remove the generic "View More Work" button since we have platform-specific ones -->
+  </div>
+</section>

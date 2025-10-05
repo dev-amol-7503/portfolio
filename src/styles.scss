@@ -1,0 +1,201 @@
+/* Global Styles */
+/* Import Bootstrap */
+@import "bootstrap/scss/bootstrap";
+
+/* Import Font Awesome */
+@import "@fortawesome/fontawesome-free/css/all.min.css";
+
+/* Import Toastr */
+@import "ngx-toastr/toastr";
+
+:root {
+  --bs-primary: #0d6efd;
+  --bs-primary-rgb: 13, 110, 253;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  line-height: 1.6;
+  color: #333;
+  margin: 0;
+  padding: 0;
+}
+
+.section-title {
+  position: relative;
+  display: inline-block;
+  padding-bottom: 15px;
+  margin-bottom: 20px;
+  font-weight: 700;
+  
+  &:after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 50px;
+    height: 3px;
+    background: var(--bs-primary);
+  }
+  
+  &.text-center:after {
+    left: 50%;
+    transform: translateX(-50%);
+  }
+}
+
+.section-subtitle {
+  color: #666;
+  font-size: 1.1rem;
+  max-width: 700px;
+  margin: 0 auto 2rem;
+}
+
+.btn {
+  font-weight: 500;
+  transition: all 0.3s ease;
+  border-radius: 8px;
+  
+  &-primary {
+    background-color: var(--bs-primary);
+    border-color: var(--bs-primary);
+    
+    &:hover, &:focus {
+      background-color: #0b5ed7;
+      border-color: #0a58ca;
+      transform: translateY(-2px);
+    }
+  }
+  
+  &-outline-primary {
+    color: var(--bs-primary);
+    border-color: var(--bs-primary);
+    
+    &:hover, &:focus {
+      background-color: var(--bs-primary);
+      color: white;
+      transform: translateY(-2px);
+    }
+  }
+}
+
+.container {
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+}
+
+/* Dark Theme Styles */
+.dark-theme {
+  --bs-body-bg: #1a1a1a;
+  --bs-body-color: white;
+  
+  .text-muted {
+    color: rgba(255, 255, 255, 0.5) !important;
+  }
+  
+  .bg-light {
+    background-color: #2d2d2d !important;
+  }
+  
+  .section-title, .section-subtitle {
+    color: #e0e0e0;
+  }
+  
+  .btn-outline-primary {
+    color: #e0e0e0;
+    border-color: #e0e0e0;
+    
+    &:hover {
+      color: #121212;
+    }
+  }
+  
+  .card, .form-control {
+    background-color: #2a2a2a;
+    border-color: #444;
+    color: #e0e0e0;
+  }
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.fade-in {
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--bs-primary);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #0b5ed7;
+}
+
+.dark-theme {
+  ::-webkit-scrollbar-track {
+    background: #2a2a2a;
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    background: #555;
+  }
+  
+  ::-webkit-scrollbar-thumb:hover {
+    background: #666;
+  }
+}
+
+/* Consistent spacing */
+section {
+  padding: 4rem 0;
+  
+  @media (max-width: 768px) {
+    padding: 3rem 0;
+  }
+}
+
+/* Responsive typography */
+html {
+  font-size: 16px;
+  
+  @media (max-width: 768px) {
+    font-size: 14px;
+  }
+}
+
+/* Utility classes */
+.text-primary {
+  color: var(--bs-primary) !important;
+}
+
+.bg-primary {
+  background-color: var(--bs-primary) !important;
+}
+
+.mt-6 {
+  margin-top: 4rem;
+}
+
+.mb-6 {
+  margin-bottom: 4rem;
+}
+
+.py-6 {
+  padding-top: 4rem;
+  padding-bottom: 4rem;
+}

@@ -1,0 +1,156 @@
+<div class="portfolio-container" [class.dark-theme]="isDarkTheme">
+<!-- Desktop Recommendation Banner -->
+<div *ngIf="showDesktopRecommendation" class="desktop-recommendation-banner">
+  <div class="container d-flex justify-content-between align-items-center">
+    <div>
+      <i class="fas fa-desktop me-2"></i>
+      For the best experience, please view this portfolio on a desktop computer.
+    </div>
+    <button class="btn-close" (click)="closeRecommendation()" aria-label="Close"></button>
+  </div>
+</div>
+
+  <!-- Header -->
+  <header class="portfolio-header">
+    <nav class="navbar navbar-expand-lg">
+      <div class="container-fluid px-4 px-lg-5">
+        <a class="navbar-brand d-flex align-items-center" routerLink="/">
+          <div class="brand-logo me-2">AN</div>
+          <span class="brand-name">Amol Nagare</span>
+        </a>
+        
+        
+        
+        <div class="collapse navbar-collapse" [ngbCollapse]="isMenuCollapsed">
+          <div class="d-flex flex-column flex-lg-row w-100 justify-content-between">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+              <li class="nav-item" *ngFor="let item of navItems">
+                <a class="nav-link" 
+                   [routerLink]="item.link" 
+                   [routerLinkActive]="item.link === '/' ? '' : 'active'" 
+                   (click)="isMenuCollapsed = true">
+                  <i [class]="item.icon + ' me-2'"></i>{{ item.label }}
+                </a>
+              </li>
+            </ul>
+            <div class="d-flex align-items-center mt-3 mt-lg-0">
+              <a href="/assets/docs/resume.pdf" download="amol_resume.pdf" class="btn btn-primary">
+                <i class="fas fa-download me-2"></i>Download CV
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <div class="d-flex align-items-center ps-4">
+          <button class="btn btn-lg theme-toggle me-2" (click)="toggleTheme()">
+            <i class="fas" [class.fa-sun]="!isDarkTheme" [class.fa-moon]="isDarkTheme"></i>
+          </button>
+          <button class="navbar-toggler" type="button" (click)="toggleMenu()">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+        </div>
+
+      </div>
+    </nav>
+  </header>
+
+  <!-- Main Content -->
+  <main class="portfolio-main">
+    <router-outlet></router-outlet>
+  </main>
+
+  <!-- Footer -->
+<footer class="portfolio-footer">
+  <div class="container">
+    <div class="row g-4">
+      <!-- About Column - Full width on mobile, half on larger screens -->
+      <div class="col-md-6 col-lg-4">
+        <div class="footer-about">
+          <h5 class="footer-title text-primary mb-4">Amol Nagare</h5>
+          <p class="footer-text">Full Stack Developer specializing in Angular and Spring Boot applications with 3+ years of experience.</p>
+          <div class="social-links mt-4">
+            <a href="https://www.linkedin.com/in/amol-nagare-33628b21a/" target="_blank" class="social-link"><i class="fab fa-linkedin-in"></i></a>
+            <a href="https://github.com/thematrixxworld/" target="_blank" class="social-link"><i class="fab fa-github"></i></a>
+            <a href="https://twitter.com" target="_blank" class="social-link"><i class="fab fa-twitter"></i></a>
+            <a href="mailto:amolnagare279@gmail.com" class="social-link"><i class="fas fa-envelope"></i></a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Links Column - Hidden on mobile -->
+      <div class="col-lg-2 col-md-6 d-none d-md-block">
+        <div class="footer-links">
+          <h6 class="footer-title text-primary mb-4">Quick Links</h6>
+          <ul class="list-unstyled">
+            <li class="mb-2"><a routerLink="/" class="footer-link">Home</a></li>
+            <li class="mb-2"><a routerLink="/about" class="footer-link">About</a></li>
+            <li class="mb-2"><a routerLink="/projects" class="footer-link">Projects</a></li>
+            <li class="mb-2"><a routerLink="/experience" class="footer-link">Experience</a></li>
+            <li><a routerLink="/contact" class="footer-link">Contact</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Skills Column - Hidden on mobile -->
+      <div class="col-lg-3 col-md-6 d-none d-md-block">
+        <div class="footer-skills">
+          <h6 class="footer-title text-primary mb-4">Technical Skills</h6>
+          <ul class="list-unstyled skill-list">
+            <li class="mb-2 d-flex align-items-center">
+              <i class="fas fa-check-circle text-primary me-2"></i>
+              <span>Angular Development</span>
+            </li>
+            <li class="mb-2 d-flex align-items-center">
+              <i class="fas fa-check-circle text-primary me-2"></i>
+              <span>Spring Boot APIs</span>
+            </li>
+            <li class="mb-2 d-flex align-items-center">
+              <i class="fas fa-check-circle text-primary me-2"></i>
+              <span>UI/UX Design</span>
+            </li>
+            <li class="d-flex align-items-center">
+              <i class="fas fa-check-circle text-primary me-2"></i>
+              <span>DevOps & CI/CD</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Contact Column - Full width on mobile, half on larger screens -->
+      <div class="col-md-6 col-lg-3">
+        <div class="footer-contact">
+          <h6 class="footer-title text-primary mb-4">Contact Info</h6>
+          <ul class="list-unstyled contact-info">
+            <li class="mb-3 d-flex align-items-start">
+              <i class="fas fa-map-marker-alt mt-1 me-2 text-primary"></i>
+              <span>Pune, India</span>
+            </li>
+            <li class="mb-3 d-flex align-items-start">
+              <i class="fas fa-envelope mt-1 me-2 text-primary"></i>
+              <span>amolnagare279&#64;gmail.com</span>
+            </li>
+            <li class="d-flex align-items-start">
+              <i class="fas fa-phone-alt mt-1 me-2 text-primary"></i>
+              <span>+91 9975607503</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <hr class="footer-divider my-4">
+
+    <div class="footer-copyright text-center">
+      <p class="mb-0">&copy; {{ currentYear }} Amol Nagare. All rights reserved.</p>
+    </div>
+  </div>
+</footer>
+
+  <!-- Scroll to Top Button -->
+  <button class="btn btn-primary btn-scroll-top shadow" 
+          (click)="scrollToTop()" 
+          *ngIf="showScrollButton"
+          aria-label="Scroll to top">
+    <i class="fas fa-arrow-up"></i>
+  </button>
+</div>

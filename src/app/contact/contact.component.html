@@ -1,0 +1,104 @@
+<section class="contact-section py-5">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-6 mb-5 mb-lg-0">
+        <div class="contact-info">
+          <h2 class="section-title mb-4">Get In Touch</h2>
+          <p class="contact-description mb-4">
+            Feel free to reach out to me for any questions or opportunities. I'll get back to you as soon as possible.
+          </p>
+          
+          <div class="contact-details">
+            <div class="contact-item mb-4">
+              <div class="contact-icon">
+                <i class="fas fa-map-marker-alt"></i>
+              </div>
+              <div class="contact-text">
+                <h5 class="contact-label">Location</h5>
+                <p class="contact-value">Pune, Maharashtra, India</p>
+              </div>
+            </div>
+            
+            <div class="contact-item mb-4">
+              <div class="contact-icon">
+                <i class="fas fa-envelope"></i>
+              </div>
+              <div class="contact-text">
+                <h5 class="contact-label">Email</h5>
+                <p class="contact-value">amolnagare279&#64;gmail.com</p>
+              </div>
+            </div>
+            
+            <div class="contact-item">
+              <div class="contact-icon">
+                <i class="fas fa-phone-alt"></i>
+              </div>
+              <div class="contact-text">
+                <h5 class="contact-label">Phone</h5>
+                <p class="contact-value">+91 9975607503</p>
+              </div>
+            </div>
+          </div>
+          
+          <div class="social-links mt-5">
+            <a href="https://www.linkedin.com/in/amol-nagare-33628b21a/" target="_blank" class="social-link">
+              <i class="fab fa-linkedin-in"></i>
+            </a>
+            <a href="https://github.com/thematrixxworld/" target="_blank" class="social-link">
+              <i class="fab fa-github"></i>
+            </a>
+            <a href="https://twitter.com" target="_blank" class="social-link">
+              <i class="fab fa-twitter"></i>
+            </a>
+            <a href="mailto:amolnagare279@gmail.com" class="social-link">
+              <i class="fas fa-envelope"></i>
+            </a>
+          </div>
+        </div>
+      </div>
+      
+      <div class="col-lg-6">
+        <div class="contact-form">
+          <h2 class="section-title mb-4">Send Me a Message</h2>
+          <form (ngSubmit)="onSubmit()" #contactForm="ngForm">
+            <div class="mb-3">
+              <label for="name" class="form-label">Your Name</label>
+              <input type="text" class="form-control" id="name" name="name" required ngModel>
+            </div>
+            
+            <div class="mb-3">
+              <label for="email" class="form-label">Your Email</label>
+              <input type="email" class="form-control" id="email" name="email" required ngModel>
+            </div>
+            
+            <div class="mb-3">
+              <label for="subject" class="form-label">Subject</label>
+              <input type="text" class="form-control" id="subject" name="subject" required ngModel>
+            </div>
+            
+            <div class="mb-3">
+              <label for="message" class="form-label">Message</label>
+              <textarea class="form-control" id="message" name="message" rows="5" required ngModel></textarea>
+            </div>
+            
+            <button type="submit" class="btn btn-primary" [disabled]="!contactForm.valid || isSubmitting">
+              <span *ngIf="!isSubmitting">Send Message</span>
+              <span *ngIf="isSubmitting">
+                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                Sending...
+              </span>
+            </button>
+            
+            <div class="alert alert-success mt-3" *ngIf="isSuccess">
+              <i class="fas fa-check-circle me-2"></i> Your message has been sent successfully!
+            </div>
+            
+            <div class="alert alert-danger mt-3" *ngIf="isError">
+              <i class="fas fa-exclamation-circle me-2"></i> There was an error sending your message. Please try again.
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
