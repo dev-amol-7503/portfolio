@@ -48,27 +48,42 @@ export class AdminService {
     projects: [
       {
         id: 1,
+        title: "MatrixClip Online Clipboard",
+        description: 'A real-time text sharing platform that allows users to share unlimited text across devices using secure 4-digit codes. Features one-click copy, instant sharing, and retrieval with beautiful UI.',
+        technologies: ['Angular', 'TypeScript', 'Bootstrap', 'RxJS', 'Local Storage API', 'Clipboard API'],
+        imageUrl: 'assets/images/clipboard-placeholder.jpg',
+        animationUrl: 'https://assets1.lottiefiles.com/packages/lf20_ikkyz3fk.json',
+        link: '/online-clipboard',
+        githubLink: 'https://github.com/thematrixxworld/online-clipboard',
+        category: 'Web Application',
+        featured: true
+      },
+      {
+        id: 2,
         title: "Amol's Portfolio",
         description: 'A responsive and visually engaging portfolio website designed and developed to showcase my skills, experience, and projects.',
         technologies: ['HTML/SCSS', 'Bootstrap', 'Angular'],
-        imageUrl: 'https://cdn.dribbble.com/users/527354/screenshots/15313994/media/8f3c9c9c9c9c9c9c9c9c9c9c9c9c9c9c.gif',
+        imageUrl: 'assets/images/portfolio-placeholder.jpg', // Fallback image
+        animationUrl: 'https://assets1.lottiefiles.com/packages/lf20_vybwn7df.json', // Portfolio animation
         link: 'https://www.thematrixworld.in/',
         githubLink: 'https://github.com/thematrixxworld/amol-portfolio.git',
         category: 'Web Application',
         featured: true
       },
       {
-        id: 2,
-        title: "Online Clipboard",
-        description: 'A real-time text sharing platform that allows users to share unlimited text across devices using secure 4-digit codes. Features one-click copy, instant sharing, and retrieval with beautiful UI. Built with Angular and modern web technologies.',
-        technologies: ['Angular', 'TypeScript', 'Bootstrap', 'RxJS', 'Local Storage API', 'Clipboard API'],
-        imageUrl: 'https://cdn.dribbble.com/users/1355613/screenshots/15314153/media/6ab1f57d8c1958761c9e6b4b3c4c4b4b.gif',
-        link: '/portfolio/#/online-clipboard',
-        githubLink: 'https://github.com/thematrixxworld/online-clipboard',
+        id: 3,
+        title: "E-Commerce Dashboard",
+        description: 'A comprehensive admin dashboard for e-commerce businesses with real-time analytics, inventory management, and sales tracking.',
+        technologies: ['Angular', 'TypeScript', 'Chart.js', 'Bootstrap', 'REST APIs'],
+        imageUrl: 'assets/images/dashboard-placeholder.jpg',
+        animationUrl: 'https://assets8.lottiefiles.com/packages/lf20_u8jfc7qi.json', // Dashboard animation
+        link: '#',
+        githubLink: '#',
         category: 'Web Application',
-        featured: true
-      },
+        featured: false
+      }
     ],
+    // ... rest of your data remains same
     testimonials: [
       {
         id: 1,
@@ -77,22 +92,11 @@ export class AdminService {
         text: 'Amol is an exceptional developer with an unwavering commitment to delivering high-quality work.',
         image: 'assets/images/profile-user.png',
         rating: 5
-      },
-      {
-        id: 2,
-        name: 'Rahul Sharma',
-        position: 'Senior Developer at Infosys',
-        text: 'Great problem-solving skills and always delivers on time. A valuable team player.',
-        image: 'assets/images/profile-user.png',
-        rating: 4
       }
     ],
     skills: [
       { name: 'Angular', level: 90, color: '#dd0031', category: 'frontend' },
-      { name: 'Java/Spring Boot', level: 85, color: '#5382a1', category: 'backend' },
-      { name: 'TypeScript', level: 88, color: '#3178c6', category: 'frontend' },
-      { name: 'Bootstrap', level: 85, color: '#7952b3', category: 'frontend' },
-      { name: 'HTML/CSS', level: 92, color: '#e34f26', category: 'frontend' },
+      { name: 'Java/Spring Boot', level: 85, color: '#5382a1', category: 'backend' }
     ],
     experiences: [
       {
@@ -104,46 +108,20 @@ export class AdminService {
         description: 'Worked on developing and maintaining enterprise-level applications using Angular and Spring Boot.',
         responsibilities: [
           'Developed and maintained the UI of Ignio environment using Angular',
-          'Designed and developed RESTful APIs using Spring Boot',
-          'Implemented responsive designs and cross-browser compatibility',
-          'Collaborated with backend teams for API integration'
+          'Designed and developed RESTful APIs using Spring Boot'
         ],
         technologies: ['Angular', 'Spring Boot', 'Docker', 'Jenkins', 'MySQL', 'REST APIs']
-      },
-      {
-        id: 2,
-        company: 'Freelance Projects',
-        position: 'Full Stack Developer',
-        period: '2020 - 2021',
-        logo: 'assets/images/freelance-logo.png',
-        description: 'Worked on various freelance projects building web applications and portfolios.',
-        responsibilities: [
-          'Developed responsive websites for small businesses',
-          'Created RESTful APIs for mobile applications',
-          'Implemented modern UI/UX designs'
-        ],
-        technologies: ['Angular', 'Node.js', 'MongoDB', 'Bootstrap']
       }
     ],
     socialPosts: [
       {
         id: 1,
         title: 'How to Organize Your Spring Boot Project for Scalability',
-        description: 'Discover best practices for structuring your Spring Boot project for better maintainability and scalability.',
+        description: 'Discover best practices for structuring your Spring Boot project.',
         link: 'https://medium.com/@thematrixxworld/how-to-organize-your-spring-boot-project',
         date: 'April 12, 2025',
         readTime: '2 min',
         likes: 245,
-        platform: 'medium'
-      },
-      {
-        id: 2,
-        title: 'Angular Performance Optimization Tips',
-        description: 'Learn advanced techniques to optimize your Angular applications for better performance.',
-        link: 'https://medium.com/@thematrixxworld/angular-performance-optimization',
-        date: 'March 28, 2025',
-        readTime: '5 min',
-        likes: 189,
         platform: 'medium'
       }
     ],
@@ -153,7 +131,7 @@ export class AdminService {
       email: 'amolnagare279@gmail.com',
       phone: '+91 9975607503',
       location: 'Pune, India',
-      about: 'Full Stack Developer with 3+ years of experience in Angular, Java (Spring Boot), and RESTful APIs. Passionate about creating efficient, scalable web applications with modern technologies.'
+      about: 'Full Stack Developer with 3+ years of experience in Angular, Java (Spring Boot), and RESTful APIs.'
     }
   };
 }

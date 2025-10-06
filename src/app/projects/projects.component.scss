@@ -1,21 +1,4 @@
 .projects-section {
-  .section-title {
-    position: relative;
-    display: inline-block;
-    
-    &::after {
-      content: '';
-      position: absolute;
-      bottom: -10px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 80px;
-      height: 3px;
-      background: var(--bs-primary);
-      border-radius: 3px;
-    }
-  }
-
   .add-project-form {
     .card {
       background: var(--theme-bg);
@@ -121,17 +104,114 @@
     }
   }
 
+  // Modern Carousel Styles
+  .modern-carousel-container {
+    position: relative;
+    margin: 0 auto;
+    border-radius: 20px;
+    overflow: hidden;
+    
+    .carousel-scroll-section {
+      height: 80vh;
+      overflow-y: auto;
+      overflow-x: hidden;
+      scroll-behavior: smooth;
+      
+      // Hide scrollbar but keep functionality
+      scrollbar-width: none;
+      &::-webkit-scrollbar {
+        display: none;
+      }
+    }
+    
+    .carousel-track {
+      display: flex;
+      flex-direction: column;
+      min-height: 100%;
+    }
+    
+    .carousel-slide {
+      flex: 0 0 100vh;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px;
+      opacity: 0.3;
+      transform: scale(0.9);
+      transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      position: relative;
+      
+      &.active {
+        opacity: 1;
+        transform: scale(1);
+      }
+      
+      &.visible {
+        opacity: 0.7;
+        transform: scale(0.95);
+      }
+      
+      // Create spacing between slides
+      &:not(:last-child) {
+        margin-bottom: 50px;
+      }
+    }
+    
+    // Progress Indicator
+    .carousel-progress {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      z-index: 100;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      border-radius: 25px;
+      padding: 15px 20px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      
+      .progress-bar {
+        width: 120px;
+        height: 6px;
+        background: rgba(0, 0, 0, 0.1);
+        border-radius: 3px;
+        overflow: hidden;
+        margin-bottom: 8px;
+        
+        .progress-fill {
+          height: 100%;
+          background: linear-gradient(135deg, var(--bs-primary), #667eea);
+          border-radius: 3px;
+          transition: width 0.5s ease;
+        }
+      }
+      
+      .progress-text {
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: var(--theme-text);
+        text-align: center;
+      }
+    }
+  }
+
   .project-card {
     background: var(--theme-bg);
     overflow: hidden;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
     border: 1px solid rgba(0, 0, 0, 0.05);
-    border-radius: 12px;
-    transition: all 0.3s ease;
+    border-radius: 25px;
+    transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    height: 500px;
+    max-width: 900px;
+    width: 90%;
+    margin: 0 auto;
+    position: relative;
     
     &:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+      transform: translateY(-15px) scale(1.02);
+      box-shadow: 0 30px 60px rgba(0, 0, 0, 0.15);
     }
     
     &.editable {
@@ -140,14 +220,24 @@
     
     .project-image {
       position: relative;
-      height: 200px;
+      height: 300px;
       overflow: hidden;
+      background: linear-gradient(135deg, #f8fafc, #e2e8f0);
       
-      img {
+      // Lottie Animation Styles - Improved visibility
+      .lottie-animation {
+        width: 100%;
+        height: 100%;
+        background: transparent;
+        border-radius: 25px 25px 0 0;
+      }
+      
+      // Fallback Image Styles
+      .fallback-image {
         width: 100%;
         height: 100%;
         object-fit: cover;
-        transition: transform 0.5s ease;
+        transition: transform 0.8s ease;
       }
       
       .project-overlay {
@@ -156,23 +246,40 @@
         left: 0;
         right: 0;
         bottom: 0;
-        background: rgba(0, 0, 0, 0.7);
-        padding: 20px;
+        // Reduced opacity for better Lottie visibility
+        background: linear-gradient(135deg, rgba(37, 99, 235, 0.7), rgba(102, 126, 234, 0.7));
+        padding: 30px;
         opacity: 0;
-        transition: opacity 0.3s ease;
+        transition: all 0.5s ease;
         display: flex;
         flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        
+        h5 {
+          font-size: 1.5rem;
+          margin-bottom: 20px;
+          text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        
+        .btn {
+          margin: 5px;
+          box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
       }
       
       .edit-controls {
         position: absolute;
-        top: 10px;
-        right: 10px;
+        top: 20px;
+        right: 20px;
         opacity: 0;
-        transition: opacity 0.3s ease;
+        transition: all 0.3s ease;
+        z-index: 10;
         
         .btn {
-          margin-left: 5px;
+          margin-left: 10px;
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
         }
       }
       
@@ -185,51 +292,66 @@
           opacity: 1;
         }
         
-        img {
+        .fallback-image {
           transform: scale(1.1);
+        }
+        
+        // Keep Lottie animation visible with subtle effect
+        .lottie-animation {
+          filter: brightness(0.9);
         }
       }
     }
     
     .project-body {
-      padding: 20px;
+      padding: 30px;
       
       .project-title {
         font-weight: 700;
         color: var(--theme-text);
-        margin-bottom: 10px;
+        margin-bottom: 15px;
+        font-size: 1.4rem;
       }
       
       .project-description {
         color: var(--theme-text-secondary);
-        font-size: 0.9rem;
-        margin-bottom: 15px;
+        font-size: 1rem;
+        margin-bottom: 20px;
+        line-height: 1.6;
       }
       
       .project-tech {
         display: flex;
         flex-wrap: wrap;
-        gap: 8px;
+        gap: 10px;
         
         .tech-badge {
-          background: rgba(37, 99, 235, 0.1);
+          background: linear-gradient(135deg, rgba(37, 99, 235, 0.1), rgba(102, 126, 234, 0.1));
           color: var(--bs-primary);
-          padding: 5px 12px;
-          border-radius: 20px;
-          font-size: 0.8rem;
-          font-weight: 500;
+          padding: 8px 16px;
+          border-radius: 25px;
+          font-size: 0.85rem;
+          font-weight: 600;
           display: inline-flex;
           align-items: center;
+          border: 1px solid rgba(37, 99, 235, 0.2);
+          transition: all 0.3s ease;
+          
+          &:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+          }
           
           i {
-            margin-right: 5px;
-            font-size: 0.9rem;
+            margin-right: 6px;
+            font-size: 1rem;
           }
         }
       }
     }
   }
 
+  // Other styles remain similar...
   .post-card {
     background: var(--theme-bg);
     cursor: pointer;
@@ -326,9 +448,41 @@
     .project-card, .post-card {
       margin-bottom: 20px;
     }
+    
+    .project-image {
+      height: 250px !important;
+    }
+    
+    .modern-carousel-container {
+      .carousel-scroll-section {
+        height: 70vh;
+      }
+      
+      .carousel-slide {
+        flex: 0 0 70vh;
+        min-height: 70vh;
+        padding: 20px 15px;
+      }
+      
+      .carousel-progress {
+        bottom: 20px;
+        right: 20px;
+        padding: 10px 15px;
+        
+        .progress-bar {
+          width: 100px;
+        }
+      }
+    }
   }
 }
 
+// Smooth scroll behavior
+html {
+  scroll-behavior: smooth;
+}
+
+// Dark theme adjustments
 .dark-theme {
   .projects-section {
     .add-project-form .card {
@@ -348,5 +502,45 @@
     .nav-pills .nav-link {
       background: rgba(255, 255, 255, 0.1);
     }
+    
+    .project-image {
+      background: linear-gradient(135deg, #0f172a, #1e293b);
+    }
+    
+    .modern-carousel-container {
+      .carousel-progress {
+        background: rgba(30, 41, 59, 0.95);
+        border-color: rgba(255, 255, 255, 0.1);
+        
+        .progress-text {
+          color: white;
+        }
+      }
+    }
+  }
+}
+
+// Lottie Animation Specific Styles - Improved visibility
+.lottie-animation {
+  transition: all 0.3s ease;
+  
+  &:hover {
+    transform: scale(1.02);
+  }
+}
+
+// Loading State for Lottie
+.lottie-loading {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+}
+
+@keyframes loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
   }
 }

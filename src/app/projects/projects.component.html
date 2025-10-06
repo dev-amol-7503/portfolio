@@ -4,13 +4,6 @@
   [class.bg-dark]="isDarkTheme"
 >
   <div class="container p-0">
-    <div class="section-header text-center mb-5">
-      <h2 class="section-title">My Work & Contributions</h2>
-      <p class="section-subtitle lead text-muted">
-        Showcasing my projects, publications, and professional insights across
-        diverse platforms.
-      </p>
-    </div>
 
     <!-- Add Project Form (Edit Mode) -->
     <div
@@ -67,8 +60,8 @@
               <input
                 type="text"
                 class="form-control"
-                placeholder="Category"
-                [(ngModel)]="newProject.category"
+                placeholder="Animation URL (Lottie)"
+                [(ngModel)]="newProject.animationUrl"
               />
             </div>
             <div class="col-12">
@@ -145,98 +138,120 @@
 
     <!-- Tabs Content -->
     <div class="tab-content" id="projectTabsContent">
-      <!-- Projects Tab -->
+      <!-- Projects Tab with Modern Auto-Scroll Carousel -->
       <div class="tab-pane fade show active" id="projects" role="tabpanel">
-        <div class="row g-4">
-          <div class="col-md-6" *ngFor="let project of visibleProjects">
-            <div class="project-card h-100" [class.editable]="isEditMode">
-              <div class="project-image">
-                <img
-                  [src]="project.imageUrl"
-                  [alt]="project.title"
-                  class="img-fluid"
-                />
-                <div class="project-overlay d-flex flex-column">
-                  <h5 class="text-white mb-3">{{ project.title }}</h5>
-                  <div class="mt-auto">
-                    <!-- Project card ke andar "View Live" button ko change karein -->
-                    <a
-                      [routerLink]="project.link"
-                      class="btn btn-primary btn-sm me-2"
-                      *ngIf="project.link.startsWith('/')"
-                    >
-                      <i class="fas fa-external-link-alt me-1"></i>View Live
-                    </a>
-                    <a
-                      [href]="project.link"
-                      target="_blank"
-                      class="btn btn-primary btn-sm me-2"
-                      *ngIf="!project.link.startsWith('/')"
-                    >
-                      <i class="fas fa-external-link-alt me-1"></i>View Live
-                    </a>
-                    <a
-                      [href]="project.githubLink"
-                      target="_blank"
-                      class="btn btn-dark btn-sm"
-                      *ngIf="project.githubLink"
-                    >
-                      <i class="fab fa-github me-1"></i>Code
-                    </a>
-                  </div>
-                </div>
+        <div class="modern-carousel-container" 
+             (mouseenter)="pauseAutoScroll()" 
+             (mouseleave)="resumeAutoScroll()">
+          
+          <!-- Carousel Track with Vertical Scroll Integration -->
+          <div class="carousel-scroll-section" #carouselSection>
+            <div class="carousel-track" #carouselTrack>
+              <div 
+                class="carousel-slide" 
+                *ngFor="let project of projects; let i = index"
+                [class.active]="currentSlideIndex === i"
+                [class.visible]="isSlideVisible(i)"
+              >
+                <div class="project-card" [class.editable]="isEditMode">
+                  <div class="project-image">
+                    <!-- Lottie Animation Container -->
+                    <div 
+                      #lottieContainer 
+                      class="lottie-animation"
+                      *ngIf="project.animationUrl"
+                    ></div>
+                    
+                    <!-- Fallback Image -->
+                    <img
+                      [src]="project.imageUrl"
+                      [alt]="project.title"
+                      class="img-fluid fallback-image"
+                      *ngIf="!project.animationUrl"
+                    />
+                    
+                    <div class="project-overlay d-flex flex-column">
+                      <h5 class="text-white mb-3">{{ project.title }}</h5>
+                      <div class="mt-auto">
+                        <a
+                          [routerLink]="project.link"
+                          class="btn btn-primary btn-sm me-2"
+                          *ngIf="project.link.startsWith('/')"
+                        >
+                          <i class="fas fa-external-link-alt me-1"></i>View Live
+                        </a>
+                        <a
+                          [href]="project.link"
+                          target="_blank"
+                          class="btn btn-primary btn-sm me-2"
+                          *ngIf="!project.link.startsWith('/')"
+                        >
+                          <i class="fas fa-external-link-alt me-1"></i>View Live
+                        </a>
+                        <a
+                          [href]="project.githubLink"
+                          target="_blank"
+                          class="btn btn-dark btn-sm"
+                          *ngIf="project.githubLink"
+                        >
+                          <i class="fab fa-github me-1"></i>Code
+                        </a>
+                      </div>
+                    </div>
 
-                <!-- Edit Controls -->
-                <div class="edit-controls" *ngIf="isEditMode">
-                  <button class="btn btn-warning btn-sm me-1">
-                    <i class="fas fa-edit"></i>
-                  </button>
-                  <button
-                    class="btn btn-danger btn-sm"
-                    (click)="deleteProject(project, $event)"
-                  >
-                    <i class="fas fa-trash"></i>
-                  </button>
-                </div>
-              </div>
-              <div class="project-body">
-                <div
-                  class="d-flex justify-content-between align-items-start mb-2"
-                >
-                  <h5 class="project-title mb-0">{{ project.title }}</h5>
-                  <span class="badge bg-primary">{{ project.category }}</span>
-                </div>
-                <p class="project-description">{{ project.description }}</p>
-                <div class="project-tech">
-                  <span
-                    class="tech-badge"
-                    *ngFor="let tech of project.technologies"
-                  >
-                    <i [class]="getTechIcon(tech)"></i> {{ tech }}
-                  </span>
+                    <!-- Edit Controls -->
+                    <div class="edit-controls" *ngIf="isEditMode">
+                      <button class="btn btn-warning btn-sm me-1">
+                        <i class="fas fa-edit"></i>
+                      </button>
+                      <button
+                        class="btn btn-danger btn-sm"
+                        (click)="deleteProject(project, $event)"
+                      >
+                        <i class="fas fa-trash"></i>
+                      </button>
+                    </div>
+                  </div>
+                  <div class="project-body">
+                    <div
+                      class="d-flex justify-content-between align-items-start mb-2"
+                    >
+                      <h5 class="project-title mb-0">{{ project.title }}</h5>
+                      <span class="badge bg-primary">{{ project.category }}</span>
+                    </div>
+                    <p class="project-description">{{ project.description }}</p>
+                    <div class="project-tech">
+                      <span
+                        class="tech-badge"
+                        *ngFor="let tech of project.technologies"
+                      >
+                        <i [class]="getTechIcon(tech)"></i> {{ tech }}
+                      </span>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-        <div
-          class="text-center mt-4"
-          *ngIf="
-            projects.length > 3 && visibleProjects.length < projects.length
-          "
-        >
-          <button class="btn btn-outline-primary" (click)="showMoreProjects()">
-            View More Projects <i class="fas fa-arrow-down ms-2"></i>
-          </button>
+
+          <!-- Progress Indicator -->
+          <div class="carousel-progress" *ngIf="projects.length > 1">
+            <div class="progress-bar">
+              <div class="progress-fill" [style.width.%]="getProgressPercentage()"></div>
+            </div>
+            <div class="progress-text">
+              {{ currentSlideIndex + 1 }} / {{ projects.length }}
+            </div>
+          </div>
         </div>
       </div>
 
-      <!-- Medium Tab -->
+      <!-- Other Tabs (Medium, Quora, LinkedIn) -->
       <div class="tab-pane fade" id="medium" role="tabpanel">
         <div class="row g-4">
           <div
             class="col-md-6 col-lg-4"
-            *ngFor="let post of visibleMediumPosts"
+            *ngFor="let post of mediumPosts"
           >
             <div class="post-card h-100">
               <div class="post-header d-flex align-items-center mb-3">
@@ -271,23 +286,12 @@
             </div>
           </div>
         </div>
-        <div
-          class="text-center mt-4"
-          *ngIf="
-            mediumPosts.length > 3 &&
-            visibleMediumPosts.length < mediumPosts.length
-          "
-        >
-          <button class="btn btn-outline-dark" (click)="showMoreMediumPosts()">
-            View More Articles <i class="fas fa-arrow-down ms-2"></i>
-          </button>
-        </div>
       </div>
 
       <!-- Quora Tab -->
       <div class="tab-pane fade" id="quora" role="tabpanel">
         <div class="row g-4">
-          <div class="col-md-6 col-lg-4" *ngFor="let post of visibleQuoraPosts">
+          <div class="col-md-6 col-lg-4" *ngFor="let post of quoraPosts">
             <div class="post-card h-100">
               <div class="post-header d-flex align-items-center mb-3">
                 <div class="platform-icon me-3">
@@ -322,17 +326,6 @@
             </div>
           </div>
         </div>
-        <div
-          class="text-center mt-4"
-          *ngIf="
-            quoraPosts.length > 3 &&
-            visibleQuoraPosts.length < quoraPosts.length
-          "
-        >
-          <button class="btn btn-outline-danger" (click)="showMoreQuoraPosts()">
-            View More Answers <i class="fas fa-arrow-down ms-2"></i>
-          </button>
-        </div>
       </div>
 
       <!-- LinkedIn Tab -->
@@ -340,7 +333,7 @@
         <div class="row g-4">
           <div
             class="col-md-6 col-lg-4"
-            *ngFor="let post of visibleLinkedinPosts"
+            *ngFor="let post of linkedinPosts"
           >
             <div class="post-card h-100">
               <div class="post-header d-flex align-items-center mb-3">
@@ -377,20 +370,6 @@
               </div>
             </div>
           </div>
-        </div>
-        <div
-          class="text-center mt-4"
-          *ngIf="
-            linkedinPosts.length > 3 &&
-            visibleLinkedinPosts.length < linkedinPosts.length
-          "
-        >
-          <button
-            class="btn btn-outline-primary"
-            (click)="showMoreLinkedinPosts()"
-          >
-            View More Posts <i class="fas fa-arrow-down ms-2"></i>
-          </button>
         </div>
       </div>
     </div>
