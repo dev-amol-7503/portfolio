@@ -51,7 +51,7 @@ export class AdminService {
           title: "Amol's Portfolio",
           description: 'A responsive and visually engaging portfolio website designed and developed to showcase my skills, experience, and projects.',
           technologies: ['HTML/SCSS', 'Bootstrap', 'Angular'],
-          imageUrl: 'assets/images/project1.jpg',
+         imageUrl: 'https://i.giphy.com/media/JIX9t2j0ZTN9S/giphy.gif',
           link: 'https://www.thematrixworld.in/',
           githubLink: 'https://github.com/thematrixxworld/amol-portfolio.git',
           category: 'Web Application',
@@ -62,12 +62,23 @@ export class AdminService {
         title: "Online Clipboard",
         description: 'A real-time text sharing platform that allows users to share unlimited text across devices using secure 4-digit codes. Features one-click copy, instant sharing, and retrieval with beautiful UI. Built with Angular and modern web technologies.',
         technologies: ['Angular', 'TypeScript', 'Bootstrap', 'RxJS', 'Local Storage API', 'Clipboard API'],
-        imageUrl: 'assets/images/online-clipboard.jpg',
-        link: '/#/online-clipboard',
+        imageUrl: 'https://i.giphy.com/media/26n6WjJyRWikgZwes/giphy.gif',
+        link: '/online-clipboard',
         githubLink: 'https://github.com/thematrixxworld/online-clipboard',
         category: 'Web Application',
         featured: true
       },
+      /*
+      // Portfolio के लिए alternative animated images
+imageUrl: 'https://i.giphy.com/media/JIX9t2j0ZTN9S/giphy.gif',
+// या
+imageUrl: 'https://i.giphy.com/media/L8K62iTDkzGX6/giphy.gif',
+
+// Online Clipboard के लिए alternative animated images  
+imageUrl: 'https://i.giphy.com/media/26n6WjJyRWikgZwes/giphy.gif',
+// या
+imageUrl: 'https://i.giphy.com/media/kiBcwEXegBTACmVOnE/giphy.gif',
+      */
       ],
       testimonials: [
         {

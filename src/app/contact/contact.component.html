@@ -60,28 +60,59 @@
       <div class="col-lg-6">
         <div class="contact-form">
           <h2 class="section-title mb-4">Send Me a Message</h2>
-          <form (ngSubmit)="onSubmit()" #contactForm="ngForm">
+          <form (ngSubmit)="onSubmit()" #contactFormRef="ngForm">
             <div class="mb-3">
               <label for="name" class="form-label">Your Name</label>
-              <input type="text" class="form-control" id="name" name="name" required ngModel>
+              <input 
+                type="text" 
+                class="form-control" 
+                id="name" 
+                name="name" 
+                required 
+                [(ngModel)]="formData.name"
+                [disabled]="isSubmitting">
             </div>
             
             <div class="mb-3">
               <label for="email" class="form-label">Your Email</label>
-              <input type="email" class="form-control" id="email" name="email" required ngModel>
+              <input 
+                type="email" 
+                class="form-control" 
+                id="email" 
+                name="email" 
+                required 
+                [(ngModel)]="formData.email"
+                [disabled]="isSubmitting">
             </div>
             
             <div class="mb-3">
               <label for="subject" class="form-label">Subject</label>
-              <input type="text" class="form-control" id="subject" name="subject" required ngModel>
+              <input 
+                type="text" 
+                class="form-control" 
+                id="subject" 
+                name="subject" 
+                required 
+                [(ngModel)]="formData.subject"
+                [disabled]="isSubmitting">
             </div>
             
             <div class="mb-3">
               <label for="message" class="form-label">Message</label>
-              <textarea class="form-control" id="message" name="message" rows="5" required ngModel></textarea>
+              <textarea 
+                class="form-control" 
+                id="message" 
+                name="message" 
+                rows="5" 
+                required 
+                [(ngModel)]="formData.message"
+                [disabled]="isSubmitting"></textarea>
             </div>
             
-            <button type="submit" class="btn btn-primary" [disabled]="!contactForm.valid || isSubmitting">
+            <button 
+              type="submit" 
+              class="btn btn-primary" 
+              [disabled]="!contactFormRef.valid || isSubmitting">
               <span *ngIf="!isSubmitting">Send Message</span>
               <span *ngIf="isSubmitting">
                 <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
@@ -90,11 +121,15 @@
             </button>
             
             <div class="alert alert-success mt-3" *ngIf="isSuccess">
-              <i class="fas fa-check-circle me-2"></i> Your message has been sent successfully!
+              <i class="fas fa-check-circle me-2"></i> Your message has been sent successfully! I'll get back to you soon.
             </div>
             
             <div class="alert alert-danger mt-3" *ngIf="isError">
-              <i class="fas fa-exclamation-circle me-2"></i> There was an error sending your message. Please try again.
+              <i class="fas fa-exclamation-circle me-2"></i> 
+              There was an error sending your message. 
+              <span *ngIf="!isSubmitting">
+                A fallback email client has been opened. Please send your message manually.
+              </span>
             </div>
           </form>
         </div>

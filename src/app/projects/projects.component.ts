@@ -4,11 +4,12 @@ import { ThemeService } from '../services/theme.service';
 import { AdminService } from '../services/admin.service';
 import { Project, SocialPost } from '../interfaces/social-post.model';
 import { FormsModule } from '@angular/forms';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-projects',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule,RouterModule],
   templateUrl: './projects.component.html',
   styleUrls: ['./projects.component.scss'],
 })

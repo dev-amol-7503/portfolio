@@ -1,12 +1,22 @@
-<section class="projects-section py-5" [class.bg-light]="!isDarkTheme" [class.bg-dark]="isDarkTheme">
+<section
+  class="projects-section py-5"
+  [class.bg-light]="!isDarkTheme"
+  [class.bg-dark]="isDarkTheme"
+>
   <div class="container p-0">
     <div class="section-header text-center mb-5">
       <h2 class="section-title">My Work & Contributions</h2>
-      <p class="section-subtitle lead text-muted">Showcasing my projects, publications, and professional insights across diverse platforms.</p>
+      <p class="section-subtitle lead text-muted">
+        Showcasing my projects, publications, and professional insights across
+        diverse platforms.
+      </p>
     </div>
 
     <!-- Add Project Form (Edit Mode) -->
-    <div *ngIf="isEditMode && activeTab === 'projects'" class="add-project-form mb-4">
+    <div
+      *ngIf="isEditMode && activeTab === 'projects'"
+      class="add-project-form mb-4"
+    >
       <div class="card">
         <div class="card-header">
           <h5 class="card-title mb-0">Add New Project</h5>
@@ -14,28 +24,52 @@
         <div class="card-body">
           <div class="row g-3">
             <div class="col-md-6">
-              <input type="text" class="form-control" placeholder="Project Title" 
-                     [(ngModel)]="newProject.title">
+              <input
+                type="text"
+                class="form-control"
+                placeholder="Project Title"
+                [(ngModel)]="newProject.title"
+              />
             </div>
             <div class="col-md-6">
-              <input type="text" class="form-control" placeholder="Technologies (comma separated)" 
-                     [(ngModel)]="newProject.technologies">
+              <input
+                type="text"
+                class="form-control"
+                placeholder="Technologies (comma separated)"
+                [(ngModel)]="newProject.technologies"
+              />
             </div>
             <div class="col-12">
-              <textarea class="form-control" placeholder="Project Description" 
-                        [(ngModel)]="newProject.description" rows="3"></textarea>
+              <textarea
+                class="form-control"
+                placeholder="Project Description"
+                [(ngModel)]="newProject.description"
+                rows="3"
+              ></textarea>
             </div>
             <div class="col-md-4">
-              <input type="text" class="form-control" placeholder="Project Link" 
-                     [(ngModel)]="newProject.link">
+              <input
+                type="text"
+                class="form-control"
+                placeholder="Project Link"
+                [(ngModel)]="newProject.link"
+              />
             </div>
             <div class="col-md-4">
-              <input type="text" class="form-control" placeholder="GitHub Link" 
-                     [(ngModel)]="newProject.githubLink">
+              <input
+                type="text"
+                class="form-control"
+                placeholder="GitHub Link"
+                [(ngModel)]="newProject.githubLink"
+              />
             </div>
             <div class="col-md-4">
-              <input type="text" class="form-control" placeholder="Category" 
-                     [(ngModel)]="newProject.category">
+              <input
+                type="text"
+                class="form-control"
+                placeholder="Category"
+                [(ngModel)]="newProject.category"
+              />
             </div>
             <div class="col-12">
               <button class="btn btn-primary" (click)="addNewProject()">
@@ -49,48 +83,60 @@
 
     <!-- Animated Tabs Navigation -->
     <div class="tabs-wrapper mb-5">
-      <ul class="nav nav-pills justify-content-center" id="projectTabs" role="tablist">
+      <ul
+        class="nav nav-pills justify-content-center"
+        id="projectTabs"
+        role="tablist"
+      >
         <li class="nav-item" role="presentation">
-          <button class="nav-link active d-flex align-items-center" 
-                  id="projects-tab" 
-                  data-bs-toggle="pill" 
-                  data-bs-target="#projects" 
-                  type="button" 
-                  role="tab"
-                  (click)="onTabChange('projects')">
+          <button
+            class="nav-link active d-flex align-items-center"
+            id="projects-tab"
+            data-bs-toggle="pill"
+            data-bs-target="#projects"
+            type="button"
+            role="tab"
+            (click)="onTabChange('projects')"
+          >
             <i class="fas fa-code me-2"></i> Projects
           </button>
         </li>
         <li class="nav-item" role="presentation">
-          <button class="nav-link d-flex align-items-center" 
-                  id="medium-tab" 
-                  data-bs-toggle="pill" 
-                  data-bs-target="#medium" 
-                  type="button" 
-                  role="tab"
-                  (click)="onTabChange('medium')">
+          <button
+            class="nav-link d-flex align-items-center"
+            id="medium-tab"
+            data-bs-toggle="pill"
+            data-bs-target="#medium"
+            type="button"
+            role="tab"
+            (click)="onTabChange('medium')"
+          >
             <i class="fab fa-medium me-2"></i> Medium
           </button>
         </li>
         <li class="nav-item" role="presentation">
-          <button class="nav-link d-flex align-items-center" 
-                  id="quora-tab" 
-                  data-bs-toggle="pill" 
-                  data-bs-target="#quora" 
-                  type="button" 
-                  role="tab"
-                  (click)="onTabChange('quora')">
+          <button
+            class="nav-link d-flex align-items-center"
+            id="quora-tab"
+            data-bs-toggle="pill"
+            data-bs-target="#quora"
+            type="button"
+            role="tab"
+            (click)="onTabChange('quora')"
+          >
             <i class="fab fa-quora me-2"></i> Quora
           </button>
         </li>
         <li class="nav-item" role="presentation">
-          <button class="nav-link d-flex align-items-center" 
-                  id="linkedin-tab" 
-                  data-bs-toggle="pill" 
-                  data-bs-target="#linkedin" 
-                  type="button" 
-                  role="tab"
-                  (click)="onTabChange('linkedin')">
+          <button
+            class="nav-link d-flex align-items-center"
+            id="linkedin-tab"
+            data-bs-toggle="pill"
+            data-bs-target="#linkedin"
+            type="button"
+            role="tab"
+            (click)="onTabChange('linkedin')"
+          >
             <i class="fab fa-linkedin me-2"></i> Linkedin
           </button>
         </li>
@@ -105,37 +151,67 @@
           <div class="col-md-6" *ngFor="let project of visibleProjects">
             <div class="project-card h-100" [class.editable]="isEditMode">
               <div class="project-image">
-                <img [src]="project.imageUrl" [alt]="project.title" class="img-fluid">
+                <img
+                  [src]="project.imageUrl"
+                  [alt]="project.title"
+                  class="img-fluid"
+                />
                 <div class="project-overlay d-flex flex-column">
                   <h5 class="text-white mb-3">{{ project.title }}</h5>
                   <div class="mt-auto">
-                    <a [href]="project.link" target="_blank" class="btn btn-primary btn-sm me-2">
+                    <!-- Project card ke andar "View Live" button ko change karein -->
+                    <a
+                      [routerLink]="project.link"
+                      class="btn btn-primary btn-sm me-2"
+                      *ngIf="project.link.startsWith('/')"
+                    >
                       <i class="fas fa-external-link-alt me-1"></i>View Live
                     </a>
-                    <a [href]="project.githubLink" target="_blank" class="btn btn-dark btn-sm" *ngIf="project.githubLink">
+                    <a
+                      [href]="project.link"
+                      target="_blank"
+                      class="btn btn-primary btn-sm me-2"
+                      *ngIf="!project.link.startsWith('/')"
+                    >
+                      <i class="fas fa-external-link-alt me-1"></i>View Live
+                    </a>
+                    <a
+                      [href]="project.githubLink"
+                      target="_blank"
+                      class="btn btn-dark btn-sm"
+                      *ngIf="project.githubLink"
+                    >
                       <i class="fab fa-github me-1"></i>Code
                     </a>
                   </div>
                 </div>
-                
+
                 <!-- Edit Controls -->
                 <div class="edit-controls" *ngIf="isEditMode">
                   <button class="btn btn-warning btn-sm me-1">
                     <i class="fas fa-edit"></i>
                   </button>
-                  <button class="btn btn-danger btn-sm" (click)="deleteProject(project, $event)">
+                  <button
+                    class="btn btn-danger btn-sm"
+                    (click)="deleteProject(project, $event)"
+                  >
                     <i class="fas fa-trash"></i>
                   </button>
                 </div>
               </div>
               <div class="project-body">
-                <div class="d-flex justify-content-between align-items-start mb-2">
+                <div
+                  class="d-flex justify-content-between align-items-start mb-2"
+                >
                   <h5 class="project-title mb-0">{{ project.title }}</h5>
                   <span class="badge bg-primary">{{ project.category }}</span>
                 </div>
                 <p class="project-description">{{ project.description }}</p>
                 <div class="project-tech">
-                  <span class="tech-badge" *ngFor="let tech of project.technologies">
+                  <span
+                    class="tech-badge"
+                    *ngFor="let tech of project.technologies"
+                  >
                     <i [class]="getTechIcon(tech)"></i> {{ tech }}
                   </span>
                 </div>
@@ -143,7 +219,12 @@
             </div>
           </div>
         </div>
-        <div class="text-center mt-4" *ngIf="projects.length > 3 && visibleProjects.length < projects.length">
+        <div
+          class="text-center mt-4"
+          *ngIf="
+            projects.length > 3 && visibleProjects.length < projects.length
+          "
+        >
           <button class="btn btn-outline-primary" (click)="showMoreProjects()">
             View More Projects <i class="fas fa-arrow-down ms-2"></i>
           </button>
@@ -153,23 +234,36 @@
       <!-- Medium Tab -->
       <div class="tab-pane fade" id="medium" role="tabpanel">
         <div class="row g-4">
-          <div class="col-md-6 col-lg-4" *ngFor="let post of visibleMediumPosts">
+          <div
+            class="col-md-6 col-lg-4"
+            *ngFor="let post of visibleMediumPosts"
+          >
             <div class="post-card h-100">
               <div class="post-header d-flex align-items-center mb-3">
                 <div class="platform-icon me-3">
                   <i class="fab fa-medium text-dark"></i>
                 </div>
                 <div>
-                  <small class="text-muted d-block">Published on {{ post.date }}</small>
+                  <small class="text-muted d-block"
+                    >Published on {{ post.date }}</small
+                  >
                   <small class="text-muted">{{ post.readTime }} read</small>
                 </div>
               </div>
               <div class="post-body">
                 <h5 class="post-title">{{ post.title }}</h5>
                 <p class="post-description">{{ post.description }}</p>
-                <div class="post-stats d-flex justify-content-between align-items-center mt-3">
-                  <span class="text-muted"><i class="fas fa-heart me-1"></i> {{ post.likes }}</span>
-                  <a [href]="post.link" target="_blank" class="btn btn-dark btn-sm stretched-link">
+                <div
+                  class="post-stats d-flex justify-content-between align-items-center mt-3"
+                >
+                  <span class="text-muted"
+                    ><i class="fas fa-heart me-1"></i> {{ post.likes }}</span
+                  >
+                  <a
+                    [href]="post.link"
+                    target="_blank"
+                    class="btn btn-dark btn-sm stretched-link"
+                  >
                     Read Article <i class="fas fa-arrow-right ms-1"></i>
                   </a>
                 </div>
@@ -177,7 +271,13 @@
             </div>
           </div>
         </div>
-        <div class="text-center mt-4" *ngIf="mediumPosts.length > 3 && visibleMediumPosts.length < mediumPosts.length">
+        <div
+          class="text-center mt-4"
+          *ngIf="
+            mediumPosts.length > 3 &&
+            visibleMediumPosts.length < mediumPosts.length
+          "
+        >
           <button class="btn btn-outline-dark" (click)="showMoreMediumPosts()">
             View More Articles <i class="fas fa-arrow-down ms-2"></i>
           </button>
@@ -194,16 +294,27 @@
                   <i class="fab fa-quora text-danger"></i>
                 </div>
                 <div>
-                  <small class="text-muted d-block">Answered on {{ post.date }}</small>
+                  <small class="text-muted d-block"
+                    >Answered on {{ post.date }}</small
+                  >
                   <small class="text-muted">{{ post.views }} views</small>
                 </div>
               </div>
               <div class="post-body">
                 <h5 class="post-title">{{ post.title }}</h5>
                 <p class="post-description">{{ post.description }}</p>
-                <div class="post-stats d-flex justify-content-between align-items-center mt-3">
-                  <span class="text-muted"><i class="fas fa-thumbs-up me-1"></i> {{ post.upvotes }}</span>
-                  <a [href]="post.link" target="_blank" class="btn btn-danger btn-sm stretched-link">
+                <div
+                  class="post-stats d-flex justify-content-between align-items-center mt-3"
+                >
+                  <span class="text-muted"
+                    ><i class="fas fa-thumbs-up me-1"></i>
+                    {{ post.upvotes }}</span
+                  >
+                  <a
+                    [href]="post.link"
+                    target="_blank"
+                    class="btn btn-danger btn-sm stretched-link"
+                  >
                     View Answer <i class="fas fa-arrow-right ms-1"></i>
                   </a>
                 </div>
@@ -211,7 +322,13 @@
             </div>
           </div>
         </div>
-        <div class="text-center mt-4" *ngIf="quoraPosts.length > 3 && visibleQuoraPosts.length < quoraPosts.length">
+        <div
+          class="text-center mt-4"
+          *ngIf="
+            quoraPosts.length > 3 &&
+            visibleQuoraPosts.length < quoraPosts.length
+          "
+        >
           <button class="btn btn-outline-danger" (click)="showMoreQuoraPosts()">
             View More Answers <i class="fas fa-arrow-down ms-2"></i>
           </button>
@@ -221,23 +338,39 @@
       <!-- LinkedIn Tab -->
       <div class="tab-pane fade" id="linkedin" role="tabpanel">
         <div class="row g-4">
-          <div class="col-md-6 col-lg-4" *ngFor="let post of visibleLinkedinPosts">
+          <div
+            class="col-md-6 col-lg-4"
+            *ngFor="let post of visibleLinkedinPosts"
+          >
             <div class="post-card h-100">
               <div class="post-header d-flex align-items-center mb-3">
                 <div class="platform-icon me-3">
                   <i class="fab fa-linkedin text-primary"></i>
                 </div>
                 <div>
-                  <small class="text-muted d-block">Posted on {{ post.date }}</small>
-                  <small class="text-muted">{{ post.engagement }} engagement</small>
+                  <small class="text-muted d-block"
+                    >Posted on {{ post.date }}</small
+                  >
+                  <small class="text-muted"
+                    >{{ post.engagement }} engagement</small
+                  >
                 </div>
               </div>
               <div class="post-body">
                 <h5 class="post-title">{{ post.title }}</h5>
                 <p class="post-description">{{ post.description }}</p>
-                <div class="post-stats d-flex justify-content-between align-items-center mt-3">
-                  <span class="text-muted"><i class="fas fa-comment me-1"></i> {{ post.comments }}</span>
-                  <a [href]="post.link" target="_blank" class="btn btn-primary btn-sm stretched-link">
+                <div
+                  class="post-stats d-flex justify-content-between align-items-center mt-3"
+                >
+                  <span class="text-muted"
+                    ><i class="fas fa-comment me-1"></i>
+                    {{ post.comments }}</span
+                  >
+                  <a
+                    [href]="post.link"
+                    target="_blank"
+                    class="btn btn-primary btn-sm stretched-link"
+                  >
                     View Post <i class="fas fa-arrow-right ms-1"></i>
                   </a>
                 </div>
@@ -245,8 +378,17 @@
             </div>
           </div>
         </div>
-        <div class="text-center mt-4" *ngIf="linkedinPosts.length > 3 && visibleLinkedinPosts.length < linkedinPosts.length">
-          <button class="btn btn-outline-primary" (click)="showMoreLinkedinPosts()">
+        <div
+          class="text-center mt-4"
+          *ngIf="
+            linkedinPosts.length > 3 &&
+            visibleLinkedinPosts.length < linkedinPosts.length
+          "
+        >
+          <button
+            class="btn btn-outline-primary"
+            (click)="showMoreLinkedinPosts()"
+          >
             View More Posts <i class="fas fa-arrow-down ms-2"></i>
           </button>
         </div>
