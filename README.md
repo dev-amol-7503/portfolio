@@ -32,7 +32,5 @@ ng build --configuration production --base-href "https://dev-amol-7503.github.io
 
 xcopy "dist\amol-portfolio\browser\*" "dist\amol-portfolio\" /E /Y
 
-xcopy "dist\amol-portfolio\browser\*" "dist\amol-portfolio\" /E /Y
-
 npx angular-cli-ghpages --dir=dist/amol-portfolio
 
