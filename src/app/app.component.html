@@ -4,9 +4,14 @@
     <div class="container d-flex justify-content-between align-items-center">
       <div>
         <i class="fas fa-desktop me-2"></i>
-        For the best experience, please view this portfolio on a desktop computer.
+        For the best experience, please view this portfolio on a desktop
+        computer.
       </div>
-      <button class="btn-close" (click)="closeRecommendation()" aria-label="Close"></button>
+      <button
+        class="btn-close"
+        (click)="closeRecommendation()"
+        aria-label="Close"
+      ></button>
     </div>
   </div>
 
@@ -16,12 +21,14 @@
       <div class="d-flex align-items-center">
         <i class="fas fa-shield-alt me-2 text-success"></i>
         <span class="text-success fw-bold">Admin Mode</span>
-        <button class="btn btn-sm ms-3" 
-                [class.btn-warning]="!isEditMode" 
-                [class.btn-success]="isEditMode"
-                (click)="toggleEditMode()">
+        <button
+          class="btn btn-sm ms-3"
+          [class.btn-warning]="!isEditMode"
+          [class.btn-success]="isEditMode"
+          (click)="toggleEditMode()"
+        >
           <fa-icon [icon]="isEditMode ? faEdit : faEdit" class="me-1"></fa-icon>
-          {{ isEditMode ? 'Editing' : 'Edit Mode' }}
+          {{ isEditMode ? "Editing" : "Edit Mode" }}
         </button>
       </div>
       <div>
@@ -44,25 +51,37 @@
           <span class="brand-name">Amol Nagare</span>
           <span *ngIf="isAdmin" class="badge bg-success ms-2">Admin</span>
         </a>
-        
+
         <div class="collapse navbar-collapse" [ngbCollapse]="isMenuCollapsed">
-          <div class="d-flex flex-column flex-lg-row w-100 justify-content-between">
+          <div
+            class="d-flex flex-column flex-lg-row w-100 justify-content-between"
+          >
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
               <li class="nav-item" *ngFor="let item of navItems">
-                <a class="nav-link" 
-                   [routerLink]="item.link" 
-                   routerLinkActive="active"
-                   [routerLinkActiveOptions]="{exact: true}"
-                   (click)="isMenuCollapsed = true">
+                <a
+                  class="nav-link"
+                  [routerLink]="item.link"
+                  routerLinkActive="active"
+                  [routerLinkActiveOptions]="{ exact: true }"
+                  (click)="isMenuCollapsed = true"
+                >
                   <i [class]="item.icon + ' me-2'"></i>{{ item.label }}
                 </a>
               </li>
             </ul>
             <div class="d-flex align-items-center mt-3 mt-lg-0">
-              <a href="/assets/docs/resume.pdf" download="amol_resume.pdf" class="btn btn-primary me-2">
+              <a
+                href="/assets/docs/resume.pdf"
+                download="Amol_Nagare_JavaAngular_Full_Stack_Developer.pdf"
+                class="btn btn-primary me-2"
+              >
                 <fa-icon [icon]="faDownload" class="me-2"></fa-icon>Download CV
               </a>
-              <a *ngIf="!isAdmin" routerLink="/admin/login" class="btn btn-outline-secondary">
+              <a
+                *ngIf="!isAdmin"
+                routerLink="/admin/login"
+                class="btn btn-outline-secondary"
+              >
                 <fa-icon [icon]="faSignInAlt" class="me-2"></fa-icon>Admin
               </a>
             </div>
@@ -90,16 +109,27 @@
   <footer class="portfolio-footer">
     <div class="container">
       <div class="row g-4">
-        <!-- About Column -->
-        <div class="col-md-6 col-lg-4">
+        <!-- About Column - Full width on mobile -->
+        <div class="col-12 col-lg-4">
           <div class="footer-about">
-            <h5 class="footer-title text-primary mb-4">Amol Nagare</h5>
-            <p class="footer-text">Full Stack Developer specializing in Angular and Spring Boot applications with 3+ years of experience.</p>
-            <div class="social-links mt-4">
-              <a href="https://www.linkedin.com/in/amol-nagare-33628b21a/" target="_blank" class="social-link">
+            <h5 class="footer-title text-primary mb-3">Amol Nagare</h5>
+            <p class="footer-text">
+              Full Stack Developer specializing in Angular and Spring Boot
+              applications with 3+ years of experience.
+            </p>
+            <div class="social-links mt-3">
+              <a
+                href="https://www.linkedin.com/in/amol-nagare-33628b21a/"
+                target="_blank"
+                class="social-link"
+              >
                 <fa-icon [icon]="faLinkedin"></fa-icon>
               </a>
-              <a href="https://github.com/thematrixxworld/" target="_blank" class="social-link">
+              <a
+                href="https://github.com/thematrixxworld/"
+                target="_blank"
+                class="social-link"
+              >
                 <fa-icon [icon]="faGithub"></fa-icon>
               </a>
               <a href="https://twitter.com" target="_blank" class="social-link">
@@ -112,24 +142,59 @@
           </div>
         </div>
 
-        <!-- Quick Links Column -->
-        <div class="col-lg-2 col-md-6 d-none d-md-block">
+        <!-- Quick Links Column - Full width on mobile -->
+        <div class="col-12 col-md-6 col-lg-2">
           <div class="footer-links">
-            <h6 class="footer-title text-primary mb-4">Quick Links</h6>
+            <h6 class="footer-title text-primary mb-3">Quick Links</h6>
             <ul class="list-unstyled">
-              <li class="mb-2"><a routerLink="/" class="footer-link">Home</a></li>
-              <li class="mb-2"><a routerLink="/about" class="footer-link">About</a></li>
-              <li class="mb-2"><a routerLink="/projects" class="footer-link">Projects</a></li>
-              <li class="mb-2"><a routerLink="/experience" class="footer-link">Experience</a></li>
-              <li><a routerLink="/contact" class="footer-link">Contact</a></li>
+              <li class="mb-2">
+                <a
+                  routerLink="/"
+                  class="footer-link"
+                  (click)="closeMobileMenu()"
+                  >Home</a
+                >
+              </li>
+              <li class="mb-2">
+                <a
+                  routerLink="/about"
+                  class="footer-link"
+                  (click)="closeMobileMenu()"
+                  >About</a
+                >
+              </li>
+              <li class="mb-2">
+                <a
+                  routerLink="/projects"
+                  class="footer-link"
+                  (click)="closeMobileMenu()"
+                  >Projects</a
+                >
+              </li>
+              <li class="mb-2">
+                <a
+                  routerLink="/experience"
+                  class="footer-link"
+                  (click)="closeMobileMenu()"
+                  >Experience</a
+                >
+              </li>
+              <li>
+                <a
+                  routerLink="/contact"
+                  class="footer-link"
+                  (click)="closeMobileMenu()"
+                  >Contact</a
+                >
+              </li>
             </ul>
           </div>
         </div>
 
-        <!-- Skills Column -->
-        <div class="col-lg-3 col-md-6 d-none d-md-block">
+        <!-- Skills Column - Full width on mobile -->
+        <div class="col-12 col-md-6 col-lg-3">
           <div class="footer-skills">
-            <h6 class="footer-title text-primary mb-4">Technical Skills</h6>
+            <h6 class="footer-title text-primary mb-3">Technical Skills</h6>
             <ul class="list-unstyled skill-list">
               <li class="mb-2 d-flex align-items-center">
                 <i class="fas fa-check-circle text-primary me-2"></i>
@@ -151,16 +216,16 @@
           </div>
         </div>
 
-        <!-- Contact Column -->
-        <div class="col-md-6 col-lg-3">
+        <!-- Contact Column - Full width on mobile -->
+        <div class="col-12 col-lg-3">
           <div class="footer-contact">
-            <h6 class="footer-title text-primary mb-4">Contact Info</h6>
+            <h6 class="footer-title text-primary mb-3">Contact Info</h6>
             <ul class="list-unstyled contact-info">
-              <li class="mb-3 d-flex align-items-start">
+              <li class="mb-2 d-flex align-items-start">
                 <i class="fas fa-map-marker-alt mt-1 me-2 text-primary"></i>
                 <span>Pune, India</span>
               </li>
-              <li class="mb-3 d-flex align-items-start">
+              <li class="mb-2 d-flex align-items-start">
                 <i class="fas fa-envelope mt-1 me-2 text-primary"></i>
                 <span>amolnagare279&#64;gmail.com</span>
               </li>
@@ -173,19 +238,23 @@
         </div>
       </div>
 
-      <hr class="footer-divider my-4">
+      <hr class="footer-divider my-4" />
 
       <div class="footer-copyright text-center">
-        <p class="mb-0">&copy; {{ currentYear }} Amol Nagare. All rights reserved.</p>
+        <p class="mb-0">
+          &copy; {{ currentYear }} Amol Nagare. All rights reserved.
+        </p>
       </div>
     </div>
   </footer>
 
   <!-- Scroll to Top Button -->
-  <button class="btn btn-primary btn-scroll-top shadow" 
-          (click)="scrollToTop()" 
-          *ngIf="showScrollButton"
-          aria-label="Scroll to top">
+  <button
+    class="btn btn-primary btn-scroll-top shadow"
+    (click)="scrollToTop()"
+    *ngIf="showScrollButton"
+    aria-label="Scroll to top"
+  >
     <fa-icon [icon]="faArrowUp"></fa-icon>
   </button>
 

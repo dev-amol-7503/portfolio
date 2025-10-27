@@ -1,3 +1,4 @@
+// social-post.model.ts
 export interface Project {
   id: number;
   title: string;
@@ -9,21 +10,23 @@ export interface Project {
   githubLink?: string;
   category: string;
   featured?: boolean;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 export interface SocialPost {
   id: number;
+  platform: 'medium' | 'quora' | 'linkedin';
   title: string;
   description: string;
   link: string;
   date: string;
-  readTime?: string;
   likes?: number;
-  views?: string;
   upvotes?: number;
-  engagement?: string;
   comments?: number;
-  platform: 'medium' | 'quora' | 'linkedin';
+  views?: number;
+  engagement?: number;
+  readTime?: string;
 }
 
 export interface Testimonial {
@@ -42,10 +45,11 @@ export interface NavItem {
 }
 
 export interface Skill {
+  id?: number;
   name: string;
   level: number;
   color: string;
-  category: 'frontend' | 'backend' | 'tools';
+  category: string;
 }
 
 export interface Experience {

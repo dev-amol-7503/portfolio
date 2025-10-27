@@ -54,7 +54,7 @@ export class AppComponent implements OnInit {
   navItems: NavItem[] = [
     { label: 'Home', link: '/', icon: 'fas fa-home' },
     { label: 'About', link: '/about', icon: 'fas fa-user' },
-    { label: 'Skills', link: '/skills', icon: 'fas fa-code' },
+    { label: 'Technical Skills', link: '/skills', icon: 'fas fa-code' },
     { label: 'My Work', link: '/projects', icon: 'fas fa-project-diagram' },
     { label: 'Experience', link: '/experience', icon: 'fas fa-briefcase' },
     { label: 'Contact', link: '/contact', icon: 'fas fa-envelope' }
@@ -131,4 +131,9 @@ export class AppComponent implements OnInit {
   closeRecommendation() {
     this.showDesktopRecommendation = false;
   }
+  closeMobileMenu() {
+  if (window.innerWidth < 992) {
+    this.isMenuCollapsed = true;
+  }
+}
 }

@@ -3,14 +3,13 @@
   [class.bg-light]="!isDarkTheme"
   [class.bg-dark]="isDarkTheme"
 >
-  <div class="container p-0">
-
+  <div class="container">
     <!-- Add Project Form (Edit Mode) -->
     <div
       *ngIf="isEditMode && activeTab === 'projects'"
-      class="add-project-form mb-4"
+      class="add-project-form mb-5"
     >
-      <div class="card">
+      <div class="card glass-card">
         <div class="card-header">
           <h5 class="card-title mb-0">Add New Project</h5>
         </div>
@@ -74,303 +73,447 @@
       </div>
     </div>
 
-    <!-- Animated Tabs Navigation -->
+    <!-- Enhanced Tabs Navigation -->
     <div class="tabs-wrapper mb-5">
-      <ul
-        class="nav nav-pills justify-content-center"
-        id="projectTabs"
-        role="tablist"
-      >
-        <li class="nav-item" role="presentation">
-          <button
-            class="nav-link active d-flex align-items-center"
-            id="projects-tab"
-            data-bs-toggle="pill"
-            data-bs-target="#projects"
-            type="button"
-            role="tab"
-            (click)="onTabChange('projects')"
-          >
-            <i class="fas fa-code me-2"></i> Projects
-          </button>
-        </li>
-        <li class="nav-item" role="presentation">
-          <button
-            class="nav-link d-flex align-items-center"
-            id="medium-tab"
-            data-bs-toggle="pill"
-            data-bs-target="#medium"
-            type="button"
-            role="tab"
-            (click)="onTabChange('medium')"
-          >
-            <i class="fab fa-medium me-2"></i> Medium
-          </button>
-        </li>
-        <li class="nav-item" role="presentation">
-          <button
-            class="nav-link d-flex align-items-center"
-            id="quora-tab"
-            data-bs-toggle="pill"
-            data-bs-target="#quora"
-            type="button"
-            role="tab"
-            (click)="onTabChange('quora')"
-          >
-            <i class="fab fa-quora me-2"></i> Quora
-          </button>
-        </li>
-        <li class="nav-item" role="presentation">
-          <button
-            class="nav-link d-flex align-items-center"
-            id="linkedin-tab"
-            data-bs-toggle="pill"
-            data-bs-target="#linkedin"
-            type="button"
-            role="tab"
-            (click)="onTabChange('linkedin')"
-          >
-            <i class="fab fa-linkedin me-2"></i> Linkedin
-          </button>
-        </li>
-      </ul>
+      <div class="row justify-content-center">
+        <div class="col-auto">
+          <div class="btn-group" role="group">
+            <button
+              class="btn btn-tab rounded-pill mx-1 mb-2"
+              [class.active]="activeTab === 'projects'"
+              (click)="onTabChange('projects')"
+            >
+              <i class="fas fa-code me-2"></i> Projects
+            </button>
+            <button
+              class="btn btn-tab rounded-pill mx-1 mb-2"
+              [class.active]="activeTab === 'medium'"
+              (click)="onTabChange('medium')"
+            >
+              <i class="fab fa-medium me-2"></i> Medium
+            </button>
+            <button
+              class="btn btn-tab rounded-pill mx-1 mb-2"
+              [class.active]="activeTab === 'quora'"
+              (click)="onTabChange('quora')"
+            >
+              <i class="fab fa-quora me-2"></i> Quora
+            </button>
+            <button
+              class="btn btn-tab rounded-pill mx-1 mb-2"
+              [class.active]="activeTab === 'linkedin'"
+              (click)="onTabChange('linkedin')"
+            >
+              <i class="fab fa-linkedin me-2"></i> LinkedIn
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <!-- Tabs Content -->
-    <div class="tab-content" id="projectTabsContent">
-      <!-- Projects Tab with Modern Auto-Scroll Carousel -->
-      <div class="tab-pane fade show active" id="projects" role="tabpanel">
-        <div class="modern-carousel-container" 
-             (mouseenter)="pauseAutoScroll()" 
-             (mouseleave)="resumeAutoScroll()">
-          
-          <!-- Carousel Track with Vertical Scroll Integration -->
-          <div class="carousel-scroll-section" #carouselSection>
-            <div class="carousel-track" #carouselTrack>
-              <div 
-                class="carousel-slide" 
-                *ngFor="let project of projects; let i = index"
-                [class.active]="currentSlideIndex === i"
-                [class.visible]="isSlideVisible(i)"
+    <!-- Tabs Content - FIXED STRUCTURE -->
+    <div class="tab-content">
+      <!-- Projects Tab -->
+      <div *ngIf="activeTab === 'projects'" class="tab-pane active">
+        <!-- DEBUG: Show current state -->
+        <div class="debug-info" style="display: none">
+          <p>Projects Count: {{ projects.length }}</p>
+          <p>Medium Count: {{ mediumPosts.length }}</p>
+          <p>Quora Count: {{ quoraPosts.length }}</p>
+          <p>LinkedIn Count: {{ linkedinPosts.length }}</p>
+        </div>
+
+        <!-- Show Cards if data exists -->
+        <div
+          *ngIf="projects.length > 0; else noProjects"
+          class="projects-grid-container"
+        >
+          <div class="row g-4">
+            <div
+              class="col-xl-4 col-lg-6 col-md-6 mb-4"
+              *ngFor="let project of projects; let i = index"
+            >
+              <div
+                class="project-card glass-card"
+                [class.editable]="isEditMode"
               >
-                <div class="project-card" [class.editable]="isEditMode">
-                  <div class="project-image">
-                    <!-- Lottie Animation Container -->
-                    <div 
-                      #lottieContainer 
-                      class="lottie-animation"
-                      *ngIf="project.animationUrl"
-                    ></div>
-                    
-                    <!-- Fallback Image -->
-                    <img
-                      [src]="project.imageUrl"
-                      [alt]="project.title"
-                      class="img-fluid fallback-image"
-                      *ngIf="!project.animationUrl"
-                    />
-                    
-                    <div class="project-overlay d-flex flex-column">
-                      <h5 class="text-white mb-3">{{ project.title }}</h5>
-                      <div class="mt-auto">
-                        <a
-                          [routerLink]="project.link"
-                          class="btn btn-primary btn-sm me-2"
-                          *ngIf="project.link.startsWith('/')"
-                        >
-                          <i class="fas fa-external-link-alt me-1"></i>View Live
-                        </a>
-                        <a
-                          [href]="project.link"
-                          target="_blank"
-                          class="btn btn-primary btn-sm me-2"
-                          *ngIf="!project.link.startsWith('/')"
-                        >
-                          <i class="fas fa-external-link-alt me-1"></i>View Live
-                        </a>
-                        <a
-                          [href]="project.githubLink"
-                          target="_blank"
-                          class="btn btn-dark btn-sm"
-                          *ngIf="project.githubLink"
-                        >
-                          <i class="fab fa-github me-1"></i>Code
-                        </a>
-                      </div>
-                    </div>
+                <div class="project-image">
+                  <!-- Lottie Animation Container -->
+                  <div
+                    #lottieContainer
+                    class="lottie-animation"
+                    *ngIf="project.animationUrl"
+                  ></div>
 
-                    <!-- Edit Controls -->
-                    <div class="edit-controls" *ngIf="isEditMode">
-                      <button class="btn btn-warning btn-sm me-1">
-                        <i class="fas fa-edit"></i>
-                      </button>
-                      <button
-                        class="btn btn-danger btn-sm"
-                        (click)="deleteProject(project, $event)"
+                  <!-- Fallback Image -->
+                  <img
+                    [src]="project.imageUrl"
+                    [alt]="project.title"
+                    class="img-fluid fallback-image"
+                    *ngIf="!project.animationUrl"
+                  />
+
+                  <div class="project-overlay d-flex flex-column">
+                    <h5 class="text-white mb-3">{{ project.title }}</h5>
+                    <div class="mt-auto">
+                      <a
+                        [routerLink]="project.link"
+                        class="btn btn-light btn-sm me-2"
+                        *ngIf="project.link.startsWith('/')"
                       >
-                        <i class="fas fa-trash"></i>
-                      </button>
+                        <i class="fas fa-external-link-alt me-1"></i>View Live
+                      </a>
+                      <a
+                        [href]="project.link"
+                        target="_blank"
+                        class="btn btn-light btn-sm me-2"
+                        *ngIf="!project.link.startsWith('/')"
+                      >
+                        <i class="fas fa-external-link-alt me-1"></i>View Live
+                      </a>
+                      <a
+                        [href]="project.githubLink"
+                        target="_blank"
+                        class="btn btn-dark btn-sm"
+                        *ngIf="project.githubLink"
+                      >
+                        <i class="fab fa-github me-1"></i>Code
+                      </a>
                     </div>
                   </div>
-                  <div class="project-body">
-                    <div
-                      class="d-flex justify-content-between align-items-start mb-2"
+
+                  <!-- Edit Controls -->
+                  <div class="edit-controls" *ngIf="isEditMode">
+                    <button class="btn btn-warning btn-sm me-1">
+                      <i class="fas fa-edit"></i>
+                    </button>
+                    <button
+                      class="btn btn-danger btn-sm"
+                      (click)="deleteProject(project, $event)"
                     >
-                      <h5 class="project-title mb-0">{{ project.title }}</h5>
-                      <span class="badge bg-primary">{{ project.category }}</span>
-                    </div>
-                    <p class="project-description">{{ project.description }}</p>
-                    <div class="project-tech">
-                      <span
-                        class="tech-badge"
-                        *ngFor="let tech of project.technologies"
-                      >
-                        <i [class]="getTechIcon(tech)"></i> {{ tech }}
-                      </span>
-                    </div>
+                      <i class="fas fa-trash"></i>
+                    </button>
+                  </div>
+                </div>
+                <div class="project-body">
+                  <div
+                    class="d-flex justify-content-between align-items-start mb-2"
+                  >
+                    <h5 class="project-title mb-0">{{ project.title }}</h5>
+                  </div>
+                  <p class="project-description">{{ project.description }}</p>
+                  <div class="project-tech">
+                    <span
+                      class="tech-badge"
+                      *ngFor="let tech of project.technologies"
+                    >
+                      <i [class]="getTechIcon(tech)"></i> {{ tech }}
+                    </span>
                   </div>
                 </div>
               </div>
             </div>
           </div>
+        </div>
 
-          <!-- Progress Indicator -->
-          <div class="carousel-progress" *ngIf="projects.length > 1">
-            <div class="progress-bar">
-              <div class="progress-fill" [style.width.%]="getProgressPercentage()"></div>
+        <!-- No Data State Template -->
+        <ng-template #noProjects>
+          <div class="no-data-state">
+            <div class="no-data-content text-center">
+              <div class="no-data-animation">
+                <div class="animation-placeholder projects-animation">
+                  <i class="fas fa-folder-open"></i>
+                </div>
+              </div>
+              <div class="no-data-text-content">
+                <h3 class="no-data-title">No Projects Yet</h3>
+                <p class="no-data-description">
+                  It looks like you haven't added any projects yet. Start
+                  showcasing your amazing work by adding your first project!
+                </p>
+                <div class="no-data-actions" *ngIf="isEditMode">
+                  <button
+                    class="btn btn-primary btn-lg"
+                    (click)="addNewProject()"
+                  >
+                    <i class="fas fa-plus me-2"></i>Add Your First Project
+                  </button>
+                </div>
+                <div class="no-data-actions" *ngIf="!isEditMode">
+                  <p class="text-muted">
+                    Check back later for amazing projects!
+                  </p>
+                </div>
+              </div>
             </div>
-            <div class="progress-text">
-              {{ currentSlideIndex + 1 }} / {{ projects.length }}
+          </div>
+        </ng-template>
+      </div>
+
+      <!-- Medium Tab -->
+      <div *ngIf="activeTab === 'medium'" class="tab-pane active">
+        <div
+          *ngIf="mediumPosts.length > 0; else noMedium"
+          class="projects-grid-container"
+        >
+          <div class="row g-4">
+            <div
+              class="col-xl-4 col-lg-6 col-md-6 mb-4"
+              *ngFor="let post of mediumPosts"
+            >
+              <div
+                class="project-card glass-card"
+                [class.editable]="isEditMode"
+              >
+                <div class="project-image">
+                  <!-- Platform-specific background -->
+                  <div class="platform-background medium-bg">
+                    <i class="fab fa-medium platform-logo"></i>
+                  </div>
+
+                  <div class="project-overlay d-flex flex-column">
+                    <h5 class="text-white mb-3">{{ post.title }}</h5>
+                    <div class="mt-auto">
+                      <a
+                        [href]="post.link"
+                        target="_blank"
+                        class="btn btn-light btn-sm"
+                      >
+                        <i class="fas fa-external-link-alt me-1"></i>Read
+                        Article
+                      </a>
+                    </div>
+                  </div>
+                </div>
+                <div class="project-body">
+                  <div
+                    class="d-flex justify-content-between align-items-start mb-2"
+                  >
+                    <h5 class="project-title mb-0">{{ post.title }}</h5>
+                  </div>
+                  <p class="project-description">{{ post.description }}</p>
+                  <div class="project-tech">
+                    <span class="tech-badge">
+                      <i class="fas fa-clock"></i> {{ post.readTime }} read
+                    </span>
+                    <span class="tech-badge">
+                      <i class="fas fa-heart"></i> {{ post.likes }} likes
+                    </span>
+                    <span class="tech-badge">
+                      <i class="fas fa-calendar"></i> {{ post.date }}
+                    </span>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
-      </div>
 
-      <!-- Other Tabs (Medium, Quora, LinkedIn) -->
-      <div class="tab-pane fade" id="medium" role="tabpanel">
-        <div class="row g-4">
-          <div
-            class="col-md-6 col-lg-4"
-            *ngFor="let post of mediumPosts"
-          >
-            <div class="post-card h-100">
-              <div class="post-header d-flex align-items-center mb-3">
-                <div class="platform-icon me-3">
-                  <i class="fab fa-medium text-dark"></i>
-                </div>
-                <div>
-                  <small class="text-muted d-block"
-                    >Published on {{ post.date }}</small
-                  >
-                  <small class="text-muted">{{ post.readTime }} read</small>
+        <!-- No Data State Template -->
+        <ng-template #noMedium>
+          <div class="no-data-state">
+            <div class="no-data-content text-center">
+              <div class="no-data-animation">
+                <div class="animation-placeholder medium-animation">
+                  <i class="fab fa-medium"></i>
                 </div>
               </div>
-              <div class="post-body">
-                <h5 class="post-title">{{ post.title }}</h5>
-                <p class="post-description">{{ post.description }}</p>
-                <div
-                  class="post-stats d-flex justify-content-between align-items-center mt-3"
-                >
-                  <span class="text-muted"
-                    ><i class="fas fa-heart me-1"></i> {{ post.likes }}</span
-                  >
+              <div class="no-data-text-content">
+                <h3 class="no-data-title">No Medium Articles</h3>
+                <p class="no-data-description">
+                  No articles published on Medium yet. Share your knowledge and
+                  experiences with the community!
+                </p>
+                <div class="no-data-actions">
                   <a
-                    [href]="post.link"
+                    href="https://medium.com/"
                     target="_blank"
-                    class="btn btn-dark btn-sm stretched-link"
+                    class="btn btn-dark btn-lg"
                   >
-                    Read Article <i class="fas fa-arrow-right ms-1"></i>
+                    <i class="fab fa-medium me-2"></i>Start Writing on Medium
                   </a>
                 </div>
               </div>
             </div>
           </div>
-        </div>
+        </ng-template>
       </div>
 
-      <!-- Quora Tab -->
-      <div class="tab-pane fade" id="quora" role="tabpanel">
-        <div class="row g-4">
-          <div class="col-md-6 col-lg-4" *ngFor="let post of quoraPosts">
-            <div class="post-card h-100">
-              <div class="post-header d-flex align-items-center mb-3">
-                <div class="platform-icon me-3">
-                  <i class="fab fa-quora text-danger"></i>
+      <!-- Quora Tab - Updated -->
+      <div *ngIf="activeTab === 'quora'" class="tab-pane active">
+        <div
+          *ngIf="quoraPosts.length > 0; else noQuora"
+          class="projects-grid-container"
+        >
+          <div class="row g-4">
+            <div
+              class="col-xl-6 col-lg-6 col-md-6 mb-4"
+              *ngFor="let post of quoraPosts"
+            >
+              <div
+                class="project-card glass-card"
+                [class.editable]="isEditMode"
+              >
+                <div class="project-image">
+                  <div class="platform-background quora-bg">
+                    <i class="fab fa-quora platform-logo"></i>
+                  </div>
+
+                  <div class="project-overlay d-flex flex-column">
+                    <h5 class="text-white mb-3">{{ post.title }}</h5>
+                    <div class="mt-auto">
+                      <a
+                        [href]="post.link"
+                        target="_blank"
+                        class="btn btn-light btn-sm"
+                      >
+                        <i class="fas fa-external-link-alt me-1"></i>View Answer
+                      </a>
+                    </div>
+                  </div>
                 </div>
-                <div>
-                  <small class="text-muted d-block"
-                    >Answered on {{ post.date }}</small
+                <div class="project-body">
+                  <div
+                    class="d-flex justify-content-between align-items-start mb-2"
                   >
-                  <small class="text-muted">{{ post.views }} views</small>
-                </div>
-              </div>
-              <div class="post-body">
-                <h5 class="post-title">{{ post.title }}</h5>
-                <p class="post-description">{{ post.description }}</p>
-                <div
-                  class="post-stats d-flex justify-content-between align-items-center mt-3"
-                >
-                  <span class="text-muted"
-                    ><i class="fas fa-thumbs-up me-1"></i>
-                    {{ post.upvotes }}</span
-                  >
-                  <a
-                    [href]="post.link"
-                    target="_blank"
-                    class="btn btn-danger btn-sm stretched-link"
-                  >
-                    View Answer <i class="fas fa-arrow-right ms-1"></i>
-                  </a>
+                    <h5 class="project-title mb-0">{{ post.title }}</h5>
+                  </div>
+                  <p class="project-description">{{ post.description }}</p>
+                  <div class="project-tech">
+                    <span class="tech-badge">
+                      <i class="fas fa-eye"></i> {{ post.views }} views
+                    </span>
+                    <span class="tech-badge">
+                      <i class="fas fa-thumbs-up"></i>
+                      {{ post.upvotes }} upvotes
+                    </span>
+                    <span class="tech-badge">
+                      <i class="fas fa-calendar"></i> {{ post.date }}
+                    </span>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
 
-      <!-- LinkedIn Tab -->
-      <div class="tab-pane fade" id="linkedin" role="tabpanel">
-        <div class="row g-4">
-          <div
-            class="col-md-6 col-lg-4"
-            *ngFor="let post of linkedinPosts"
-          >
-            <div class="post-card h-100">
-              <div class="post-header d-flex align-items-center mb-3">
-                <div class="platform-icon me-3">
-                  <i class="fab fa-linkedin text-primary"></i>
-                </div>
-                <div>
-                  <small class="text-muted d-block"
-                    >Posted on {{ post.date }}</small
-                  >
-                  <small class="text-muted"
-                    >{{ post.engagement }} engagement</small
-                  >
+        <!-- No Data State Template -->
+        <ng-template #noQuora>
+          <div class="no-data-state">
+            <div class="no-data-content text-center">
+              <div class="no-data-animation">
+                <div class="animation-placeholder quora-animation">
+                  <i class="fab fa-quora"></i>
                 </div>
               </div>
-              <div class="post-body">
-                <h5 class="post-title">{{ post.title }}</h5>
-                <p class="post-description">{{ post.description }}</p>
-                <div
-                  class="post-stats d-flex justify-content-between align-items-center mt-3"
-                >
-                  <span class="text-muted"
-                    ><i class="fas fa-comment me-1"></i>
-                    {{ post.comments }}</span
-                  >
+              <div class="no-data-text-content">
+                <h3 class="no-data-title">No Quora Answers</h3>
+                <p class="no-data-description">
+                  No answers posted on Quora yet. Share your expertise and help
+                  others by answering questions!
+                </p>
+                <div class="no-data-actions">
                   <a
-                    [href]="post.link"
+                    href="https://www.quora.com/"
                     target="_blank"
-                    class="btn btn-primary btn-sm stretched-link"
+                    class="btn btn-danger btn-lg"
                   >
-                    View Post <i class="fas fa-arrow-right ms-1"></i>
+                    <i class="fab fa-quora me-2"></i>Answer Questions on Quora
                   </a>
                 </div>
               </div>
             </div>
           </div>
+        </ng-template>
+      </div>
+
+      <!-- LinkedIn Tab - Updated -->
+      <div *ngIf="activeTab === 'linkedin'" class="tab-pane active">
+        <div
+          *ngIf="linkedinPosts.length > 0; else noLinkedIn"
+          class="projects-grid-container"
+        >
+          <div class="row g-4">
+            <div
+              class="col-xl-6 col-lg-6 col-md-6 mb-4"
+              *ngFor="let post of linkedinPosts"
+            >
+              <div
+                class="project-card glass-card"
+                [class.editable]="isEditMode"
+              >
+                <div class="project-image">
+                  <div class="platform-background linkedin-bg">
+                    <i class="fab fa-linkedin platform-logo"></i>
+                  </div>
+
+                  <div class="project-overlay d-flex flex-column">
+                    <h5 class="text-white mb-3">{{ post.title }}</h5>
+                    <div class="mt-auto">
+                      <a
+                        [href]="post.link"
+                        target="_blank"
+                        class="btn btn-light btn-sm"
+                      >
+                        <i class="fas fa-external-link-alt me-1"></i>View Post
+                      </a>
+                    </div>
+                  </div>
+                </div>
+                <div class="project-body">
+                  <div
+                    class="d-flex justify-content-between align-items-start mb-2"
+                  >
+                    <h5 class="project-title mb-0">{{ post.title }}</h5>
+                  </div>
+                  <p class="project-description">{{ post.description }}</p>
+                  <div class="project-tech">
+                    <span class="tech-badge">
+                      <i class="fas fa-comment"></i>
+                      {{ post.comments }} comments
+                    </span>
+                    <span class="tech-badge">
+                      <i class="fas fa-chart-line"></i>
+                      {{ post.engagement }} engagement
+                    </span>
+                    <span class="tech-badge">
+                      <i class="fas fa-calendar"></i> {{ post.date }}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
+
+        <!-- No Data State Template -->
+        <ng-template #noLinkedIn>
+          <div class="no-data-state">
+            <div class="no-data-content text-center">
+              <div class="no-data-animation">
+                <div class="animation-placeholder linkedin-animation">
+                  <i class="fab fa-linkedin"></i>
+                </div>
+              </div>
+              <div class="no-data-text-content">
+                <h3 class="no-data-title">No LinkedIn Posts</h3>
+                <p class="no-data-description">
+                  No posts shared on LinkedIn yet. Connect with professionals
+                  and share your insights with the community!
+                </p>
+                <div class="no-data-actions">
+                  <a
+                    href="https://www.linkedin.com/"
+                    target="_blank"
+                    class="btn btn-primary btn-lg"
+                  >
+                    <i class="fab fa-linkedin me-2"></i>Share on LinkedIn
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </ng-template>
       </div>
     </div>
   </div>

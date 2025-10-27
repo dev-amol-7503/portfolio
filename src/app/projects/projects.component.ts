@@ -1,4 +1,13 @@
-import { Component, OnInit, ElementRef, ViewChildren, QueryList, AfterViewInit, ViewChild, OnDestroy, HostListener } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  ElementRef,
+  ViewChildren,
+  QueryList,
+  AfterViewInit,
+  OnDestroy,
+  ChangeDetectorRef
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ThemeService } from '../services/theme.service';
 import { AdminService } from '../services/admin.service';
@@ -16,18 +25,9 @@ import lottie from 'lottie-web';
 })
 export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChildren('lottieContainer') lottieContainers!: QueryList<ElementRef>;
-  @ViewChild('carouselTrack') carouselTrack!: ElementRef;
-  @ViewChild('carouselSection') carouselSection!: ElementRef;
 
   isDarkTheme = false;
   isEditMode = false;
-
-  // Carousel properties
-  currentSlideIndex = 0;
-  isAutoScrollActive = true;
-  autoScrollInterval: any;
-  private readonly autoScrollDelay = 5000; // 5 seconds
-  private isScrolling = false;
 
   activeTab: string = 'projects';
 
@@ -36,11 +36,25 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
   quoraPosts: SocialPost[] = [];
   linkedinPosts: SocialPost[] = [];
 
-  newProject: Partial<Project> = {};
+  // Updated newProject type for form handling
+  newProject: {
+    title?: string;
+    description?: string;
+    technologies?: string;
+    imageUrl?: string;
+    animationUrl?: string;
+    link?: string;
+    githubLink?: string;
+    category?: string;
+    featured?: boolean;
+  } = {};
+
+  private lottieAnimations: any[] = [];
 
   constructor(
     private themeService: ThemeService,
-    private adminService: AdminService
+    private adminService: AdminService,
+    private cdRef: ChangeDetectorRef
   ) {}
 
   ngOnInit() {
@@ -48,160 +62,132 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
       this.isDarkTheme = isDark;
     });
 
-    this.adminService.editMode$.subscribe(mode => {
+    this.adminService.editMode$.subscribe((mode) => {
       this.isEditMode = mode;
     });
 
-    this.adminService.portfolioData$.subscribe(data => {
-      this.projects = data.projects || [];
-      this.mediumPosts = data.socialPosts?.filter(post => post.platform === 'medium') || [];
-      this.quoraPosts = data.socialPosts?.filter(post => post.platform === 'quora') || [];
-      this.linkedinPosts = data.socialPosts?.filter(post => post.platform === 'linkedin') || [];
+    this.adminService.portfolioData$.subscribe((data) => {
+      console.log('🔄 Portfolio Data Received:', data);
       
-      this.startAutoScroll();
+      // FIXED: Proper data filtering with debugging
+      this.projects = data.projects || [];
+      
+      // Debug social posts before filtering
+      console.log('🔍 All Social Posts:', data.socialPosts);
+      
+      // FIXED: Case-insensitive platform filtering
+      this.mediumPosts = data.socialPosts?.filter((post) => 
+        post.platform?.toLowerCase() === 'medium'
+      ) || [];
+      
+      this.quoraPosts = data.socialPosts?.filter((post) => 
+        post.platform?.toLowerCase() === 'quora'
+      ) || [];
+      
+      this.linkedinPosts = data.socialPosts?.filter((post) => 
+        post.platform?.toLowerCase() === 'linkedin'
+      ) || [];
+      
+      // DEBUG: Log current state
+      this.logCurrentState();
+      
+      // Force change detection
+      this.cdRef.detectChanges();
+      
+      // Reinitialize Lottie animations when data changes
+      setTimeout(() => {
+        this.initializeLottieAnimations();
+      }, 100);
     });
   }
 
   ngAfterViewInit() {
     this.initializeLottieAnimations();
-    this.setupScrollListener();
-    
+
     this.lottieContainers.changes.subscribe(() => {
       this.initializeLottieAnimations();
     });
   }
 
   ngOnDestroy() {
-    this.stopAutoScroll();
+    this.destroyLottieAnimations();
+  }
+
+  private logCurrentState() {
+    console.log('📊 Current Data State:');
+    console.log('   Projects:', this.projects.length, this.projects);
+    console.log('   Medium Posts:', this.mediumPosts.length, this.mediumPosts);
+    console.log('   Quora Posts:', this.quoraPosts.length, this.quoraPosts);
+    console.log('   LinkedIn Posts:', this.linkedinPosts.length, this.linkedinPosts);
+    console.log('   Active Tab:', this.activeTab);
+    
+    // Additional debug for medium posts
+    if (this.mediumPosts.length > 0) {
+      console.log('🔍 Medium Post Details:', this.mediumPosts[0]);
+      console.log('🔍 Medium Post Platform:', this.mediumPosts[0].platform);
+    }
+  }
+
+  private destroyLottieAnimations() {
+    this.lottieAnimations.forEach(animation => {
+      if (animation && typeof animation.destroy === 'function') {
+        animation.destroy();
+      }
+    });
+    this.lottieAnimations = [];
   }
 
   private initializeLottieAnimations() {
+    this.destroyLottieAnimations();
+
     this.lottieContainers.forEach((container, index) => {
-      const project = this.projects[index];
-      if (project && project.animationUrl) {
-        lottie.loadAnimation({
-          container: container.nativeElement,
-          renderer: 'svg',
-          loop: true,
-          autoplay: true,
-          path: project.animationUrl
-        });
+      let items: any[] = [];
+      
+      switch (this.activeTab) {
+        case 'projects':
+          items = this.projects;
+          break;
+        case 'medium':
+          items = this.mediumPosts;
+          break;
+        case 'quora':
+          items = this.quoraPosts;
+          break;
+        case 'linkedin':
+          items = this.linkedinPosts;
+          break;
+      }
+
+      const item = items[index];
+      if (item && item.animationUrl) {
+        try {
+          const animation = lottie.loadAnimation({
+            container: container.nativeElement,
+            renderer: 'svg',
+            loop: true,
+            autoplay: true,
+            path: item.animationUrl,
+          });
+          this.lottieAnimations.push(animation);
+        } catch (error) {
+          console.warn('Failed to load Lottie animation:', error);
+        }
       }
     });
   }
 
-  private setupScrollListener() {
-    if (this.carouselSection) {
-      const section = this.carouselSection.nativeElement;
-      
-      section.addEventListener('scroll', () => {
-        this.handleScroll();
-      });
-    }
-  }
-
-  private handleScroll() {
-    if (this.isScrolling) return;
-    
-    this.isScrolling = true;
-    
-    if (this.carouselSection) {
-      const section = this.carouselSection.nativeElement;
-      const scrollTop = section.scrollTop;
-      const slideHeight = section.clientHeight;
-      const newIndex = Math.floor(scrollTop / slideHeight);
-      
-      if (newIndex !== this.currentSlideIndex && newIndex >= 0 && newIndex < this.projects.length) {
-        this.currentSlideIndex = newIndex;
-      }
-    }
-    
-    // Debounce scroll handling
-    setTimeout(() => {
-      this.isScrolling = false;
-    }, 100);
-  }
-
-  // Auto-scroll functionality
-  startAutoScroll() {
-    if (this.projects.length <= 1) return;
-    
-    this.stopAutoScroll();
-    this.isAutoScrollActive = true;
-    
-    this.autoScrollInterval = setInterval(() => {
-      this.nextSlide();
-    }, this.autoScrollDelay);
-  }
-
-  stopAutoScroll() {
-    if (this.autoScrollInterval) {
-      clearInterval(this.autoScrollInterval);
-      this.autoScrollInterval = null;
-    }
-  }
-
-  pauseAutoScroll() {
-    this.stopAutoScroll();
-  }
-
-  resumeAutoScroll() {
-    if (this.isAutoScrollActive) {
-      this.startAutoScroll();
-    }
-  }
-
-  // Navigation methods
-  nextSlide() {
-    if (this.projects.length === 0) return;
-    
-    const nextIndex = (this.currentSlideIndex + 1) % this.projects.length;
-    this.goToSlide(nextIndex);
-  }
-
-  prevSlide() {
-    if (this.projects.length === 0) return;
-    
-    const prevIndex = this.currentSlideIndex === 0 
-      ? this.projects.length - 1 
-      : this.currentSlideIndex - 1;
-    this.goToSlide(prevIndex);
-  }
-
-  goToSlide(index: number) {
-    if (index >= 0 && index < this.projects.length && this.carouselSection) {
-      this.currentSlideIndex = index;
-      const section = this.carouselSection.nativeElement;
-      const slideHeight = section.clientHeight;
-      const scrollPosition = index * slideHeight;
-      
-      section.scrollTo({
-        top: scrollPosition,
-        behavior: 'smooth'
-      });
-    }
-  }
-
-  // Check if slide is visible
-  isSlideVisible(index: number): boolean {
-    return Math.abs(index - this.currentSlideIndex) <= 1;
-  }
-
-  // Get progress percentage
-  getProgressPercentage(): number {
-    if (this.projects.length === 0) return 0;
-    return ((this.currentSlideIndex + 1) / this.projects.length) * 100;
-  }
-
   // Tab change handler
   onTabChange(tabId: string) {
+    console.log('🔁 Tab changing to:', tabId);
     this.activeTab = tabId;
-    if (tabId === 'projects') {
-      this.currentSlideIndex = 0;
-      this.startAutoScroll();
-    } else {
-      this.stopAutoScroll();
-    }
+    
+    this.destroyLottieAnimations();
+    this.cdRef.detectChanges();
+    
+    setTimeout(() => {
+      this.initializeLottieAnimations();
+      this.logCurrentState();
+    }, 300);
   }
 
   getTechIcon(tech: string): string {
@@ -221,25 +207,30 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     return icons[tech] || 'fas fa-code';
   }
 
-  // Edit mode methods
   addNewProject() {
     if (this.isEditMode && this.newProject.title && this.newProject.description) {
       const project: Project = {
         id: Date.now(),
         title: this.newProject.title,
         description: this.newProject.description,
-        technologies: this.newProject.technologies || ['Angular'],
+        technologies: this.newProject.technologies
+          ? this.newProject.technologies.split(',').map((t) => t.trim())
+          : ['Angular'],
         imageUrl: this.newProject.imageUrl || 'assets/images/project-placeholder.jpg',
-        animationUrl: this.newProject.animationUrl || 'https://assets1.lottiefiles.com/packages/lf20_vybwn7df.json',
+        animationUrl: this.newProject.animationUrl ||
+          'https://assets1.lottiefiles.com/packages/lf20_vybwn7df.json',
         link: this.newProject.link || '#',
         githubLink: this.newProject.githubLink,
         category: this.newProject.category || 'Web Application',
-        featured: this.newProject.featured || false
+        featured: this.newProject.featured || false,
       };
-      
+
       this.adminService.addProject(project);
       this.newProject = {};
-      this.currentSlideIndex = 0;
+      
+      setTimeout(() => {
+        this.initializeLottieAnimations();
+      }, 100);
     }
   }
 
@@ -247,22 +238,38 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     if (this.isEditMode) {
       event.preventDefault();
       event.stopPropagation();
-      
+
       if (confirm(`Are you sure you want to delete "${project.title}"?`)) {
         this.adminService.deleteProject(project.id);
-        if (this.currentSlideIndex >= this.projects.length) {
-          this.currentSlideIndex = Math.max(0, this.projects.length - 1);
-        }
+        
+        setTimeout(() => {
+          this.initializeLottieAnimations();
+        }, 100);
       }
     }
   }
 
-  // Handle window resize
-  @HostListener('window:resize')
-  onResize() {
-    // Update scroll position on resize
-    setTimeout(() => {
-      this.goToSlide(this.currentSlideIndex);
-    }, 100);
+  // TEST METHOD: Clear specific tab data for testing
+  clearTabDataForTesting(tabName: string) {
+    console.log('🧪 Clearing data for:', tabName);
+    
+    switch (tabName) {
+      case 'projects':
+        this.projects = [];
+        break;
+      case 'medium':
+        this.mediumPosts = [];
+        break;
+      case 'quora':
+        this.quoraPosts = [];
+        break;
+      case 'linkedin':
+        this.linkedinPosts = [];
+        break;
+    }
+    
+    this.cdRef.detectChanges();
+    console.log('✅ Data cleared for:', tabName);
+    this.logCurrentState();
   }
 }

@@ -1,75 +1,112 @@
 <section class="skills-section py-5">
   <div class="container">
-    <div class="section-header text-center mb-5">
-      <h2 class="section-title">My Skills</h2>
-      <p class="section-subtitle lead text-muted">Here are my technical skills that I've acquired over 3+ years of professional experience</p>
+    
+    <!-- Edit Mode Controls -->
+    <div class="row mb-4" *ngIf="isEditMode">
+      <div class="col-12">
+        <div class="alert alert-info d-flex align-items-center">
+          <i class="fas fa-edit me-2"></i>
+          <span>Edit Mode: Click on skills to modify them</span>
+          <button class="btn btn-sm btn-success ms-auto" (click)="addNewSkill()">
+            <i class="fas fa-plus me-1"></i> Add Skill
+          </button>
+        </div>
+      </div>
     </div>
     
-    <div class="row">
-      <div class="col-md-6" *ngFor="let skill of skills">
-        <div class="skill-item mb-4">
-          <div class="skill-header d-flex justify-content-between mb-2">
-            <h5 class="skill-name mb-0">{{ skill.name }}</h5>
-            <span class="skill-percent">{{ skill.level }}%</span>
-          </div>
-          <div class="progress" style="height: 10px;">
-            <div class="progress-bar" 
-                 role="progressbar" 
-                 [style.width]="skill.level + '%'"
-                 [attr.aria-valuenow]="skill.level"
-                 aria-valuemin="0"
-                 aria-valuemax="100"
-                 [ngStyle]="{'background-color': skill.color}"></div>
+    <!-- Skills Filter -->
+    <div class="skills-filter mb-5">
+      <div class="row justify-content-center">
+        <div class="col-auto">
+          <button 
+            class="btn btn-filter rounded-pill mx-1 mb-2" 
+            [class.active]="activeCategory === 'all'"
+            (click)="filterSkills('all')">
+            All Skills
+          </button>
+          <button 
+            *ngFor="let category of skillCategories" 
+            class="btn btn-filter rounded-pill mx-1 mb-2" 
+            [class.active]="activeCategory === category.name"
+            (click)="filterSkills(category.name)">
+            <i [class]="category.icon" class="me-2"></i>{{ category.displayName }}
+          </button>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Skills with Glass Effect -->
+    <div class="skills-grid mb-5">
+      <div class="row g-4">
+        <div class="col-md-6 col-lg-4" *ngFor="let skill of filteredSkills">
+          <div class="skill-glass-card">
+            <div class="skill-icon-container">
+              <i [class]="getSkillIcon(skill.name)" class="skill-icon"></i>
+            </div>
+            <div class="skill-content">
+              <div class="skill-header d-flex justify-content-between align-items-center mb-3">
+                <div>
+                  <input 
+                    *ngIf="isEditMode"
+                    [value]="skill.name"
+                    (change)="onSkillNameChange(skill, $event)"
+                    class="skill-edit-input"
+                  >
+                  <h5 class="skill-name mb-0" *ngIf="!isEditMode">{{ skill.name }}</h5>
+                </div>
+                <div class="d-flex align-items-center">
+                  <input 
+                    *ngIf="isEditMode"
+                    type="number" 
+                    [value]="skill.level"
+                    (change)="onSkillLevelChange(skill, $event)"
+                    class="skill-level-edit me-2"
+                    min="0"
+                    max="100"
+                  >
+                  <span class="skill-percent">{{ skill.level }}%</span>
+                  <button 
+                    *ngIf="isEditMode"
+                    class="btn btn-sm btn-danger ms-2"
+                    (click)="deleteSkill(skill)"
+                  >
+                    <i class="fas fa-trash"></i>
+                  </button>
+                </div>
+              </div>
+              <div class="progress" style="height: 8px;">
+                <div class="progress-bar" 
+                     role="progressbar" 
+                     [style.width]="skill.level + '%'"
+                     [attr.aria-valuenow]="skill.level"
+                     aria-valuemin="0"
+                     aria-valuemax="100"
+                     [ngStyle]="{'background-color': skill.color}">
+                  <div class="progress-pulse"></div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
     </div>
     
-    <div class="skill-categories mt-5">
-      <div class="row">
-        <div class="col-md-4 mb-4">
-          <div class="category-card p-4 h-100">
-            <div class="category-icon mb-3">
-              <i class="fas fa-laptop-code"></i>
-            </div>
-            <h4 class="category-title mb-3">Frontend</h4>
-            <ul class="category-skills">
-              <li>HTML5, CSS3</li>
-              <li>JavaScript, TypeScript</li>
-              <li>Angular, Bootstrap</li>
-              <li>UI/UX Design</li>
-            </ul>
-          </div>
+    
+    <!-- Skills Summary -->
+    <div class="skills-summary mt-5 pt-4">
+      <div class="row align-items-center">
+        <div class="col-lg-8">
+          <h3 class="mb-3">Full Stack Development Expertise</h3>
+          <p class="mb-0">
+            With 4 years of professional experience, I specialize in building enterprise-scale applications using 
+            Java, Spring Boot, and Angular. My expertise spans from creating responsive user interfaces to 
+            developing robust backend systems and implementing CI/CD pipelines.
+          </p>
         </div>
-        
-        <div class="col-md-4 mb-4">
-          <div class="category-card p-4 h-100">
-            <div class="category-icon mb-3">
-              <i class="fas fa-server"></i>
-            </div>
-            <h4 class="category-title mb-3">Backend</h4>
-            <ul class="category-skills">
-              <li>Java, Spring Boot</li>
-              <li>Node.js, Express.js</li>
-              <li>RESTful APIs</li>
-              <li>Microservices</li>
-            </ul>
-          </div>
-        </div>
-        
-        <div class="col-md-4 mb-4">
-          <div class="category-card p-4 h-100">
-            <div class="category-icon mb-3">
-              <i class="fas fa-tools"></i>
-            </div>
-            <h4 class="category-title mb-3">Others</h4>
-            <ul class="category-skills">
-              <li>Docker, Jenkins</li>
-              <li>MySQL, PostgreSQL</li>
-              <li>Android Development</li>
-              <li>Git, Agile Methodologies</li>
-            </ul>
-          </div>
+        <div class="col-lg-4 text-lg-end mt-3 mt-lg-0">
+          <button class="btn btn-primary btn-lg">
+            View My Projects <i class="fas fa-arrow-right ms-2"></i>
+          </button>
         </div>
       </div>
     </div>

@@ -1,4 +1,54 @@
+/* about.component.scss */
 .about-section {
+  .personal-info-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+    align-items: center;
+    padding: 1rem;
+    background: rgba(37, 99, 235, 0.05);
+    border-radius: 10px;
+    border: 1px solid rgba(37, 99, 235, 0.1);
+    
+    .detail-item {
+      display: flex;
+      align-items: center;
+      white-space: nowrap;
+      
+      span {
+        color: var(--theme-text-secondary);
+        font-size: 0.95rem;
+        
+        strong {
+          color: var(--theme-text);
+          font-weight: 600;
+        }
+      }
+      
+      i {
+        font-size: 1rem;
+        width: 20px;
+        text-align: center;
+      }
+    }
+  }
+  
+  /* Responsive Grid */
+  @media (max-width: 1200px) {
+    .personal-info-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1rem;
+    }
+  }
+  
+  @media (max-width: 576px) {
+    .personal-info-grid {
+      grid-template-columns: 1fr;
+      gap: 0.75rem;
+    }
+  }
+  
+  /* Rest of your existing SCSS */
   .about-image-container {
     max-width: 500px;
     margin: 0 auto;
@@ -54,16 +104,6 @@
     }
   }
   
-  .detail-item {
-    display: flex;
-    align-items: center;
-    margin-bottom: 0.5rem;
-    
-    span {
-      color: var(--theme-text-secondary);
-    }
-  }
-  
   .education-section {
     background-color: rgba(37, 99, 235, 0.05);
     padding: 1.5rem;
@@ -94,6 +134,11 @@
 
 .dark-theme {
   .about-section {
+    .personal-info-grid {
+      background: rgba(37, 99, 235, 0.1);
+      border-color: rgba(37, 99, 235, 0.2);
+    }
+    
     .about-text, .detail-item span {
       color: var(--theme-text-secondary);
     }
