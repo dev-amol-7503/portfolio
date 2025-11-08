@@ -202,6 +202,23 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
       Firebase: 'fab fa-firebase',
       NgRx: 'fas fa-store',
       DragDrop: 'fas fa-arrows-alt',
+      Java: 'fab fa-java',
+      'Spring Boot': 'fas fa-leaf',
+      PostgreSQL: 'fas fa-database',
+      MySQL: 'fas fa-database',
+      Docker: 'fab fa-docker',
+      Jenkins: 'fab fa-jenkins',
+      'REST APIs': 'fas fa-code',
+      Microservices: 'fas fa-network-wired',
+      Hibernate: 'fas fa-database',
+      'Spring Data JPA': 'fas fa-database',
+      'Spring Framework': 'fas fa-leaf',
+      'AWS DevOps': 'fab fa-aws',
+      Maven: 'fas fa-cogs',
+      'Git/GitHub': 'fab fa-github',
+      HTML: 'fab fa-html5',
+      CSS: 'fab fa-css3-alt',
+      JavaScript: 'fab fa-js-square',
     };
 
     return icons[tech] || 'fas fa-code';

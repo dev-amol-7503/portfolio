@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
 import { AdminService } from '../services/admin.service';
 import { Skill } from '../interfaces/social-post.model';
 
@@ -43,7 +44,7 @@ export class SkillsComponent implements OnInit {
     }
   ];
 
-  constructor(private adminService: AdminService) {}
+  constructor(private adminService: AdminService, private router: Router) {}
 
   ngOnInit() {
     this.loadSkills();
@@ -51,6 +52,10 @@ export class SkillsComponent implements OnInit {
     this.adminService.editMode$.subscribe(mode => {
       this.isEditMode = mode;
     });
+  }
+
+   goToProjects() {
+    this.router.navigate(['/projects']);
   }
 
   private loadSkills() {

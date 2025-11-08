@@ -32,12 +32,14 @@ export class AdminLoginComponent {
 
     this.isLoggingIn = true;
     
+    // Use setTimeout to simulate API call
     setTimeout(() => {
       const success = this.adminService.login(this.username, this.password);
       
       if (success) {
         this.toastr.success('Login successful!');
-        this.router.navigate(['/']);
+        // Redirect to admin dashboard instead of home
+        this.router.navigate(['/admin']);
       } else {
         this.toastr.error('Invalid credentials');
       }

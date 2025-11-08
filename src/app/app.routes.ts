@@ -2,6 +2,7 @@ import { Routes } from '@angular/router';
 import { AdminLoginComponent } from './components/admin-login/admin-login.component';
 import { AdminDashboardComponent } from './components/admin-dashboard/admin-dashboard.component';
 import { OnlineClipboardComponent } from './components/online-clipboard/online-clipboard.component';
+import { adminGuard } from './guards/admin.guard';
 
 export const routes: Routes = [
   { 
@@ -47,7 +48,38 @@ export const routes: Routes = [
   { 
     path: 'admin', 
     component: AdminDashboardComponent,
-    title: 'Admin Dashboard'
+    title: 'Admin Dashboard',
+    canActivate: [adminGuard]
+  },
+  // Matrix Notes Routes - Public
+  { 
+    path: 'tutorials', 
+    loadComponent: () => import('./projects/matrix-notes/tutorials-list/tutorials-list.component').then(m => m.TutorialsListComponent),
+    title: 'Matrix Notes - Tutorials'
+  },
+  { 
+    path: 'tutorials/:id', 
+    loadComponent: () => import('./projects/matrix-notes/tutorial-detail/tutorial-detail.component').then(m => m.TutorialDetailComponent),
+    title: 'Matrix Notes - Tutorial'
+  },
+  // Matrix Notes Routes - Admin Protected
+  { 
+    path: 'admin/matrix-notes', 
+    loadComponent: () => import('./projects/matrix-notes/matrix-notes-dashboard/matrix-notes-dashboard.component').then(m => m.MatrixNotesDashboardComponent),
+    title: 'Matrix Notes Dashboard',
+    canActivate: [adminGuard]
+  },
+  { 
+    path: 'admin/matrix-notes/editor', 
+    loadComponent: () => import('./projects/matrix-notes/matrix-notes-editor/matrix-notes-editor.component').then(m => m.MatrixNotesEditorComponent),
+    title: 'Matrix Notes Editor',
+    canActivate: [adminGuard]
+  },
+  { 
+    path: 'admin/matrix-notes/editor/:id', 
+    loadComponent: () => import('./projects/matrix-notes/matrix-notes-editor/matrix-notes-editor.component').then(m => m.MatrixNotesEditorComponent),
+    title: 'Matrix Notes Editor',
+    canActivate: [adminGuard]
   },
   { path: '**', redirectTo: '' }
 ];

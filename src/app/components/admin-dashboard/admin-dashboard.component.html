@@ -24,32 +24,39 @@
   <div class="dashboard-content">
     <div class="container">
       <!-- Navigation Tabs -->
-      <ul class="nav nav-tabs mb-4">
-        <li class="nav-item">
-          <button class="nav-link" [class.active]="activeTab === 'overview'" 
-                  (click)="switchTab('overview')">
-            <i class="fas fa-chart-bar me-2"></i>Overview
-          </button>
-        </li>
-        <li class="nav-item">
-          <button class="nav-link" [class.active]="activeTab === 'projects'" 
-                  (click)="switchTab('projects')">
-            <i class="fas fa-project-diagram me-2"></i>Projects
-          </button>
-        </li>
-        <li class="nav-item">
-          <button class="nav-link" [class.active]="activeTab === 'testimonials'" 
-                  (click)="switchTab('testimonials')">
-            <i class="fas fa-comments me-2"></i>Testimonials
-          </button>
-        </li>
-        <li class="nav-item">
-          <button class="nav-link" [class.active]="activeTab === 'skills'" 
-                  (click)="switchTab('skills')">
-            <i class="fas fa-code me-2"></i>Skills
-          </button>
-        </li>
-      </ul>
+      <!-- In your admin dashboard tabs -->
+<ul class="nav nav-tabs mb-4">
+  <li class="nav-item">
+    <button class="nav-link" [class.active]="activeTab === 'overview'" 
+            (click)="switchTab('overview')">
+      <i class="fas fa-chart-bar me-2"></i>Overview
+    </button>
+  </li>
+  <li class="nav-item">
+    <button class="nav-link" [class.active]="activeTab === 'projects'" 
+            (click)="switchTab('projects')">
+      <i class="fas fa-project-diagram me-2"></i>Projects
+    </button>
+  </li>
+  <li class="nav-item">
+    <button class="nav-link" [class.active]="activeTab === 'testimonials'" 
+            (click)="switchTab('testimonials')">
+      <i class="fas fa-comments me-2"></i>Testimonials
+    </button>
+  </li>
+  <li class="nav-item">
+    <button class="nav-link" [class.active]="activeTab === 'skills'" 
+            (click)="switchTab('skills')">
+      <i class="fas fa-code me-2"></i>Skills
+    </button>
+  </li>
+  <!-- Add Matrix Notes Tab -->
+  <li class="nav-item">
+    <a class="nav-link" routerLink="/admin/matrix-notes">
+      <i class="fas fa-book me-2"></i>Matrix Notes
+    </a>
+  </li>
+</ul>
 
       <!-- Overview Tab -->
       <div *ngIf="activeTab === 'overview'" class="tab-content">

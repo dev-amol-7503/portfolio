@@ -1,0 +1,159 @@
+<div class="matrix-dashboard-container" *ngIf="adminService.isAdmin$ | async">
+  <div class="dashboard-header">
+    <div class="container-fluid">
+      <div class="row align-items-center">
+        <div class="col">
+          <h1>
+            <i class="fas fa-book me-2"></i>
+            Matrix Notes Dashboard
+          </h1>
+          <p class="text-muted mb-0">Manage your tutorials and educational content</p>
+        </div>
+        <div class="col-auto">
+          <button class="btn btn-primary" (click)="createNewTutorial()">
+            <i class="fas fa-plus me-2"></i>Create New Tutorial
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="dashboard-content">
+    <div class="container-fluid">
+      <!-- Statistics Cards -->
+      <div class="row mb-4">
+        <div class="col-md-3">
+          <div class="stat-card">
+            <div class="stat-icon bg-primary">
+              <i class="fas fa-book"></i>
+            </div>
+            <div class="stat-info">
+              <h3>{{ tutorials.length }}</h3>
+              <p>Total Tutorials</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="stat-card">
+            <div class="stat-icon bg-success">
+              <i class="fas fa-check-circle"></i>
+            </div>
+            <div class="stat-info">
+              <h3>{{ publishedTutorials.length }}</h3>
+              <p>Published</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="stat-card">
+            <div class="stat-icon bg-warning">
+              <i class="fas fa-edit"></i>
+            </div>
+            <div class="stat-info">
+              <h3>{{ draftTutorials.length }}</h3>
+              <p>Drafts</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="stat-card">
+            <div class="stat-icon bg-info">
+              <i class="fas fa-eye"></i>
+            </div>
+            <div class="stat-info">
+              <h3>{{ getTotalViews() }}</h3>
+              <p>Total Views</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tutorials List -->
+      <div class="row">
+        <div class="col-12">
+          <div class="card">
+            <div class="card-header">
+              <h5 class="card-title mb-0">All Tutorials</h5>
+            </div>
+            <div class="card-body">
+              <!-- Loading State -->
+              <div *ngIf="isLoading" class="text-center py-5">
+                <div class="spinner-border text-primary" role="status">
+                  <span class="visually-hidden">Loading...</span>
+                </div>
+                <p class="mt-2 text-muted">Loading tutorials...</p>
+              </div>
+
+              <!-- Tutorials Table -->
+              <div *ngIf="!isLoading" class="table-responsive">
+                <table class="table table-hover">
+                  <thead>
+                    <tr>
+                      <th>Title</th>
+                      <th>Category</th>
+                      <th>Difficulty</th>
+                      <th>Status</th>
+                      <th>Views</th>
+                      <th>Created</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let tutorial of tutorials">
+                      <td>
+                        <strong>{{ tutorial.title || 'Untitled' }}</strong>
+                        <div class="text-muted small">{{ tutorial.description | slice:0:100 }}{{ tutorial.description.length > 100 ? '...' : '' }}</div>
+                      </td>
+                      <td>
+                        <span class="badge bg-secondary">{{ tutorial.category }}</span>
+                      </td>
+                      <td>
+                        <span class="badge" [ngClass]="getDifficultyBadgeClass(tutorial.difficulty)">
+                          {{ tutorial.difficulty | titlecase }}
+                        </span>
+                      </td>
+                      <td>
+                        <span class="badge" [ngClass]="tutorial.published ? 'bg-success' : 'bg-warning'">
+                          {{ tutorial.published ? 'Published' : 'Draft' }}
+                        </span>
+                      </td>
+                      <td>
+                        <span class="text-muted">{{ tutorial.views || 0 }}</span>
+                      </td>
+                      <td>
+                        <small class="text-muted">{{ tutorial.createdAt | date:'mediumDate' }}</small>
+                      </td>
+                      <td>
+                        <div class="btn-group btn-group-sm">
+                          <button class="btn btn-outline-primary" (click)="editTutorial(tutorial.id)">
+                            <i class="fas fa-edit"></i>
+                          </button>
+                          <button class="btn btn-outline-secondary" (click)="togglePublish(tutorial)">
+                            <i class="fas" [class.fa-eye-slash]="tutorial.published" [class.fa-eye]="!tutorial.published"></i>
+                          </button>
+                          <button class="btn btn-outline-danger" (click)="deleteTutorial(tutorial.id)">
+                            <i class="fas fa-trash"></i>
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+
+                <!-- Empty State -->
+                <div *ngIf="tutorials.length === 0" class="text-center py-5">
+                  <i class="fas fa-book fa-3x text-muted mb-3"></i>
+                  <h5>No tutorials yet</h5>
+                  <p class="text-muted">Create your first tutorial to get started.</p>
+                  <button class="btn btn-primary" (click)="createNewTutorial()">
+                    <i class="fas fa-plus me-2"></i>Create First Tutorial
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

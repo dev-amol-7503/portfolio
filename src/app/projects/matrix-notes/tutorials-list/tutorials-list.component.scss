@@ -1,0 +1,145 @@
+.tutorials-list-container {
+  .tutorials-hero {
+    background: linear-gradient(135deg, var(--bs-primary) 0%, #4f46e5 100%);
+
+    .hero-stats {
+      .stat {
+        text-align: center;
+
+        h3 {
+          font-weight: 700;
+        }
+
+        small {
+          opacity: 0.8;
+        }
+      }
+    }
+  }
+
+  .filters-section {
+    .search-box {
+      position: relative;
+
+      .fas.fa-search {
+        position: absolute;
+        left: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--theme-text-secondary);
+      }
+
+      .form-control {
+        padding-left: 40px;
+      }
+    }
+  }
+
+  .tutorials-grid {
+    .tutorial-card {
+      border: none;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+      transition: all 0.3s ease;
+      background: var(--theme-bg);
+
+      &:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+      }
+
+      .card-body {
+        padding: 1.5rem;
+      }
+
+      .tutorial-header {
+        .category-icon {
+          i {
+            font-size: 1.5rem;
+          }
+        }
+
+        .card-title {
+          color: var(--theme-text);
+          font-weight: 600;
+          margin-bottom: 0.75rem;
+        }
+      }
+
+      .tutorial-meta {
+        .badge {
+          font-size: 0.75rem;
+        }
+      }
+
+      .tutorial-stats {
+        font-size: 0.875rem;
+      }
+
+      .tutorial-tags {
+        .tag {
+          font-size: 0.75rem;
+          padding: 0.25rem 0.5rem;
+        }
+      }
+
+      .tutorial-actions {
+        .btn {
+          border-radius: 8px;
+          font-weight: 500;
+        }
+      }
+    }
+  }
+}
+
+.dark-theme {
+  .tutorials-list-container {
+    .filters-section {
+      background: #1e293b;
+
+      .search-box .form-control {
+        background: #334155;
+        border-color: #475569;
+        color: #f1f5f9;
+      }
+    }
+
+    .tutorials-grid .tutorial-card {
+      background: #1e293b;
+
+      .tutorial-header .card-title {
+        color: #f1f5f9;
+      }
+
+      .tutorial-tags .tag {
+        background: #334155;
+        color: #e2e8f0;
+      }
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .tutorials-list-container {
+    .tutorials-hero {
+      padding: 2rem 0;
+
+      .display-4 {
+        font-size: 2rem;
+      }
+
+      .hero-stats {
+        flex-direction: column;
+        gap: 1rem;
+        text-align: center;
+      }
+    }
+
+    .filters-section {
+      .row > div {
+        margin-bottom: 1rem;
+      }
+    }
+  }
+}

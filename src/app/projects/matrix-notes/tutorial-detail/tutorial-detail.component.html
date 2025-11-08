@@ -1,0 +1,450 @@
+<div class="tutorial-detail-container">
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="text-center py-5">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+    <p class="mt-2 text-muted">Loading tutorial...</p>
+  </div>
+
+  <!-- Tutorial Content -->
+  <div *ngIf="!isLoading && tutorial" class="container">
+    <div class="row">
+      <!-- Main Content -->
+      <div class="col-lg-8">
+        <article class="tutorial-content">
+          <!-- Tutorial Header -->
+          <header class="tutorial-header mb-5">
+            <nav aria-label="breadcrumb" class="mb-4">
+              <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                  <a [routerLink]="['/tutorials']" class="breadcrumb-link">
+                    <i class="fas fa-book me-1"></i>Tutorials
+                  </a>
+                </li>
+                <li class="breadcrumb-item">
+                  <a [routerLink]="['/tutorials']" [queryParams]="{category: tutorial.category}" class="breadcrumb-link">
+                    {{ tutorial.category | titlecase }}
+                  </a>
+                </li>
+                <li class="breadcrumb-item active" aria-current="page">
+                  {{ tutorial.title }}
+                </li>
+              </ol>
+            </nav>
+
+            <div class="tutorial-title-section">
+              <h1 class="display-5 fw-bold mb-3 gradient-text">{{ tutorial.title }}</h1>
+              
+              <div class="tutorial-meta mb-4">
+                <div class="meta-grid">
+                  <div class="meta-item">
+                    <span class="badge" [ngClass]="getDifficultyBadgeClass(tutorial.difficulty)">
+                      <i class="fas fa-signal me-1"></i>
+                      {{ tutorial.difficulty | titlecase }}
+                    </span>
+                  </div>
+                  <div class="meta-item">
+                    <span class="badge bg-secondary">
+                      <i class="fas fa-tag me-1"></i>
+                      {{ tutorial.category | titlecase }}
+                    </span>
+                  </div>
+                  <div class="meta-item">
+                    <i class="fas fa-clock text-primary me-1"></i>
+                    {{ tutorial.readingTime }} min read
+                  </div>
+                  <div class="meta-item">
+                    <i class="fas fa-calendar text-primary me-1"></i>
+                    {{ tutorial.createdAt | date:'mediumDate' }}
+                  </div>
+                  <div class="meta-item">
+                    <i class="fas fa-eye text-primary me-1"></i>
+                    {{ tutorial.views || 0 }} views
+                  </div>
+                  <div class="meta-item">
+                    <i class="fas fa-heart text-danger me-1"></i>
+                    {{ tutorial.likes || 0 }} likes
+                  </div>
+                </div>
+              </div>
+
+              <p class="lead description-text">{{ tutorial.description }}</p>
+
+              <div class="tutorial-actions">
+                <div class="actions-grid">
+                  <button class="btn btn-action-like" (click)="likeTutorial()" [class.liked]="hasLiked">
+                    <i class="fas fa-heart me-2"></i>
+                    <span class="action-text">Like</span>
+                    <span class="action-count">({{ tutorial.likes || 0 }})</span>
+                  </button>
+                  
+                  <button class="btn btn-action-bookmark" (click)="toggleBookmark()" [class.bookmarked]="isBookmarked">
+                    <i class="fas" [class.fa-bookmark]="isBookmarked" [class.fa-bookmark]="!isBookmarked"></i>
+                    <span class="action-text">{{ isBookmarked ? 'Bookmarked' : 'Bookmark' }}</span>
+                  </button>
+                  
+                  <button class="btn btn-action-comment" (click)="showComments = !showComments">
+                    <i class="fas fa-comments me-2"></i>
+                    <span class="action-text">Comments</span>
+                    <span class="action-count">({{ comments.length }})</span>
+                  </button>
+
+                  <div class="dropdown">
+                    <button class="btn btn-action-share dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                      <i class="fas fa-share-alt me-2"></i>
+                      <span class="action-text">Share</span>
+                    </button>
+                    <ul class="dropdown-menu">
+                      <li><a class="dropdown-item" href="#" (click)="shareOnTwitter()"><i class="fab fa-twitter me-2"></i>Twitter</a></li>
+                      <li><a class="dropdown-item" href="#" (click)="shareOnLinkedIn()"><i class="fab fa-linkedin me-2"></i>LinkedIn</a></li>
+                      <li><a class="dropdown-item" href="#" (click)="shareOnFacebook()"><i class="fab fa-facebook me-2"></i>Facebook</a></li>
+                      <li><hr class="dropdown-divider"></li>
+                      <li><a class="dropdown-item" href="#" (click)="copyLink()"><i class="fas fa-link me-2"></i>Copy Link</a></li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+
+              <div class="tutorial-tags mt-4">
+                <div class="tags-container">
+                  <span *ngFor="let tag of tutorial.tags" class="tag-pill">
+                    <i class="fas fa-hashtag me-1"></i>{{ tag }}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </header>
+
+          <!-- Tutorial Content Blocks -->
+          <div class="content-blocks">
+            <div *ngFor="let content of tutorial.content; let i = index" 
+                 class="content-block" 
+                 [id]="getSectionId(content, i)">
+              <div class="content-rendered">
+                <!-- Text Content -->
+                <div *ngIf="content.type === 'text'" class="text-content-block">
+                  <div [innerHTML]="renderMarkdown(content.content)" class="rich-text-content"></div>
+                </div>
+
+                <!-- Code Content -->
+                <div *ngIf="content.type === 'code'" class="code-content-block">
+                  <div class="code-header">
+                    <div class="code-meta">
+                      <span class="code-language">{{ content.language || 'text' | uppercase }}</span>
+                      <span *ngIf="content.fileName" class="code-filename">
+                        <i class="fas fa-file-code me-1"></i>{{ content.fileName }}
+                      </span>
+                    </div>
+                    <button class="btn btn-sm btn-outline-secondary copy-btn" (click)="copyCode(content.content)">
+                      <i class="fas fa-copy me-1"></i>Copy
+                    </button>
+                  </div>
+                  <pre class="code-display"><code [class]="'language-' + (content.language || 'text')">{{ content.content }}</code></pre>
+                </div>
+
+                <!-- Image Content -->
+                <div *ngIf="content.type === 'image'" class="image-content-block">
+                  <div class="image-container">
+                    <img [src]="content.content" [alt]="content.caption || 'Tutorial image'" class="tutorial-image">
+                    <div *ngIf="content.caption" class="image-caption">
+                      {{ content.caption }}
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Video Content -->
+                <div *ngIf="content.type === 'video'" class="video-content-block">
+                  <div class="video-header" *ngIf="content.title">
+                    <h4>{{ content.title }}</h4>
+                  </div>
+                  <div class="video-container">
+                    <div [innerHTML]="renderVideo(content.content)" class="video-embed"></div>
+                  </div>
+                </div>
+
+                <!-- Callout Content -->
+                <div *ngIf="content.type === 'callout'" class="callout-content-block">
+                  <div [innerHTML]="renderCallout(content.content, content.metadata?.type)" class="callout-container"></div>
+                </div>
+
+                <!-- Table Content -->
+                <div *ngIf="content.type === 'table'" class="table-content-block">
+                  <div [innerHTML]="renderTable(content.content)" class="table-container"></div>
+                </div>
+
+                <!-- Diagram Content -->
+                <div *ngIf="content.type === 'diagram'" class="diagram-content-block">
+                  <div class="diagram-header">
+                    <h5>Diagram</h5>
+                  </div>
+                  <pre class="diagram-code"><code>{{ content.content }}</code></pre>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tutorial Footer -->
+          <footer class="tutorial-footer mt-5 pt-5 border-top">
+            <div class="footer-content">
+              <div class="row align-items-center">
+                <div class="col-md-8">
+                  <div class="author-info">
+                    <div class="author-avatar">
+                      <div class="avatar-circle bg-primary">
+                        {{ getAuthorInitials(tutorial.author) }}
+                      </div>
+                    </div>
+                    <div class="author-details">
+                      <h6 class="author-name">Written by {{ tutorial.author }}</h6>
+                      <p class="author-bio text-muted">Expert developer and technical writer</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-4 text-md-end">
+                  <div class="social-share">
+                    <h6 class="share-title">Share this tutorial</h6>
+                    <div class="share-buttons">
+                      <button class="btn btn-share btn-twitter" (click)="shareOnTwitter()">
+                        <i class="fab fa-twitter"></i>
+                      </button>
+                      <button class="btn btn-share btn-linkedin" (click)="shareOnLinkedIn()">
+                        <i class="fab fa-linkedin"></i>
+                      </button>
+                      <button class="btn btn-share btn-facebook" (click)="shareOnFacebook()">
+                        <i class="fab fa-facebook"></i>
+                      </button>
+                      <button class="btn btn-share btn-link" (click)="copyLink()">
+                        <i class="fas fa-link"></i>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="progress-section mt-4">
+                <div class="progress-info">
+                  <span class="progress-text">Tutorial Progress</span>
+                  <span class="progress-percentage">{{ getScrollProgress() }}%</span>
+                </div>
+                <div class="progress">
+                  <div class="progress-bar" [style.width.%]="getScrollProgress()"></div>
+                </div>
+              </div>
+            </div>
+          </footer>
+        </article>
+
+        <!-- Comments Section -->
+        <section *ngIf="showComments" class="comments-section mt-5">
+          <div class="card comments-card">
+            <div class="card-header">
+              <h5 class="card-title mb-0">
+                <i class="fas fa-comments me-2"></i>Discussion ({{ comments.length }})
+              </h5>
+            </div>
+            <div class="card-body">
+              <!-- Add Comment Form -->
+              <div class="add-comment mb-4">
+                <div class="comment-form">
+                  <div class="user-avatar-small">
+                    <div class="avatar-circle-sm bg-primary">
+                      {{ getCurrentUserInitials() }}
+                    </div>
+                  </div>
+                  <div class="comment-input-container">
+                    <textarea 
+                      class="form-control comment-input" 
+                      rows="3" 
+                      placeholder="Share your thoughts..." 
+                      [(ngModel)]="newComment"
+                      (keydown.control.enter)="addComment()"
+                    ></textarea>
+                    <div class="comment-actions mt-2">
+                      <div class="formatting-tips">
+                        <small class="text-muted">
+                          <i class="fas fa-info-circle me-1"></i>
+                          Markdown supported. Press Ctrl+Enter to post
+                        </small>
+                      </div>
+                      <button 
+                        class="btn btn-primary btn-post" 
+                        (click)="addComment()" 
+                        [disabled]="!newComment.trim()"
+                      >
+                        <i class="fas fa-paper-plane me-1"></i>
+                        Post Comment
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Comments List -->
+              <div class="comments-list">
+                <div *ngFor="let comment of comments" class="comment mb-4">
+                  <div class="comment-inner">
+                    <div class="comment-header">
+                      <div class="comment-author">
+                        <div class="user-avatar-small">
+                          <div class="avatar-circle-sm" [ngClass]="'bg-' + getRandomColor()">
+                            {{ comment.userName.charAt(0).toUpperCase() }}
+                          </div>
+                        </div>
+                        <div class="author-info">
+                          <h6 class="author-name mb-0">{{ comment.userName }}</h6>
+                          <small class="comment-date text-muted">
+                            {{ comment.createdAt | date:'MMM d, y, h:mm a' }}
+                          </small>
+                        </div>
+                      </div>
+                      <div class="comment-actions">
+                        <button class="btn btn-sm btn-outline-secondary" title="Like comment">
+                          <i class="fas fa-heart"></i>
+                        </button>
+                      </div>
+                    </div>
+                    <div class="comment-body mt-2">
+                      <p class="mb-0" [innerHTML]="renderMarkdown(comment.content)"></p>
+                    </div>
+                    <div class="comment-footer mt-2">
+                      <button class="btn btn-sm btn-link text-muted">
+                        <i class="fas fa-reply me-1"></i>Reply
+                      </button>
+                      <button class="btn btn-sm btn-link text-muted">
+                        <i class="fas fa-flag me-1"></i>Report
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Empty Comments -->
+                <div *ngIf="comments.length === 0" class="empty-comments text-center py-5">
+                  <div class="empty-state-icon">
+                    <i class="fas fa-comments fa-3x text-muted mb-3"></i>
+                  </div>
+                  <h5 class="text-muted">No comments yet</h5>
+                  <p class="text-muted mb-0">Be the first to share your thoughts!</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <!-- Sidebar -->
+      <div class="col-lg-4">
+        <aside class="tutorial-sidebar">
+          <!-- Table of Contents -->
+          <div class="card sidebar-card mb-4">
+            <div class="card-header">
+              <h6 class="card-title mb-0">
+                <i class="fas fa-list me-2"></i>Table of Contents
+              </h6>
+            </div>
+            <div class="card-body">
+              <nav class="toc-nav">
+                <ul class="list-unstyled mb-0">
+                  <li *ngFor="let item of getTableOfContents(); let i = index" 
+                      [class]="'toc-item toc-level-' + item.level"
+                      [class.active]="activeSectionId === item.id">
+                    <a [href]="'#' + item.id" 
+                       class="toc-link" 
+                       (click)="scrollToSection(item.id, $event)">
+                      <span class="toc-bullet"></span>
+                      <span class="toc-text">{{ item.title }}</span>
+                    </a>
+                  </li>
+                </ul>
+              </nav>
+            </div>
+          </div>
+
+          <!-- Tutorial Info -->
+          <div class="card sidebar-card mb-4">
+            <div class="card-header">
+              <h6 class="card-title mb-0">
+                <i class="fas fa-info-circle me-2"></i>Tutorial Info
+              </h6>
+            </div>
+            <div class="card-body">
+              <div class="info-grid">
+                <div class="info-item">
+                  <div class="info-icon">
+                    <i class="fas fa-signal"></i>
+                  </div>
+                  <div class="info-content">
+                    <div class="info-label">Difficulty</div>
+                    <div class="info-value">
+                      <span class="badge" [ngClass]="getDifficultyBadgeClass(tutorial.difficulty)">
+                        {{ tutorial.difficulty | titlecase }}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="info-item">
+                  <div class="info-icon">
+                    <i class="fas fa-tag"></i>
+                  </div>
+                  <div class="info-content">
+                    <div class="info-label">Category</div>
+                    <div class="info-value">{{ tutorial.category | titlecase }}</div>
+                  </div>
+                </div>
+                
+                <div class="info-item">
+                  <div class="info-icon">
+                    <i class="fas fa-clock"></i>
+                  </div>
+                  <div class="info-content">
+                    <div class="info-label">Reading Time</div>
+                    <div class="info-value">{{ tutorial.readingTime }} minutes</div>
+                  </div>
+                </div>
+                
+                <div class="info-item">
+                  <div class="info-icon">
+                    <i class="fas fa-calendar"></i>
+                  </div>
+                  <div class="info-content">
+                    <div class="info-label">Published</div>
+                    <div class="info-value">{{ tutorial.createdAt | date:'mediumDate' }}</div>
+                  </div>
+                </div>
+                
+                <div class="info-item">
+                  <div class="info-icon">
+                    <i class="fas fa-sync"></i>
+                  </div>
+                  <div class="info-content">
+                    <div class="info-label">Last Updated</div>
+                    <div class="info-value">{{ tutorial.updatedAt | date:'mediumDate' }}</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </aside>
+      </div>
+    </div>
+  </div>
+
+  <!-- Not Found State -->
+  <div *ngIf="!isLoading && !tutorial" class="text-center py-5">
+    <div class="not-found-container">
+      <i class="fas fa-exclamation-triangle fa-3x text-warning mb-3"></i>
+      <h4 class="mb-3">Tutorial Not Found</h4>
+      <p class="text-muted mb-4">The tutorial you're looking for doesn't exist or has been removed.</p>
+      <a [routerLink]="['/tutorials']" class="btn btn-primary">
+        <i class="fas fa-arrow-left me-2"></i>Browse All Tutorials
+      </a>
+    </div>
+  </div>
+
+  <!-- Back to Top Button -->
+  <button class="btn back-to-top" (click)="scrollToTop()" *ngIf="showBackToTop">
+    <i class="fas fa-arrow-up"></i>
+  </button>
+</div>

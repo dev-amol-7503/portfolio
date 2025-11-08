@@ -1,0 +1,596 @@
+<div class="matrix-editor-container" *ngIf="adminService.isAdmin$ | async">
+  <!-- Editor Header -->
+  <div class="editor-header">
+    <div class="container-fluid">
+      <div class="row align-items-center">
+        <div class="col">
+          <h2>
+            <i class="fas fa-edit me-2"></i>
+            {{ isEditMode ? "Edit Tutorial" : "Create New Tutorial" }}
+          </h2>
+        </div>
+        <div class="col-auto">
+          <div class="btn-group me-2">
+            <button class="btn btn-outline-secondary" (click)="togglePreview()">
+              <i
+                class="fas"
+                [class.fa-eye]="!previewMode"
+                [class.fa-edit]="previewMode"
+              ></i>
+              {{ previewMode ? "Edit" : "Preview" }}
+            </button>
+            <button
+              class="btn btn-outline-primary"
+              (click)="saveDraft()"
+              [disabled]="isSaving"
+            >
+              <i class="fas fa-save me-1"></i>
+              {{ isSaving ? "Saving..." : "Save Draft" }}
+            </button>
+            <button
+              class="btn btn-success"
+              (click)="publishTutorial()"
+              [disabled]="isSaving"
+            >
+              <i class="fas fa-paper-plane me-1"></i>
+              {{ isSaving ? "Publishing..." : "Publish" }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="editor-content">
+    <div class="container-fluid">
+      <!-- Basic Information -->
+      <div class="row">
+        <div class="col-12">
+          <div class="card mb-4">
+            <div class="card-header">
+              <h5 class="card-title mb-0">Basic Information</h5>
+            </div>
+            <div class="card-body">
+              <div class="row g-3">
+                <div class="col-md-8">
+                  <label class="form-label">Title</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    [(ngModel)]="tutorial.title"
+                    placeholder="Enter tutorial title"
+                  />
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label">Difficulty</label>
+                  <select class="form-select" [(ngModel)]="tutorial.difficulty">
+                    <option value="beginner">Beginner</option>
+                    <option value="intermediate">Intermediate</option>
+                    <option value="advanced">Advanced</option>
+                  </select>
+                </div>
+                <div class="col-12">
+                  <label class="form-label">Description</label>
+                  <textarea
+                    class="form-control"
+                    rows="3"
+                    [(ngModel)]="tutorial.description"
+                    placeholder="Brief description of the tutorial"
+                  ></textarea>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label">Category</label>
+                  <select class="form-select" [(ngModel)]="tutorial.category">
+                    <option value="web-development">Web Development</option>
+                    <option value="mobile-development">
+                      Mobile Development
+                    </option>
+                    <option value="devops">DevOps</option>
+                    <option value="data-science">Data Science</option>
+                    <option value="machine-learning">Machine Learning</option>
+                    <option value="cybersecurity">Cybersecurity</option>
+                    <option value="general">General</option>
+                  </select>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label">Tags</label>
+                  <div class="tags-input-container">
+                    <div class="tags-list">
+                      <span
+                        class="tag badge bg-primary me-1 mb-1"
+                        *ngFor="let tag of tutorial.tags; let i = index"
+                      >
+                        {{ tag }}
+                        <i class="fas fa-times ms-1" (click)="removeTag(i)"></i>
+                      </span>
+                    </div>
+                    <input
+                      type="text"
+                      class="form-control"
+                      #tagInput
+                      placeholder="Add tags..."
+                      (keyup.enter)="
+                        addTag(tagInput.value); tagInput.value = ''
+                      "
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Content Editor -->
+      <div class="row" *ngIf="!previewMode">
+        <div class="col-12">
+          <div class="card">
+            <div
+              class="card-header d-flex justify-content-between align-items-center"
+            >
+              <h5 class="card-title mb-0">Content Editor</h5>
+              <div class="content-type-selector">
+                <div class="btn-group">
+                  <button
+                    *ngFor="let type of contentTypes"
+                    class="btn btn-outline-primary btn-sm"
+                    [class.active]="activeContentType === type.value"
+                    (click)="activeContentType = type.value"
+                  >
+                    <i [class]="type.icon"></i> {{ type.label }}
+                  </button>
+                </div>
+                <button
+                  class="btn btn-primary btn-sm ms-2"
+                  (click)="addContentBlock()"
+                >
+                  <i class="fas fa-plus me-1"></i> Add Block
+                </button>
+              </div>
+            </div>
+            <div class="card-body">
+              <!-- Drag and Drop Content Area -->
+              <div
+                cdkDropList
+                (cdkDropListDropped)="dropContent($event)"
+                class="content-list"
+              >
+                <div
+                  *ngFor="let content of tutorial.content; let i = index"
+                  cdkDrag
+                  class="content-block"
+                  [class.text-block]="content.type === 'text'"
+                  [class.code-block]="content.type === 'code'"
+                  [class.image-block]="content.type === 'image'"
+                  [class.video-block]="content.type === 'video'"
+                  [class.diagram-block]="content.type === 'diagram'"
+                  [class.callout-block]="content.type === 'callout'"
+                  [class.table-block]="content.type === 'table'"
+                >
+                  <div class="content-header">
+                    <div class="drag-handle">
+                      <i class="fas fa-grip-vertical"></i>
+                    </div>
+                    <div class="content-type">
+                      <i [class]="getContentIcon(content.type)"></i>
+                      {{ content.type | titlecase }}
+                    </div>
+                    <div class="content-actions">
+                      <button
+                        class="btn btn-sm btn-outline-danger"
+                        (click)="removeContentBlock(i)"
+                      >
+                        <i class="fas fa-trash"></i>
+                      </button>
+                    </div>
+                  </div>
+
+                  <div class="content-body">
+<!-- Enhanced Textarea with Rich Features -->
+<div *ngIf="content.type === 'text'" class="form-group">
+  <div class="text-editor-toolbar">
+    <div class="btn-group me-2">
+      <button 
+        class="btn btn-sm btn-outline-secondary" 
+        (click)="insertMarkdown('bold', i)" 
+        title="Bold"
+        type="button"
+      >
+        <i class="fas fa-bold"></i>
+      </button>
+      <button 
+        class="btn btn-sm btn-outline-secondary" 
+        (click)="insertMarkdown('italic', i)" 
+        title="Italic"
+        type="button"
+      >
+        <i class="fas fa-italic"></i>
+      </button>
+      <button 
+        class="btn btn-sm btn-outline-secondary" 
+        (click)="insertMarkdown('code', i)" 
+        title="Code"
+        type="button"
+      >
+        <i class="fas fa-code"></i>
+      </button>
+    </div>
+    
+    <div class="btn-group me-2">
+      <button 
+        class="btn btn-sm btn-outline-secondary" 
+        (click)="insertMarkdown('bullet', i)" 
+        title="Bullet List"
+        type="button"
+      >
+        <i class="fas fa-list-ul"></i>
+      </button>
+      <button 
+        class="btn btn-sm btn-outline-secondary" 
+        (click)="insertMarkdown('number', i)" 
+        title="Numbered List"
+        type="button"
+      >
+        <i class="fas fa-list-ol"></i>
+      </button>
+    </div>
+    
+    <div class="btn-group me-2">
+      <button 
+        class="btn btn-sm btn-outline-secondary" 
+        (click)="insertMarkdown('h1', i)" 
+        title="Heading 1"
+        type="button"
+      >
+        H1
+      </button>
+      <button 
+        class="btn btn-sm btn-outline-secondary" 
+        (click)="insertMarkdown('h2', i)" 
+        title="Heading 2"
+        type="button"
+      >
+        H2
+      </button>
+      <button 
+        class="btn btn-sm btn-outline-secondary" 
+        (click)="insertMarkdown('h3', i)" 
+        title="Heading 3"
+        type="button"
+      >
+        H3
+      </button>
+    </div>
+    
+    <div class="btn-group me-2">
+      <button 
+        class="btn btn-sm btn-outline-secondary" 
+        (click)="insertMarkdown('quote', i)" 
+        title="Blockquote"
+        type="button"
+      >
+        <i class="fas fa-quote-left"></i>
+      </button>
+      <button 
+        class="btn btn-sm btn-outline-secondary" 
+        (click)="insertMarkdown('link', i)" 
+        title="Link"
+        type="button"
+      >
+        <i class="fas fa-link"></i>
+      </button>
+      <button 
+        class="btn btn-sm btn-outline-secondary" 
+        (click)="insertMarkdown('image', i)" 
+        title="Image"
+        type="button"
+      >
+        <i class="fas fa-image"></i>
+      </button>
+    </div>
+    
+    <div class="btn-group me-2">
+      <button 
+        class="btn btn-sm btn-outline-secondary" 
+        (click)="alignText('left', i)" 
+        title="Align Left"
+        type="button"
+      >
+        <i class="fas fa-align-left"></i>
+      </button>
+      <button 
+        class="btn btn-sm btn-outline-secondary" 
+        (click)="alignText('center', i)" 
+        title="Align Center"
+        type="button"
+      >
+        <i class="fas fa-align-center"></i>
+      </button>
+      <button 
+        class="btn btn-sm btn-outline-secondary" 
+        (click)="alignText('right', i)" 
+        title="Align Right"
+        type="button"
+      >
+        <i class="fas fa-align-right"></i>
+      </button>
+    </div>
+    
+    <div class="btn-group">
+      <button 
+        class="btn btn-sm btn-outline-secondary" 
+        (click)="insertMarkdown('table', i)" 
+        title="Insert Table"
+        type="button"
+      >
+        <i class="fas fa-table"></i>
+      </button>
+      <button 
+        class="btn btn-sm btn-outline-secondary" 
+        (click)="insertMarkdown('hr', i)" 
+        title="Horizontal Line"
+        type="button"
+      >
+        <i class="fas fa-minus"></i>
+      </button>
+    </div>
+  </div>
+  
+  <textarea
+    class="form-control textarea-editor"
+    rows="12"
+    [(ngModel)]="content.content"
+    (keydown)="handleKeydown($event, i)"
+    (focus)="onTextEditorFocus(i)"
+    #textArea
+    placeholder="Start typing your content here. Use the toolbar above for formatting or type Markdown directly."
+  ></textarea>
+  
+  <!-- Quick Help -->
+  <div class="mt-2">
+    <small class="form-text text-muted">
+      <strong>Quick Tips:</strong> 
+      <kbd>Tab</kbd> for indentation, 
+      <kbd>Shift+Tab</kbd> to unindent, 
+      <kbd>Ctrl+B</kbd> for bold, 
+      <kbd>Ctrl+I</kbd> for italic
+    </small>
+  </div>
+  
+  <!-- Live Preview -->
+  <div class="mt-4" *ngIf="content.content">
+    <div class="d-flex justify-content-between align-items-center mb-2">
+      <label class="form-label mb-0">Live Preview:</label>
+      <button 
+        class="btn btn-sm btn-outline-secondary" 
+        (click)="togglePreview1(i)"
+        type="button"
+      >
+        {{ content.showPreview ? 'Hide Preview' : 'Show Preview' }}
+      </button>
+    </div>
+    <div class="text-preview border rounded p-3 bg-light" *ngIf="content.showPreview">
+      <div [innerHTML]="renderEnhancedMarkdown(content.content)"></div>
+    </div>
+  </div>
+</div>
+
+                    <!-- Code Content -->
+                    <div *ngIf="content.type === 'code'" class="form-group">
+                      <div class="code-header">
+                        <div class="row align-items-center">
+                          <div class="col-md-6">
+                            <label class="form-label small">Language</label>
+                            <select
+                              class="form-select form-select-sm"
+                              [(ngModel)]="content.language"
+                            >
+                              <option
+                                *ngFor="let lang of programmingLanguages"
+                                [value]="lang"
+                              >
+                                {{ lang | uppercase }}
+                              </option>
+                            </select>
+                          </div>
+                          <div class="col-md-6">
+                            <label class="form-label small">File Name</label>
+                            <input
+                              type="text"
+                              class="form-control form-control-sm"
+                              [(ngModel)]="content.fileName"
+                              placeholder="e.g., app.component.ts"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                      <div class="code-editor-container">
+                        <textarea
+                          class="form-control code-editor"
+                          rows="10"
+                          [(ngModel)]="content.content"
+                          placeholder="Enter your code..."
+                        ></textarea>
+                        <div class="code-preview" *ngIf="content.content">
+                          <pre><code [class]="'language-' + content.language">{{ content.content }}</code></pre>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Image Content -->
+                    <div *ngIf="content.type === 'image'" class="form-group">
+                      <div class="image-upload-container">
+                        <div class="row">
+                          <div class="col-md-6">
+                            <label class="form-label">Image File</label>
+                            <input
+                              type="file"
+                              class="form-control"
+                              (change)="onImageUpload($event, i)"
+                              accept="image/*"
+                            />
+                          </div>
+                          <div class="col-md-6">
+                            <label class="form-label">Image Caption</label>
+                            <input
+                              type="text"
+                              class="form-control"
+                              [(ngModel)]="content.caption"
+                              placeholder="Enter image caption..."
+                            />
+                          </div>
+                        </div>
+                        <div *ngIf="content.content" class="image-preview mt-3">
+                          <div class="image-preview-card">
+                            <img
+                              [src]="content.content"
+                              class="img-fluid rounded"
+                            />
+                            <div class="image-caption" *ngIf="content.caption">
+                              {{ content.caption }}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Video Content -->
+                    <div *ngIf="content.type === 'video'" class="form-group">
+                      <div class="video-input-container">
+                        <div class="row">
+                          <div class="col-md-8">
+                            <label class="form-label">Video URL</label>
+                            <input
+                              type="text"
+                              class="form-control"
+                              [(ngModel)]="content.content"
+                              placeholder="Enter video URL (YouTube, Vimeo, etc.)"
+                            />
+                          </div>
+                          <div class="col-md-4">
+                            <label class="form-label">Video Title</label>
+                            <input
+                              type="text"
+                              class="form-control"
+                              [(ngModel)]="content.title"
+                              placeholder="Video title"
+                            />
+                          </div>
+                        </div>
+                        <div *ngIf="content.content" class="video-preview mt-3">
+                          <div class="video-preview-card">
+                            <div class="video-thumbnail">
+                              <i class="fas fa-play-circle"></i>
+                              <div class="video-title">{{ content.title || 'Video Preview' }}</div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Diagram Content -->
+                    <div *ngIf="content.type === 'diagram'" class="form-group">
+                      <div class="diagram-editor">
+                        <label class="form-label">Diagram Code</label>
+                        <textarea
+                          class="form-control diagram-code"
+                          rows="8"
+                          [(ngModel)]="content.content"
+                          placeholder="Enter diagram code (Mermaid, Graphviz, etc.)"
+                        ></textarea>
+                        <div class="diagram-preview mt-3" *ngIf="content.content">
+                          <pre class="diagram-preview-code">{{ content.content }}</pre>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Callout Section -->
+                    <div *ngIf="content.type === 'callout'" class="form-group">
+                      <div class="callout-editor">
+                        <div class="row mb-3">
+                          <div class="col-md-6">
+                            <label class="form-label">Callout Type</label>
+                            <select
+                              class="form-select"
+                              [ngModel]="content.metadata?.type"
+                              (ngModelChange)="updateCalloutType(content, $event)"
+                            >
+                              <option value="info">Info</option>
+                              <option value="warning">Warning</option>
+                              <option value="danger">Danger</option>
+                              <option value="success">Success</option>
+                              <option value="tip">Tip</option>
+                            </select>
+                          </div>
+                        </div>
+                        <textarea
+                          class="form-control"
+                          rows="4"
+                          [(ngModel)]="content.content"
+                          placeholder="Enter callout content..."
+                        ></textarea>
+                      </div>
+                    </div>
+
+                    <!-- Table Content -->
+                    <div *ngIf="content.type === 'table'" class="form-group">
+                      <div class="table-editor">
+                        <label class="form-label">Table Data (CSV or Markdown)</label>
+                        <textarea
+                          class="form-control"
+                          rows="6"
+                          [(ngModel)]="content.content"
+                          placeholder="Enter table data in CSV format or Markdown table syntax"
+                        ></textarea>
+                        <div class="table-preview mt-3" *ngIf="content.content">
+                          <div [innerHTML]="renderTablePreview(content.content)"></div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Empty State -->
+              <div
+                *ngIf="tutorial.content.length === 0"
+                class="empty-state text-center py-5"
+              >
+                <i class="fas fa-file-alt fa-3x text-muted mb-3"></i>
+                <h5>No content yet</h5>
+                <p class="text-muted">
+                  Start by adding your first content block using the buttons above.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Preview Mode -->
+      <div class="row" *ngIf="previewMode">
+        <div class="col-12">
+          <div class="card">
+            <div class="card-header">
+              <h5 class="card-title mb-0">Preview</h5>
+            </div>
+            <div class="card-body">
+              <div class="tutorial-preview">
+                <h1>{{ tutorial.title || "Untitled Tutorial" }}</h1>
+                <p class="lead">{{ tutorial.description }}</p>
+
+                <div
+                  *ngFor="let content of tutorial.content"
+                  class="preview-content"
+                >
+                  <!-- Render different content types in preview -->
+                  <div [innerHTML]="renderContent(content)"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

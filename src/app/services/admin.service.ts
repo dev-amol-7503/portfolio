@@ -68,7 +68,7 @@ export class AdminService {
             'Clipboard API',
           ],
           imageUrl: 'assets/images/clipboard-placeholder.jpg',
-          animationUrl:'assets/lottie/matrix-clipboard-animation.json',
+          animationUrl: 'assets/lottie/matrix-clipboard-animation.json',
           link: '/online-clipboard',
           githubLink: 'https://github.com/thematrixxworld/online-clipboard',
           category: 'Web Application',
@@ -81,15 +81,35 @@ export class AdminService {
             'A responsive and visually engaging portfolio website designed and developed to showcase my skills, experience, and projects.',
           technologies: ['HTML/SCSS', 'Bootstrap', 'Angular'],
           imageUrl: 'assets/images/portfolio-placeholder.jpg',
-          animationUrl:
-            'assets/lottie/portfolio-animation.json',
+          animationUrl: 'assets/lottie/portfolio-animation.json',
           link: 'https://www.thematrixworld.in/',
           githubLink: 'https://github.com/thematrixxworld/amol-portfolio.git',
           category: 'Web Application',
           featured: true,
         },
         {
-          id: 3,
+          id: 5,
+          title: 'Matrix Notes - Tutorial Management System',
+          description:
+            'A comprehensive tutorial and notes management application with rich text editing, real-time collaboration, and advanced content management features.',
+          technologies: [
+            'Angular',
+            'TypeScript',
+            'Firebase',
+            'Firestore',
+            'Bootstrap',
+            'Rich Text Editor',
+          ],
+          imageUrl: 'assets/images/matrix-notes-placeholder.jpg',
+          animationUrl: 'assets/lottie/notes-animation.json',
+          link: '/tutorials', // This will take users to tutorials list
+          githubLink: 'https://github.com/thematrixxworld/matrix-notes',
+          category: 'Web Application',
+          featured: true,
+        },
+        /*
+        {
+          id: 4,
           title: 'E-Commerce Dashboard',
           description:
             'A comprehensive admin dashboard for e-commerce businesses with real-time analytics, inventory management, and sales tracking.',
@@ -101,13 +121,14 @@ export class AdminService {
             'REST APIs',
           ],
           imageUrl: 'assets/images/dashboard-placeholder.jpg',
-          animationUrl:
-            'assets/lottie/shopping-animation.json',
+          animationUrl: 'assets/lottie/shopping-animation.json',
           link: '#',
           githubLink: '#',
           category: 'Web Application',
           featured: false,
         },
+        */
+        
       ],
       testimonials: [
         {
@@ -163,7 +184,7 @@ export class AdminService {
         phone: '+91 9975607503',
         location: 'Pune, India',
         about:
-          "I'm a passionate Full Stack Developer with 3+ years of experience crafting scalable web and mobile applications. I specialize in Angular and Spring Boot, blending elegant UI design with powerful backend logic. With a strong grasp of Microservices, DevOps, and modern development tools, I turn complex ideas into smooth, high-performing digital experiences.",
+          "I'm a passionate Full Stack Developer with 4+ years of experience crafting scalable web and mobile applications. I specialize in Angular and Spring Boot, blending elegant UI design with powerful backend logic. With a strong grasp of Microservices, DevOps, and modern development tools, I turn complex ideas into smooth, high-performing digital experiences.",
       },
     };
   }
@@ -171,31 +192,139 @@ export class AdminService {
   private getInitialSkills(): Skill[] {
     return [
       // Frontend Skills
-      { id: 1, name: 'HTML/CSS', level: 90, color: '#E44D26', category: 'frontend' },
-      { id: 2, name: 'JavaScript', level: 85, color: '#F7DF1E', category: 'frontend' },
-      { id: 3, name: 'TypeScript', level: 88, color: '#3178C6', category: 'frontend' },
-      { id: 4, name: 'Angular', level: 87, color: '#DD0031', category: 'frontend' },
-      { id: 5, name: 'Bootstrap', level: 82, color: '#7952B3', category: 'frontend' },
-      
+      {
+        id: 1,
+        name: 'HTML/CSS',
+        level: 90,
+        color: '#E44D26',
+        category: 'frontend',
+      },
+      {
+        id: 2,
+        name: 'JavaScript',
+        level: 85,
+        color: '#F7DF1E',
+        category: 'frontend',
+      },
+      {
+        id: 3,
+        name: 'TypeScript',
+        level: 88,
+        color: '#3178C6',
+        category: 'frontend',
+      },
+      {
+        id: 4,
+        name: 'Angular',
+        level: 87,
+        color: '#DD0031',
+        category: 'frontend',
+      },
+      {
+        id: 5,
+        name: 'Bootstrap',
+        level: 82,
+        color: '#7952B3',
+        category: 'frontend',
+      },
+
       // Backend Skills
       { id: 6, name: 'Java', level: 88, color: '#ED8B00', category: 'backend' },
-      { id: 7, name: 'Spring Boot', level: 86, color: '#6DB33F', category: 'backend' },
-      { id: 8, name: 'Spring Framework', level: 85, color: '#6DB33F', category: 'backend' },
-      { id: 9, name: 'Hibernate', level: 83, color: '#59666C', category: 'backend' },
-      { id: 10, name: 'Spring Data JPA', level: 84, color: '#6DB33F', category: 'backend' },
-      { id: 11, name: 'Microservices', level: 80, color: '#1890FF', category: 'backend' },
-      { id: 12, name: 'RESTful APIs', level: 90, color: '#FF6B6B', category: 'backend' },
-      
+      {
+        id: 7,
+        name: 'Spring Boot',
+        level: 86,
+        color: '#6DB33F',
+        category: 'backend',
+      },
+      {
+        id: 8,
+        name: 'Spring Framework',
+        level: 85,
+        color: '#6DB33F',
+        category: 'backend',
+      },
+      {
+        id: 9,
+        name: 'Hibernate',
+        level: 83,
+        color: '#59666C',
+        category: 'backend',
+      },
+      {
+        id: 10,
+        name: 'Spring Data JPA',
+        level: 84,
+        color: '#6DB33F',
+        category: 'backend',
+      },
+      {
+        id: 11,
+        name: 'Microservices',
+        level: 80,
+        color: '#1890FF',
+        category: 'backend',
+      },
+      {
+        id: 12,
+        name: 'RESTful APIs',
+        level: 90,
+        color: '#FF6B6B',
+        category: 'backend',
+      },
+
       // Database Skills
-      { id: 13, name: 'PostgreSQL', level: 82, color: '#336791', category: 'database' },
-      { id: 14, name: 'MySQL', level: 80, color: '#4479A1', category: 'database' },
-      
+      {
+        id: 13,
+        name: 'PostgreSQL',
+        level: 82,
+        color: '#336791',
+        category: 'database',
+      },
+      {
+        id: 14,
+        name: 'MySQL',
+        level: 80,
+        color: '#4479A1',
+        category: 'database',
+      },
+
       // DevOps & Tools
-      { id: 15, name: 'Docker', level: 78, color: '#2496ED', category: 'devops' },
-      { id: 16, name: 'Jenkins', level: 75, color: '#D24939', category: 'devops' },
-      { id: 17, name: 'Git/GitHub', level: 88, color: '#F05032', category: 'devops' },
-      { id: 18, name: 'AWS DevOps', level: 70, color: '#FF9900', category: 'devops' },
-      { id: 19, name: 'Maven', level: 85, color: '#C71A36', category: 'devops' }
+      {
+        id: 15,
+        name: 'Docker',
+        level: 78,
+        color: '#2496ED',
+        category: 'devops',
+      },
+      {
+        id: 16,
+        name: 'Jenkins',
+        level: 75,
+        color: '#D24939',
+        category: 'devops',
+      },
+      {
+        id: 17,
+        name: 'Git/GitHub',
+        level: 88,
+        color: '#F05032',
+        category: 'devops',
+      },
+      {
+        id: 18,
+        name: 'AWS DevOps',
+        level: 70,
+        color: '#FF9900',
+        category: 'devops',
+      },
+      {
+        id: 19,
+        name: 'Maven',
+        level: 85,
+        color: '#C71A36',
+        category: 'devops',
+      },
     ];
   }
 
@@ -279,10 +408,10 @@ export class AdminService {
 
   addSkill(skill: Skill): void {
     const currentData = this.portfolioData.value;
-    const newSkill = { 
-      ...skill, 
+    const newSkill = {
+      ...skill,
       id: Date.now(),
-      category: skill.category.toLowerCase()
+      category: skill.category.toLowerCase(),
     };
     const updatedSkills = [newSkill, ...currentData.skills];
     const newData = { ...currentData, skills: updatedSkills };

@@ -1,14 +1,8 @@
-<section
-  class="projects-section py-5"
-  [class.bg-light]="!isDarkTheme"
-  [class.bg-dark]="isDarkTheme"
->
+<section class="projects-section py-5" [class.bg-light]="!isDarkTheme" [class.bg-dark]="isDarkTheme">
   <div class="container">
+
     <!-- Add Project Form (Edit Mode) -->
-    <div
-      *ngIf="isEditMode && activeTab === 'projects'"
-      class="add-project-form mb-5"
-    >
+    <div *ngIf="isEditMode && activeTab === 'projects'" class="add-project-form mb-5">
       <div class="card glass-card">
         <div class="card-header">
           <h5 class="card-title mb-0">Add New Project</h5>
@@ -115,28 +109,14 @@
     <div class="tab-content">
       <!-- Projects Tab -->
       <div *ngIf="activeTab === 'projects'" class="tab-pane active">
-        <!-- DEBUG: Show current state -->
-        <div class="debug-info" style="display: none">
-          <p>Projects Count: {{ projects.length }}</p>
-          <p>Medium Count: {{ mediumPosts.length }}</p>
-          <p>Quora Count: {{ quoraPosts.length }}</p>
-          <p>LinkedIn Count: {{ linkedinPosts.length }}</p>
-        </div>
-
         <!-- Show Cards if data exists -->
-        <div
-          *ngIf="projects.length > 0; else noProjects"
-          class="projects-grid-container"
-        >
+        <div *ngIf="projects.length > 0; else noProjects" class="projects-grid-container">
           <div class="row g-4">
             <div
               class="col-xl-4 col-lg-6 col-md-6 mb-4"
               *ngFor="let project of projects; let i = index"
             >
-              <div
-                class="project-card glass-card"
-                [class.editable]="isEditMode"
-              >
+              <div class="project-card glass-card" [class.editable]="isEditMode">
                 <div class="project-image">
                   <!-- Lottie Animation Container -->
                   <div
@@ -156,26 +136,49 @@
                   <div class="project-overlay d-flex flex-column">
                     <h5 class="text-white mb-3">{{ project.title }}</h5>
                     <div class="mt-auto">
+                      <!-- Matrix Notes - Goes to tutorials page -->
                       <a
-                        [routerLink]="project.link"
+                        *ngIf="project.title === 'Matrix Notes - Tutorial Management System'"
+                        [routerLink]="['/tutorials']"
                         class="btn btn-light btn-sm me-2"
-                        *ngIf="project.link.startsWith('/')"
                       >
                         <i class="fas fa-external-link-alt me-1"></i>View Live
                       </a>
+                      
+                      <!-- Online Clipboard - Internal route -->
                       <a
+                        *ngIf="project.title.includes('MatrixShare') || project.title.includes('Online Clipboard')"
+                        [routerLink]="['/online-clipboard']"
+                        class="btn btn-light btn-sm me-2"
+                      >
+                        <i class="fas fa-external-link-alt me-1"></i>View Live
+                      </a>
+                      
+                      <!-- External links -->
+                      <a
+                        *ngIf="project.link && !project.link.startsWith('/') && project.title !== 'Matrix Notes - Tutorial Management System' && !project.title.includes('MatrixShare')"
                         [href]="project.link"
                         target="_blank"
                         class="btn btn-light btn-sm me-2"
-                        *ngIf="!project.link.startsWith('/')"
                       >
                         <i class="fas fa-external-link-alt me-1"></i>View Live
                       </a>
+                      
+                      <!-- Other internal routes -->
+                      <a
+                        *ngIf="project.link && project.link.startsWith('/') && project.title !== 'Matrix Notes - Tutorial Management System' && !project.title.includes('MatrixShare')"
+                        [routerLink]="project.link"
+                        class="btn btn-light btn-sm me-2"
+                      >
+                        <i class="fas fa-external-link-alt me-1"></i>View Live
+                      </a>
+                      
+                      <!-- GitHub Link -->
                       <a
                         [href]="project.githubLink"
                         target="_blank"
                         class="btn btn-dark btn-sm"
-                        *ngIf="project.githubLink"
+                        *ngIf="project.githubLink && project.githubLink !== '#'"
                       >
                         <i class="fab fa-github me-1"></i>Code
                       </a>
@@ -196,10 +199,11 @@
                   </div>
                 </div>
                 <div class="project-body">
-                  <div
-                    class="d-flex justify-content-between align-items-start mb-2"
-                  >
+                  <div class="d-flex justify-content-between align-items-start mb-2">
                     <h5 class="project-title mb-0">{{ project.title }}</h5>
+                    <span class="badge bg-primary" *ngIf="project.featured">
+                      Featured
+                    </span>
                   </div>
                   <p class="project-description">{{ project.description }}</p>
                   <div class="project-tech">
@@ -252,19 +256,13 @@
 
       <!-- Medium Tab -->
       <div *ngIf="activeTab === 'medium'" class="tab-pane active">
-        <div
-          *ngIf="mediumPosts.length > 0; else noMedium"
-          class="projects-grid-container"
-        >
+        <div *ngIf="mediumPosts.length > 0; else noMedium" class="projects-grid-container">
           <div class="row g-4">
             <div
               class="col-xl-4 col-lg-6 col-md-6 mb-4"
               *ngFor="let post of mediumPosts"
             >
-              <div
-                class="project-card glass-card"
-                [class.editable]="isEditMode"
-              >
+              <div class="project-card glass-card" [class.editable]="isEditMode">
                 <div class="project-image">
                   <!-- Platform-specific background -->
                   <div class="platform-background medium-bg">
@@ -286,10 +284,11 @@
                   </div>
                 </div>
                 <div class="project-body">
-                  <div
-                    class="d-flex justify-content-between align-items-start mb-2"
-                  >
+                  <div class="d-flex justify-content-between align-items-start mb-2">
                     <h5 class="project-title mb-0">{{ post.title }}</h5>
+                    <span class="badge bg-dark">
+                      <i class="fab fa-medium me-1"></i> Medium
+                    </span>
                   </div>
                   <p class="project-description">{{ post.description }}</p>
                   <div class="project-tech">
@@ -339,21 +338,15 @@
         </ng-template>
       </div>
 
-      <!-- Quora Tab - Updated -->
+      <!-- Quora Tab -->
       <div *ngIf="activeTab === 'quora'" class="tab-pane active">
-        <div
-          *ngIf="quoraPosts.length > 0; else noQuora"
-          class="projects-grid-container"
-        >
+        <div *ngIf="quoraPosts.length > 0; else noQuora" class="projects-grid-container">
           <div class="row g-4">
             <div
-              class="col-xl-6 col-lg-6 col-md-6 mb-4"
+              class="col-xl-4 col-lg-6 col-md-6 mb-4"
               *ngFor="let post of quoraPosts"
             >
-              <div
-                class="project-card glass-card"
-                [class.editable]="isEditMode"
-              >
+              <div class="project-card glass-card" [class.editable]="isEditMode">
                 <div class="project-image">
                   <div class="platform-background quora-bg">
                     <i class="fab fa-quora platform-logo"></i>
@@ -373,19 +366,20 @@
                   </div>
                 </div>
                 <div class="project-body">
-                  <div
-                    class="d-flex justify-content-between align-items-start mb-2"
-                  >
+                  <div class="d-flex justify-content-between align-items-start mb-2">
                     <h5 class="project-title mb-0">{{ post.title }}</h5>
+                    <span class="badge bg-danger">
+                      <i class="fab fa-quora me-1"></i> Quora
+                    </span>
                   </div>
                   <p class="project-description">{{ post.description }}</p>
                   <div class="project-tech">
                     <span class="tech-badge">
-                      <i class="fas fa-eye"></i> {{ post.views }} views
+                      <i class="fas fa-eye"></i> {{ post.views || '0' }} views
                     </span>
                     <span class="tech-badge">
                       <i class="fas fa-thumbs-up"></i>
-                      {{ post.upvotes }} upvotes
+                      {{ post.upvotes || '0' }} upvotes
                     </span>
                     <span class="tech-badge">
                       <i class="fas fa-calendar"></i> {{ post.date }}
@@ -427,21 +421,15 @@
         </ng-template>
       </div>
 
-      <!-- LinkedIn Tab - Updated -->
+      <!-- LinkedIn Tab -->
       <div *ngIf="activeTab === 'linkedin'" class="tab-pane active">
-        <div
-          *ngIf="linkedinPosts.length > 0; else noLinkedIn"
-          class="projects-grid-container"
-        >
+        <div *ngIf="linkedinPosts.length > 0; else noLinkedIn" class="projects-grid-container">
           <div class="row g-4">
             <div
-              class="col-xl-6 col-lg-6 col-md-6 mb-4"
+              class="col-xl-4 col-lg-6 col-md-6 mb-4"
               *ngFor="let post of linkedinPosts"
             >
-              <div
-                class="project-card glass-card"
-                [class.editable]="isEditMode"
-              >
+              <div class="project-card glass-card" [class.editable]="isEditMode">
                 <div class="project-image">
                   <div class="platform-background linkedin-bg">
                     <i class="fab fa-linkedin platform-logo"></i>
@@ -461,20 +449,21 @@
                   </div>
                 </div>
                 <div class="project-body">
-                  <div
-                    class="d-flex justify-content-between align-items-start mb-2"
-                  >
+                  <div class="d-flex justify-content-between align-items-start mb-2">
                     <h5 class="project-title mb-0">{{ post.title }}</h5>
+                    <span class="badge bg-primary">
+                      <i class="fab fa-linkedin me-1"></i> LinkedIn
+                    </span>
                   </div>
                   <p class="project-description">{{ post.description }}</p>
                   <div class="project-tech">
                     <span class="tech-badge">
                       <i class="fas fa-comment"></i>
-                      {{ post.comments }} comments
+                      {{ post.comments || '0' }} comments
                     </span>
                     <span class="tech-badge">
                       <i class="fas fa-chart-line"></i>
-                      {{ post.engagement }} engagement
+                      {{ post.engagement || '0' }} engagement
                     </span>
                     <span class="tech-badge">
                       <i class="fas fa-calendar"></i> {{ post.date }}
@@ -514,6 +503,31 @@
             </div>
           </div>
         </ng-template>
+      </div>
+    </div>
+
+    <!-- Admin Matrix Notes Access Button -->
+    <div *ngIf="isEditMode" class="text-center mt-5">
+      <div class="card glass-card">
+        <div class="card-body">
+          <h5 class="card-title">
+            <i class="fas fa-book me-2"></i>Matrix Notes Admin
+          </h5>
+          <p class="card-text text-muted">
+            As an admin, you can manage tutorials and educational content in the Matrix Notes system.
+          </p>
+          <div class="btn-group">
+            <a [routerLink]="['/admin/matrix-notes']" class="btn btn-primary">
+              <i class="fas fa-tachometer-alt me-2"></i>Matrix Notes Dashboard
+            </a>
+            <a [routerLink]="['/admin/matrix-notes/editor']" class="btn btn-success">
+              <i class="fas fa-plus me-2"></i>Create New Tutorial
+            </a>
+            <a [routerLink]="['/tutorials']" class="btn btn-outline-info">
+              <i class="fas fa-eye me-2"></i>View Public Tutorials
+            </a>
+          </div>
+        </div>
       </div>
     </div>
   </div>

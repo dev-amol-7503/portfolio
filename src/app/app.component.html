@@ -1,47 +1,4 @@
 <div class="portfolio-container" [class.dark-theme]="isDarkTheme">
-  <!-- Desktop Recommendation Banner -->
-  <div *ngIf="showDesktopRecommendation" class="desktop-recommendation-banner">
-    <div class="container d-flex justify-content-between align-items-center">
-      <div>
-        <i class="fas fa-desktop me-2"></i>
-        For the best experience, please view this portfolio on a desktop
-        computer.
-      </div>
-      <button
-        class="btn-close"
-        (click)="closeRecommendation()"
-        aria-label="Close"
-      ></button>
-    </div>
-  </div>
-
-  <!-- Admin Controls -->
-  <div *ngIf="isAdmin" class="admin-controls-bar">
-    <div class="container d-flex justify-content-between align-items-center">
-      <div class="d-flex align-items-center">
-        <i class="fas fa-shield-alt me-2 text-success"></i>
-        <span class="text-success fw-bold">Admin Mode</span>
-        <button
-          class="btn btn-sm ms-3"
-          [class.btn-warning]="!isEditMode"
-          [class.btn-success]="isEditMode"
-          (click)="toggleEditMode()"
-        >
-          <fa-icon [icon]="isEditMode ? faEdit : faEdit" class="me-1"></fa-icon>
-          {{ isEditMode ? "Editing" : "Edit Mode" }}
-        </button>
-      </div>
-      <div>
-        <a routerLink="/admin" class="btn btn-sm btn-outline-light me-2">
-          <fa-icon [icon]="faCog" class="me-1"></fa-icon>Dashboard
-        </a>
-        <button class="btn btn-sm btn-outline-light" (click)="logout()">
-          <fa-icon [icon]="faSignOutAlt" class="me-1"></fa-icon>Logout
-        </button>
-      </div>
-    </div>
-  </div>
-
   <!-- Header -->
   <header class="portfolio-header">
     <nav class="navbar navbar-expand-lg">
@@ -100,6 +57,33 @@
     </nav>
   </header>
 
+  <!-- Admin Controls -->
+  <div *ngIf="isAdmin" class="admin-controls-bar">
+    <div class="container d-flex justify-content-between align-items-center">
+      <div class="d-flex align-items-center">
+        <i class="fas fa-shield-alt me-2 text-success"></i>
+        <span class="text-success fw-bold">Admin Mode</span>
+        <button
+          class="btn btn-sm ms-3"
+          [class.btn-warning]="!isEditMode"
+          [class.btn-success]="isEditMode"
+          (click)="toggleEditMode()"
+        >
+          <fa-icon [icon]="isEditMode ? faEdit : faEdit" class="me-1"></fa-icon>
+          {{ isEditMode ? "Editing" : "Edit Mode" }}
+        </button>
+      </div>
+      <div>
+        <a routerLink="/admin" class="btn btn-sm btn-outline-light me-2">
+          <fa-icon [icon]="faCog" class="me-1"></fa-icon>Dashboard
+        </a>
+        <button class="btn btn-sm btn-outline-light" (click)="logout()">
+          <fa-icon [icon]="faSignOutAlt" class="me-1"></fa-icon>Logout
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- Main Content -->
   <main class="portfolio-main">
     <router-outlet></router-outlet>
@@ -115,7 +99,7 @@
             <h5 class="footer-title text-primary mb-3">Amol Nagare</h5>
             <p class="footer-text">
               Full Stack Developer specializing in Angular and Spring Boot
-              applications with 3+ years of experience.
+              applications with 4+ years of experience.
             </p>
             <div class="social-links mt-3">
               <a

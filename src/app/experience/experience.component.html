@@ -1,34 +1,176 @@
 <section class="experience-section py-5">
   <div class="container">
-    <div class="section-header text-center mb-5">
-      <h2 class="section-title">My Experience</h2>
-      <p class="section-subtitle lead text-muted">Here are my professional journey and contributions</p>
-    </div>
-    
-    <div class="timeline">
-      <div class="timeline-item" *ngFor="let exp of experiences">
-        <div class="timeline-badge">
-          <i class="fas fa-briefcase"></i>
-        </div>
-        <div class="timeline-content">
-          <div class="timeline-header">
-            <h4 class="timeline-position">{{ exp.position }}</h4>
-            <div class="timeline-company">
-              <img [src]="exp.logo" alt="Company Logo" class="company-logo me-2">
-              <span>{{ exp.company }}</span>
+    <div class="timeline-container">
+      <div class="timeline-progress">
+        <div class="progress-bar"></div>
+      </div>
+
+      <div class="timeline">
+        <!-- TCS Experience - Professional -->
+        <div class="timeline-item professional">
+          <div class="timeline-marker">
+            <div class="marker-circle">
+              <i class="fas fa-briefcase"></i>
             </div>
-            <div class="timeline-period">{{ exp.period }}</div>
           </div>
-          <div class="timeline-body">
-            <p class="timeline-description">{{ exp.description }}</p>
-            <ul class="timeline-responsibilities">
-              <li *ngFor="let resp of exp.responsibilities">
-                <i class="fas fa-check-circle text-primary me-2"></i>{{ resp }}
-              </li>
-            </ul>
-            
-            <div class="timeline-tech mt-3">
-              <span class="tech-badge" *ngFor="let tech of exp.technologies">{{ tech }}</span>
+
+          <div class="timeline-card">
+            <div class="card-header">
+              <div class="company-details">
+                <h3 class="company-name">Tata Consultancy Services Limited</h3>
+                <div class="position-period">
+                  <span class="position">Full Stack Developer</span>
+                  <span class="period-badge">Dec 2021 - Present</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="card-body">
+              <div class="key-responsibilities">
+                <ul class="responsibilities-list">
+                  <li class="responsibility-item">
+                    <i class="fas fa-arrow-right"></i>
+                    <span
+                      >Developed and maintained user-centric interfaces for
+                      ignio ERPOps using Angular, applying modern UI/UX
+                      principles and creating reusable components to meet
+                      product requirements</span
+                    >
+                  </li>
+                  <li class="responsibility-item">
+                    <i class="fas fa-arrow-right"></i>
+                    <span
+                      >Engineered and optimized RESTful APIs using Spring Boot,
+                      ensuring high performance, security, and seamless
+                      integration between frontend and backend systems</span
+                    >
+                  </li>
+                  <li class="responsibility-item">
+                    <i class="fas fa-arrow-right"></i>
+                    <span
+                      >Improved application performance by implementing lazy
+                      loading and optimizing API calls, resulting in faster load
+                      times and a smoother user experience</span
+                    >
+                  </li>
+                  <li class="responsibility-item">
+                    <i class="fas fa-arrow-right"></i>
+                    <span
+                      >Used Docker to containerize services, simplifying
+                      deployment and ensuring consistency across different
+                      environments</span
+                    >
+                  </li>
+                  <li class="responsibility-item">
+                    <i class="fas fa-arrow-right"></i>
+                    <span
+                      >Collaborated within an Agile team environment,
+                      participating in sprint planning, daily stand-ups, and
+                      retrospectives to deliver features on schedule</span
+                    >
+                  </li>
+                </ul>
+              </div>
+
+              <div class="tech-stack">
+                <h5 class="tech-stack-title">Technologies Used</h5>
+                <div class="tech-tags">
+                  <!-- Core Foundations -->
+                  <span class="tech-tag">Core Java</span>
+                  <span class="tech-tag">OOPs Concepts</span>
+                  <span class="tech-tag">Collections Framework</span>
+                  <span class="tech-tag">Multithreading</span>
+                  <span class="tech-tag">Exception Handling</span>
+                  <span class="tech-tag">SQL</span>
+
+                  <!-- Backend (Spring Ecosystem) -->
+                  <span class="tech-tag">Spring Boot</span>
+                  <span class="tech-tag">Spring Data JPA</span>
+                  <span class="tech-tag">Spring Security</span>
+                  <span class="tech-tag">RESTful APIs</span>
+                  <span class="tech-tag">Microservices</span>
+
+                  <!-- Frontend -->
+                  <span class="tech-tag">HTML/CSS</span>
+                  <span class="tech-tag">TypeScript</span>
+                  <span class="tech-tag">Angular</span>
+
+                  <!-- DevOps & Tools -->
+                  <span class="tech-tag">Git</span>
+                  <span class="tech-tag">GitLab</span>
+                  <span class="tech-tag">CI/CD Pipeline</span>
+                  <span class="tech-tag">Docker</span>
+                  <span class="tech-tag">Maven</span>
+                  <span class="tech-tag">Postman</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Insight Success Experience - Internship -->
+        <div class="timeline-item internship">
+          <div class="timeline-marker">
+            <div class="marker-circle">
+              <i class="fas fa-graduation-cap"></i>
+            </div>
+          </div>
+
+          <div class="timeline-card">
+            <div class="card-header">
+              <div class="company-details">
+                <h3 class="company-name">Matrix World Solution</h3>
+                <div class="position-period">
+                  <span class="position">Intern</span>
+                  <span class="period-badge">May 2021 – Dec 2021</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="card-body">
+              <div class="key-responsibilities">
+                <ul class="responsibilities-list">
+                  <li class="responsibility-item">
+                    <i class="fas fa-arrow-right"></i>
+                    <span
+                      >Developed and maintained robust backend functionality
+                      using Core Java (OOP, Collections, Multithreading) to
+                      enhance application features, improving code reliability
+                      and performance for key business processes</span
+                    >
+                  </li>
+                  <li class="responsibility-item">
+                    <i class="fas fa-arrow-right"></i>
+                    <span
+                      >Supported the development of RESTful web services by
+                      contributing to Spring Boot controllers and service
+                      layers, facilitating efficient data exchange between the
+                      front-end</span
+                    >
+                  </li>
+                  <li class="responsibility-item">
+                    <i class="fas fa-arrow-right"></i>
+                    <span
+                      >Gained hands-on experience with data persistence
+                      technologies by writing and optimizing SQL queries and
+                      utilizing JPA/Hibernate to interact with relational
+                      databases, ensuring accurate data storage and
+                      retrieval</span
+                    >
+                  </li>
+                </ul>
+              </div>
+
+              <div class="tech-stack">
+                <h5 class="tech-stack-title">Technologies Used</h5>
+                <div class="tech-tags">
+                  <span class="tech-tag">Core Java</span>
+                  <span class="tech-tag">SQL</span>
+                  <span class="tech-tag">Multithreading</span>
+                  <span class="tech-tag">Collections</span>
+                  <span class="tech-tag">Streams API</span>
+                </div>
+              </div>
             </div>
           </div>
         </div>
