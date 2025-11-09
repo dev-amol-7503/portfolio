@@ -16,7 +16,11 @@ import {
   CdkDropList,
 } from '@angular/cdk/drag-drop';
 import { MatrixNotesService } from '../../../services/matrix-notes.service';
-import { Tutorial, TutorialContent } from '../../../interfaces/tutorial.model';
+import {
+  RoadmapStep,
+  Tutorial,
+  TutorialContent,
+} from '../../../interfaces/tutorial.model';
 import { AdminService } from '../../../services/admin.service';
 
 @Component({
@@ -66,6 +70,11 @@ export class MatrixNotesEditorComponent implements OnInit, OnDestroy {
     'microservices',
   ];
 
+  // Roadmap steps for selection
+  roadmapSteps: RoadmapStep[] = [];
+  backendSteps: RoadmapStep[] = [];
+  frontendSteps: RoadmapStep[] = [];
+
   constructor(
     private matrixNotesService: MatrixNotesService,
     public adminService: AdminService,
@@ -81,6 +90,9 @@ export class MatrixNotesEditorComponent implements OnInit, OnDestroy {
         return;
       }
     });
+
+    // Initialize roadmap steps
+    this.initializeRoadmapSteps();
 
     // Check if editing existing tutorial
     const tutorialId = this.route.snapshot.paramMap.get('id');
@@ -102,6 +114,7 @@ export class MatrixNotesEditorComponent implements OnInit, OnDestroy {
     }
   }
 
+  // FIXED: Initialize tutorial with proper optional properties
   private getEmptyTutorial(): Tutorial {
     return {
       id: '',
@@ -120,14 +133,810 @@ export class MatrixNotesEditorComponent implements OnInit, OnDestroy {
       bookmarks: [],
       views: 0,
       likes: 0,
+      roadmapStep: undefined,
+      technologies: [],
+      prerequisites: [],
+      learningObjectives: [],
     };
   }
+
+  // Toggle preview with proper typing
+  public togglePreview1(index: number) {
+    this.previewMode = !this.previewMode;
+    if (!this.tutorial.content[index].showPreview) {
+      this.tutorial.content[index].showPreview = true;
+    } else {
+      this.tutorial.content[index].showPreview = false;
+    }
+  }
+
+  // FIXED: Initialize roadmap steps
+  private initializeRoadmapSteps() {
+    this.backendSteps = [
+      {
+        id: 1,
+        title: 'Java Fundamentals',
+        description:
+          'Master core Java concepts and modern features including Java 17/21 LTS, OOP, Collections, Streams API, and Multithreading',
+        category: 'backend',
+        technologies: [
+          'Java 17',
+          'Java 21',
+          'OOP',
+          'Collections',
+          'Lambda',
+          'Streams',
+          'Multithreading',
+          'Virtual Threads',
+        ],
+        topics: [
+          'Java 17/21 LTS features',
+          'Object-Oriented Programming',
+          'Collections Framework',
+          'Streams API & Parallel Streams',
+          'Exception Handling',
+          'Multithreading & Concurrency',
+          'Records, Sealed Classes',
+          'Pattern Matching',
+          'Text Blocks & Switch Expressions',
+          'Functional Programming',
+          'Java Module System',
+          'Virtual Threads (Project Loom)',
+        ],
+        tutorials: [],
+        isActive: true,
+        isCompleted: false,
+        order: 1,
+        badgeClass: 'backend-badge',
+        badgeText: 'Backend',
+        progressClass: 'backend-progress',
+        totalTopics: 12,
+        estimatedHours: 50,
+      },
+      {
+        id: 2,
+        title: 'Build Tools',
+        description:
+          'Master Maven and Gradle for project management, dependencies, and build automation',
+        category: 'backend',
+        technologies: [
+          'Maven',
+          'Gradle',
+          'Build Tools',
+          'Dependencies',
+          'Plugins',
+        ],
+        topics: [
+          'Project Structure',
+          'Dependencies & Plugins',
+          'Build Profiles',
+          'Multi-module Projects',
+          'Spring Boot Plugin',
+          'Maven vs Gradle',
+        ],
+        tutorials: [],
+        isActive: false,
+        isCompleted: false,
+        order: 2,
+        badgeClass: 'backend-badge',
+        badgeText: 'Backend',
+        progressClass: 'backend-progress',
+        totalTopics: 6,
+        estimatedHours: 20,
+      },
+      {
+        id: 3,
+        title: 'Spring Core',
+        description:
+          'Dependency Injection, Bean Lifecycle, and Spring Framework fundamentals',
+        category: 'backend',
+        technologies: [
+          'Spring Framework',
+          'IoC',
+          'DI',
+          'ApplicationContext',
+          'Auto Configuration',
+        ],
+        topics: [
+          'IoC / Dependency Injection',
+          'Bean Lifecycle',
+          'ApplicationContext',
+          'Java-based Configuration',
+          'Spring Boot Auto Configuration',
+          'Conditional Beans',
+          'Starter Dependencies',
+          'Lombok Integration',
+        ],
+        tutorials: [],
+        isActive: false,
+        isCompleted: false,
+        order: 3,
+        badgeClass: 'core-badge',
+        badgeText: 'Core',
+        progressClass: 'backend-progress',
+        totalTopics: 8,
+        estimatedHours: 30,
+      },
+      {
+        id: 4,
+        title: 'Spring Boot 3.x',
+        description:
+          'Modern Spring Boot development with latest features and best practices',
+        category: 'backend',
+        technologies: [
+          'Spring Boot 3.x',
+          'Spring MVC',
+          'Validation',
+          'Actuator',
+          'AOT',
+        ],
+        topics: [
+          'Spring MVC Architecture',
+          'Controllers & ControllerAdvice',
+          'HTTP Status Codes',
+          'Validation (Jakarta)',
+          'Configuration Properties',
+          'Profiles & Environment',
+          'Actuator & Health Checks',
+          'AOT Compilation',
+        ],
+        tutorials: [],
+        isActive: false,
+        isCompleted: false,
+        order: 4,
+        badgeClass: 'backend-badge',
+        badgeText: 'Backend',
+        progressClass: 'backend-progress',
+        totalTopics: 8,
+        estimatedHours: 35,
+      },
+      {
+        id: 5,
+        title: 'Data Access & Persistence',
+        description:
+          'Database operations with Spring Data JPA, PostgreSQL, MySQL, and Redis',
+        category: 'backend',
+        technologies: [
+          'Spring Data JPA',
+          'PostgreSQL',
+          'MySQL',
+          'Redis',
+          'Hibernate',
+        ],
+        topics: [
+          'Spring Data JPA',
+          'Entity Mapping & Relationships',
+          'Query Methods & @Query',
+          'DTO & Projection',
+          'Lazy/Eager Loading',
+          'Transactions',
+          'Pagination & Sorting',
+          'Flyway / Liquibase',
+          'Spring Data JDBC',
+          'Redis Cache',
+          'MongoDB',
+          'Testcontainers',
+          'R2DBC',
+        ],
+        tutorials: [],
+        isActive: false,
+        isCompleted: false,
+        order: 5,
+        badgeClass: 'backend-badge',
+        badgeText: 'Backend',
+        progressClass: 'backend-progress',
+        totalTopics: 13,
+        estimatedHours: 55,
+      },
+      {
+        id: 6,
+        title: 'RESTful APIs',
+        description:
+          'Build professional REST APIs with proper design patterns and best practices',
+        category: 'backend',
+        technologies: [
+          'REST API',
+          'Spring MVC',
+          'DTOs',
+          'MapStruct',
+          'HATEOAS',
+        ],
+        topics: [
+          'REST Design Principles',
+          'Request/Response Models',
+          'DTOs & Mappers (MapStruct)',
+          'Pagination, Sorting, Filtering',
+          'Exception Handling',
+          'Global Error Handler',
+          'File Upload/Download',
+          'Versioning APIs',
+          'HATEOAS',
+        ],
+        tutorials: [],
+        isActive: false,
+        isCompleted: false,
+        order: 6,
+        badgeClass: 'backend-badge',
+        badgeText: 'Backend',
+        progressClass: 'backend-progress',
+        totalTopics: 9,
+        estimatedHours: 35,
+      },
+      {
+        id: 7,
+        title: 'API Security',
+        description:
+          'Secure your applications with Spring Security, JWT, and OAuth2',
+        category: 'backend',
+        technologies: [
+          'Spring Security',
+          'JWT',
+          'OAuth2',
+          'OpenID Connect',
+          'Keycloak',
+        ],
+        topics: [
+          'Spring Security 6 Lambda DSL',
+          'Roles & Authorities',
+          'JWT Authentication',
+          'OAuth2 / OpenID Connect',
+          'Filters & Custom Authentication',
+          'Keycloak / Auth0 Integration',
+          'CSRF, CORS & Security Headers',
+          'Password Encoders',
+        ],
+        tutorials: [],
+        isActive: false,
+        isCompleted: false,
+        order: 7,
+        badgeClass: 'backend-badge',
+        badgeText: 'Security',
+        progressClass: 'backend-progress',
+        totalTopics: 8,
+        estimatedHours: 40,
+      },
+      {
+        id: 8,
+        title: 'Testing',
+        description:
+          'Comprehensive testing strategies with JUnit, Mockito, and Testcontainers',
+        category: 'backend',
+        technologies: [
+          'JUnit 5',
+          'Mockito',
+          'Testcontainers',
+          'Integration Testing',
+        ],
+        topics: [
+          'JUnit 5',
+          'Mockito / MockBean',
+          'Spring Boot Test',
+          'Integration Tests',
+          'RestAssured',
+          'Test Slices',
+          'Contract Testing',
+        ],
+        tutorials: [],
+        isActive: false,
+        isCompleted: false,
+        order: 8,
+        badgeClass: 'backend-badge',
+        badgeText: 'Testing',
+        progressClass: 'backend-progress',
+        totalTopics: 7,
+        estimatedHours: 30,
+      },
+      {
+        id: 9,
+        title: 'External API Clients',
+        description:
+          'Communicate with external APIs using RestTemplate, WebClient, and Feign',
+        category: 'backend',
+        technologies: ['RestTemplate', 'WebClient', 'Feign', 'Resilience4j'],
+        topics: [
+          'RestTemplate (Legacy)',
+          'WebClient (Reactive)',
+          'Feign Client',
+          'Retry Mechanism',
+          'Circuit Breaker',
+          'Unit & Integration Testing',
+        ],
+        tutorials: [],
+        isActive: false,
+        isCompleted: false,
+        order: 9,
+        badgeClass: 'backend-badge',
+        badgeText: 'Integration',
+        progressClass: 'backend-progress',
+        totalTopics: 6,
+        estimatedHours: 25,
+      },
+      {
+        id: 10,
+        title: 'DevOps & Monitoring',
+        description:
+          'Deployment, monitoring, and DevOps practices for Spring Boot applications',
+        category: 'backend',
+        technologies: [
+          'Docker',
+          'Kubernetes',
+          'Actuator',
+          'Micrometer',
+          'CI/CD',
+        ],
+        topics: [
+          'Spring Boot Actuator',
+          'Micrometer & Metrics',
+          'Logging (Logback/SLF4J)',
+          'Centralized Logging',
+          'Dockerize Spring Apps',
+          'CI/CD Pipelines',
+          'Prometheus + Grafana',
+          'Config Server',
+        ],
+        tutorials: [],
+        isActive: false,
+        isCompleted: false,
+        order: 10,
+        badgeClass: 'backend-badge',
+        badgeText: 'DevOps',
+        progressClass: 'backend-progress',
+        totalTopics: 8,
+        estimatedHours: 45,
+      },
+      {
+        id: 11,
+        title: 'Cloud & Deployment',
+        description:
+          'Deploy applications to cloud platforms and implement microservices architecture',
+        category: 'backend',
+        technologies: [
+          'AWS',
+          'Docker',
+          'Kubernetes',
+          'Microservices',
+          'Spring Cloud',
+        ],
+        topics: [
+          'Deploy to AWS/GCP/Azure',
+          'Container Registry',
+          'Kubernetes',
+          'Serverless',
+          'Spring Cloud Config',
+          'Service Discovery',
+          'Microservices Architecture',
+        ],
+        tutorials: [],
+        isActive: false,
+        isCompleted: false,
+        order: 11,
+        badgeClass: 'backend-badge',
+        badgeText: 'Cloud',
+        progressClass: 'backend-progress',
+        totalTopics: 7,
+        estimatedHours: 40,
+      },
+      {
+        id: 12,
+        title: 'Advanced Backend',
+        description:
+          'Advanced topics including reactive programming, messaging, and GraphQL',
+        category: 'backend',
+        technologies: [
+          'Microservices',
+          'WebFlux',
+          'Kafka',
+          'GraphQL',
+          'Caching',
+        ],
+        topics: [
+          'Microservices Architecture',
+          'Service Discovery',
+          'API Gateway',
+          'Reactive Programming',
+          'WebFlux & Reactor',
+          'Messaging (RabbitMQ, Kafka)',
+          'GraphQL with Spring Boot',
+          'Caching Strategies',
+          'Observability',
+        ],
+        tutorials: [],
+        isActive: false,
+        isCompleted: false,
+        order: 12,
+        badgeClass: 'backend-badge',
+        badgeText: 'Advanced',
+        progressClass: 'backend-progress',
+        totalTopics: 9,
+        estimatedHours: 50,
+      },
+    ];
+
+    this.frontendSteps = [
+      {
+        id: 13,
+        title: 'Web Fundamentals',
+        description:
+          'Master HTML5, CSS3, JavaScript ES6+, and TypeScript fundamentals',
+        category: 'frontend',
+        technologies: ['HTML5', 'CSS3', 'JavaScript', 'TypeScript', 'Git'],
+        topics: [
+          'HTML5 Semantic Elements',
+          'CSS3 (Flexbox, Grid)',
+          'JavaScript ES6+ Features',
+          'TypeScript Fundamentals',
+          'Interfaces & Generics',
+          'Async/Await & Promises',
+          'Decorators',
+          'Basic Git & Version Control',
+        ],
+        tutorials: [],
+        isActive: false,
+        isCompleted: false,
+        order: 1,
+        badgeClass: 'frontend-badge',
+        badgeText: 'Frontend',
+        progressClass: 'frontend-progress',
+        totalTopics: 8,
+        estimatedHours: 35,
+      },
+      {
+        id: 14,
+        title: 'Angular Core (v19)',
+        description:
+          'Modern Angular development with standalone components, signals, and latest features',
+        category: 'frontend',
+        technologies: [
+          'Angular 19',
+          'TypeScript',
+          'Standalone',
+          'Signals',
+          'Zones',
+        ],
+        topics: [
+          'Angular Architecture',
+          'Standalone Components',
+          'Modules vs Standalone APIs',
+          'Components & Templates',
+          'Data Binding',
+          'Directives (ngIf, ngFor)',
+          'Pipes (built-in & custom)',
+          'Signals (Angular 16+)',
+          'Zone-less Change Detection',
+        ],
+        tutorials: [],
+        isActive: false,
+        isCompleted: false,
+        order: 2,
+        badgeClass: 'frontend-badge',
+        badgeText: 'Angular',
+        progressClass: 'frontend-progress',
+        totalTopics: 9,
+        estimatedHours: 40,
+      },
+      {
+        id: 15,
+        title: 'Routing & Navigation',
+        description:
+          'Client-side routing, lazy loading, guards, and navigation in Angular',
+        category: 'frontend',
+        technologies: [
+          'Angular Router',
+          'Lazy Loading',
+          'Guards',
+          'Navigation',
+        ],
+        topics: [
+          'RouterModule & Routes',
+          'Route Parameters',
+          'Query Parameters',
+          'Lazy Loading',
+          'Route Guards',
+          'Preloading Strategies',
+          'Route Resolvers',
+        ],
+        tutorials: [],
+        isActive: false,
+        isCompleted: false,
+        order: 3,
+        badgeClass: 'frontend-badge',
+        badgeText: 'Routing',
+        progressClass: 'frontend-progress',
+        totalTopics: 7,
+        estimatedHours: 20,
+      },
+      {
+        id: 16,
+        title: 'Services & Dependency Injection',
+        description:
+          'Angular services, dependency injection, and RxJS for reactive programming',
+        category: 'frontend',
+        technologies: ['Services', 'DI', 'RxJS', 'Observables', 'Subjects'],
+        topics: [
+          'Injectable Services',
+          'Hierarchical DI',
+          'RxJS Observables',
+          'Subjects & BehaviorSubjects',
+          'Common Operators',
+          'Error Handling',
+          'Reactive Patterns',
+        ],
+        tutorials: [],
+        isActive: false,
+        isCompleted: false,
+        order: 4,
+        badgeClass: 'frontend-badge',
+        badgeText: 'Services',
+        progressClass: 'frontend-progress',
+        totalTopics: 7,
+        estimatedHours: 25,
+      },
+      {
+        id: 17,
+        title: 'HTTP Communication',
+        description:
+          'HTTP client, interceptors, and API communication in Angular',
+        category: 'frontend',
+        technologies: ['HttpClient', 'Interceptors', 'API', 'CRUD'],
+        topics: [
+          'HttpClient Module',
+          'CRUD Operations',
+          'Request/Response Interceptors',
+          'JWT & Logging Interceptors',
+          'Environment Configuration',
+          'API Versioning',
+          'Error Handling',
+        ],
+        tutorials: [],
+        isActive: false,
+        isCompleted: false,
+        order: 5,
+        badgeClass: 'frontend-badge',
+        badgeText: 'HTTP',
+        progressClass: 'frontend-progress',
+        totalTopics: 7,
+        estimatedHours: 25,
+      },
+      {
+        id: 18,
+        title: 'Authentication & Authorization',
+        description:
+          'JWT authentication, route protection, and role-based access in Angular',
+        category: 'frontend',
+        technologies: ['JWT', 'Auth Guards', 'Route Protection', 'Roles'],
+        topics: [
+          'JWT Integration',
+          'Login/Signup Flow',
+          'Auth Guards',
+          'Route Protection',
+          'Role-based UI',
+          'Refresh Tokens',
+          'Persistent Auth State',
+        ],
+        tutorials: [],
+        isActive: false,
+        isCompleted: false,
+        order: 6,
+        badgeClass: 'frontend-badge',
+        badgeText: 'Auth',
+        progressClass: 'frontend-progress',
+        totalTopics: 7,
+        estimatedHours: 25,
+      },
+      {
+        id: 19,
+        title: 'UI & Styling',
+        description:
+          'Modern UI development with Angular Material, Tailwind CSS, and responsive design',
+        category: 'frontend',
+        technologies: [
+          'Angular Material',
+          'Tailwind CSS',
+          'SCSS',
+          'Responsive',
+        ],
+        topics: [
+          'Angular Material Components',
+          'Tailwind CSS Setup',
+          'SCSS & CSS Preprocessors',
+          'Responsive Design',
+          'Angular Animations',
+          'Custom Themes',
+          'Reusable Components',
+        ],
+        tutorials: [],
+        isActive: false,
+        isCompleted: false,
+        order: 7,
+        badgeClass: 'frontend-badge',
+        badgeText: 'UI/UX',
+        progressClass: 'frontend-progress',
+        totalTopics: 7,
+        estimatedHours: 30,
+      },
+      {
+        id: 20,
+        title: 'Testing',
+        description:
+          'Comprehensive testing strategies for Angular applications',
+        category: 'frontend',
+        technologies: ['Jasmine', 'Karma', 'Cypress', 'Testing'],
+        topics: [
+          'Unit Testing (Jasmine)',
+          'Component Testing',
+          'Service Testing',
+          'HttpTestingController',
+          'E2E Testing (Cypress)',
+          'Test Best Practices',
+        ],
+        tutorials: [],
+        isActive: false,
+        isCompleted: false,
+        order: 8,
+        badgeClass: 'frontend-badge',
+        badgeText: 'Testing',
+        progressClass: 'frontend-progress',
+        totalTopics: 6,
+        estimatedHours: 20,
+      },
+      {
+        id: 21,
+        title: 'Build & Deployment',
+        description:
+          'Build optimization, environment configuration, and deployment strategies',
+        category: 'frontend',
+        technologies: [
+          'Angular CLI',
+          'Build Optimization',
+          'Deployment',
+          'AWS',
+        ],
+        topics: [
+          'Angular CLI Commands',
+          'Environment Configs',
+          'Code Optimization',
+          'AOT Compilation',
+          'Bundle Analyzer',
+          'Deployment Platforms',
+          'AWS S3 + CloudFront',
+        ],
+        tutorials: [],
+        isActive: false,
+        isCompleted: false,
+        order: 9,
+        badgeClass: 'frontend-badge',
+        badgeText: 'Deployment',
+        progressClass: 'frontend-progress',
+        totalTopics: 7,
+        estimatedHours: 25,
+      },
+      {
+        id: 22,
+        title: 'Advanced Frontend',
+        description:
+          'Advanced Angular topics including state management, PWA, and performance',
+        category: 'frontend',
+        technologies: ['NgRx', 'Signals', 'PWA', 'SSR', 'Performance'],
+        topics: [
+          'State Management (NgRx)',
+          'Signals Store',
+          'Performance Optimization',
+          'Progressive Web Apps',
+          'SSR & SSG (Angular Universal)',
+          'Monorepos with Nx',
+          'Internationalization',
+        ],
+        tutorials: [],
+        isActive: false,
+        isCompleted: false,
+        order: 10,
+        badgeClass: 'frontend-badge',
+        badgeText: 'Advanced',
+        progressClass: 'frontend-progress',
+        totalTopics: 7,
+        estimatedHours: 50,
+      },
+    ];
+    this.roadmapSteps = [...this.backendSteps, ...this.frontendSteps];
+  }
+
+  // FIXED: Handle roadmap step change with proper type checking
+  onRoadmapStepChange(stepId: number | undefined): void {
+    if (!stepId) return;
+
+    const selectedStep = this.roadmapSteps.find((step) => step.id === stepId);
+    if (selectedStep) {
+      // Initialize arrays if they don't exist
+      if (!this.tutorial.technologies) this.tutorial.technologies = [];
+      if (!this.tutorial.tags) this.tutorial.tags = [];
+      if (!this.tutorial.learningObjectives)
+        this.tutorial.learningObjectives = [];
+
+      // Auto-populate technologies and tags from roadmap step
+      this.tutorial.technologies = [...selectedStep.technologies];
+      this.tutorial.tags = [
+        ...selectedStep.technologies,
+        ...selectedStep.topics.slice(0, 3),
+      ];
+      this.tutorial.category = selectedStep.category;
+
+      // Add learning objectives based on roadmap step topics
+      this.tutorial.learningObjectives = selectedStep.topics.slice(0, 5);
+    }
+  }
+
+  // FIXED: Technology methods
+  addTechnology(tech: string): void {
+    if (tech && tech.trim()) {
+      if (!this.tutorial.technologies) {
+        this.tutorial.technologies = [];
+      }
+      if (!this.tutorial.technologies.includes(tech.trim())) {
+        this.tutorial.technologies.push(tech.trim());
+      }
+    }
+  }
+
+  removeTechnology(index: number): void {
+    if (
+      this.tutorial.technologies &&
+      this.tutorial.technologies.length > index
+    ) {
+      this.tutorial.technologies.splice(index, 1);
+    }
+  }
+
+  // FIXED: Prerequisite methods
+  addPrerequisite(prereq: string): void {
+    if (prereq && prereq.trim()) {
+      if (!this.tutorial.prerequisites) {
+        this.tutorial.prerequisites = [];
+      }
+      if (!this.tutorial.prerequisites.includes(prereq.trim())) {
+        this.tutorial.prerequisites.push(prereq.trim());
+      }
+    }
+  }
+
+  removePrerequisite(index: number): void {
+    if (
+      this.tutorial.prerequisites &&
+      this.tutorial.prerequisites.length > index
+    ) {
+      this.tutorial.prerequisites.splice(index, 1);
+    }
+  }
+
+  // FIXED: Get roadmap step name
+  getRoadmapStepName(stepId: number | undefined): string {
+    if (!stepId) return 'Not assigned';
+    const step = this.roadmapSteps.find((s) => s.id === stepId);
+    return step ? step.title : 'Unknown step';
+  }
+
+  // Get all roadmap steps for dropdown
+  getRoadmapSteps(): RoadmapStep[] {
+    return this.roadmapSteps;
+  }
+
+  // Get steps by category
+  getStepsByCategory(category: string): RoadmapStep[] {
+    return this.roadmapSteps.filter((step) => step.category === category);
+  }
+
+  // ... rest of your existing methods (loadTutorial, addContentBlock, removeContentBlock, etc.) ...
 
   async loadTutorial(tutorialId: string) {
     try {
       const tutorial = await this.matrixNotesService.getTutorial(tutorialId);
       if (tutorial) {
-        this.tutorial = tutorial;
+        // Ensure optional arrays are initialized
+        this.tutorial = {
+          ...tutorial,
+          technologies: tutorial.technologies || [],
+          prerequisites: tutorial.prerequisites || [],
+          learningObjectives: tutorial.learningObjectives || [],
+        };
         this.isEditMode = true;
       }
     } catch (error) {
@@ -141,12 +950,12 @@ export class MatrixNotesEditorComponent implements OnInit, OnDestroy {
       type: this.activeContentType as any,
       content: '',
       order: this.tutorial.content.length,
-      language: this.activeContentType === 'code' ? 'javascript' : undefined,
-      fileName: this.activeContentType === 'code' ? '' : undefined,
-      caption: this.activeContentType === 'image' ? '' : undefined,
-      title: this.activeContentType === 'video' ? '' : undefined,
-      metadata:
-        this.activeContentType === 'callout' ? { type: 'info' } : undefined,
+      language: this.activeContentType === 'code' ? 'javascript' : '',
+      fileName: this.activeContentType === 'code' ? '' : '',
+      caption: this.activeContentType === 'image' ? '' : '',
+      title: this.activeContentType === 'video' ? '' : '',
+      metadata: this.activeContentType === 'callout' ? { type: 'info' } : {},
+      showPreview: false,
     };
 
     this.tutorial.content.push(newContent);
@@ -223,37 +1032,6 @@ export class MatrixNotesEditorComponent implements OnInit, OnDestroy {
     }
   }
 
-  async publishTutorial() {
-    if (!this.tutorial.title) {
-      this.toastr.error('Please add a title before publishing');
-      return;
-    }
-
-    if (this.tutorial.content.length === 0) {
-      this.toastr.error('Please add some content before publishing');
-      return;
-    }
-
-    this.isSaving = true;
-    try {
-      if (!this.isEditMode) {
-        const tutorialId = await this.matrixNotesService.createTutorial(
-          this.tutorial
-        );
-        this.tutorial.id = tutorialId;
-        this.isEditMode = true;
-      }
-
-      await this.matrixNotesService.publishTutorial(this.tutorial.id);
-      this.tutorial.published = true;
-      this.toastr.success('Tutorial published successfully');
-    } catch (error) {
-      this.toastr.error('Failed to publish tutorial');
-    } finally {
-      this.isSaving = false;
-    }
-  }
-
   calculateReadingTime(): number {
     const wordCount = this.tutorial.content
       .filter((content) => content.type === 'text')
@@ -265,6 +1043,10 @@ export class MatrixNotesEditorComponent implements OnInit, OnDestroy {
   getContentIcon(type: string): string {
     const contentType = this.contentTypes.find((ct) => ct.value === type);
     return contentType?.icon || 'fas fa-question';
+  }
+
+  editTutorial(tutorialId: string) {
+    this.router.navigate(['/admin/matrix-notes/editor', tutorialId]);
   }
 
   // Method to handle image upload
@@ -861,8 +1643,7 @@ export class MatrixNotesEditorComponent implements OnInit, OnDestroy {
   }
 
   // Toggle preview with proper typing
-  public togglePreview1(index: number) {
-    this.previewMode = !this.previewMode;
+  public toggleTextPreview(index: number) {
     if (!this.tutorial.content[index].showPreview) {
       this.tutorial.content[index].showPreview = true;
     } else {
@@ -870,21 +1651,10 @@ export class MatrixNotesEditorComponent implements OnInit, OnDestroy {
     }
   }
 
-  // For individual text block preview - rename this one
-toggleTextPreview(index: number) {
-  if (!this.tutorial.content[index].showPreview) {
-    this.tutorial.content[index].showPreview = true;
-  } else {
-    this.tutorial.content[index].showPreview = false;
+  // Keep this one for global preview mode
+  togglePreview() {
+    this.previewMode = !this.previewMode;
   }
-}
-
-// Keep this one for global preview mode
-togglePreview() {
-  this.previewMode = !this.previewMode;
-}
-
-  
 
   // Enhanced markdown rendering with alignment support
   public renderEnhancedMarkdown(text: string): string {
@@ -939,5 +1709,117 @@ togglePreview() {
 
     return html;
   }
-  
+
+  // FIXED: Safe getter for learning objectives
+  getLearningObjectives(): string[] {
+    return this.tutorial.learningObjectives || [];
+  }
+
+  // FIXED: Safe method to update learning objectives
+  updateLearningObjective(index: number, value: string): void {
+    if (!this.tutorial.learningObjectives) {
+      this.tutorial.learningObjectives = [];
+    }
+
+    if (this.tutorial.learningObjectives.length > index) {
+      this.tutorial.learningObjectives[index] = value;
+    }
+  }
+
+  // FIXED: Learning objectives methods with safety checks
+  addLearningObjective(): void {
+    if (!this.tutorial.learningObjectives) {
+      this.tutorial.learningObjectives = [];
+    }
+    this.tutorial.learningObjectives.push('');
+  }
+
+  removeLearningObjective(index: number): void {
+    if (
+      this.tutorial.learningObjectives &&
+      this.tutorial.learningObjectives.length > index
+    ) {
+      this.tutorial.learningObjectives.splice(index, 1);
+    }
+  }
+
+  // matrix-notes-editor.component.ts - PRODUCTION PUBLISH
+
+  async publishTutorial(): Promise<void> {
+    // Validation
+    if (!this.tutorial.title?.trim()) {
+      this.toastr.error('Please add a title before publishing');
+      return;
+    }
+
+    if (this.tutorial.content.length === 0) {
+      this.toastr.error('Please add some content before publishing');
+      return;
+    }
+
+    this.isSaving = true;
+
+    try {
+      // Prepare tutorial data
+      this.prepareTutorialForPublish();
+
+      // Save tutorial
+      const tutorialId = await this.saveTutorial();
+
+      // Publish tutorial
+      await this.matrixNotesService.publishTutorial(tutorialId);
+
+      // Navigate to published tutorial
+      this.navigateToPublishedTutorial(tutorialId);
+    } catch (error) {
+      console.error('❌ Failed to publish tutorial:', error);
+      this.toastr.error('Failed to publish tutorial');
+    } finally {
+      this.isSaving = false;
+    }
+  }
+
+  private prepareTutorialForPublish(): void {
+    // Calculate reading time
+    this.tutorial.readingTime = this.calculateReadingTime();
+
+    // Set roadmap metadata
+    if (this.tutorial.roadmapStep) {
+      const selectedStep = this.roadmapSteps.find(
+        (s) => s.id === this.tutorial.roadmapStep
+      );
+      if (selectedStep) {
+        this.tutorial.roadmapType = selectedStep.category as
+          | 'frontend'
+          | 'backend';
+        this.tutorial.stepTitle = selectedStep.title;
+      }
+    }
+
+    // Ensure arrays are initialized
+    this.tutorial.technologies = this.tutorial.technologies || [];
+    this.tutorial.prerequisites = this.tutorial.prerequisites || [];
+    this.tutorial.learningObjectives = this.tutorial.learningObjectives || [];
+  }
+
+  private async saveTutorial(): Promise<string> {
+    if (this.isEditMode) {
+      await this.matrixNotesService.updateTutorial(
+        this.tutorial.id,
+        this.tutorial
+      );
+      return this.tutorial.id;
+    } else {
+      return await this.matrixNotesService.createTutorial(this.tutorial);
+    }
+  }
+
+  private navigateToPublishedTutorial(tutorialId: string): void {
+    const queryParams = this.tutorial.roadmapStep
+      ? { roadmapStep: this.tutorial.roadmapStep }
+      : undefined;
+
+    this.router.navigate(['/tutorials', tutorialId], { queryParams });
+    this.toastr.success('Tutorial published successfully');
+  }
 }

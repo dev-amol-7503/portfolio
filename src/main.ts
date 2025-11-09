@@ -19,6 +19,6 @@ bootstrapApplication(AppComponent, {
     // ✅ FIXED: ye dono importProvidersFrom ke bahar likhne hain
     provideFirebaseApp(() => initializeApp(environment.firebase)),
     provideFirestore(() => getFirestore()),
-    provideRouter(routes, withHashLocation()),
+    provideRouter(routes)
   ],
 }).catch((err) => console.error(err));

@@ -10,7 +10,6 @@ import {
 
 export interface PortfolioData {
   projects: Project[];
-  testimonials: Testimonial[];
   skills: Skill[];
   experiences: Experience[];
   socialPosts: SocialPost[];
@@ -56,15 +55,14 @@ export class AdminService {
       projects: [
         {
           id: 1,
-          title: 'MatrixShare - Share Anything. Anywhere. Instantly',
+          title: 'MatrixText',
           description:
-            'A real-time text sharing platform that allows users to share unlimited text across devices using secure 4-digit codes. Features one-click copy, instant sharing, and retrieval with beautiful UI.',
+            'A real-time text sharing app to send and receive unlimited text across devices using a secure 4-digit code. Fast sharing, one-click copy, and clean modern UI.',
           technologies: [
             'Angular',
             'TypeScript',
             'Bootstrap',
             'RxJS',
-            'Local Storage API',
             'Clipboard API',
           ],
           imageUrl: 'assets/images/clipboard-placeholder.jpg',
@@ -76,10 +74,10 @@ export class AdminService {
         },
         {
           id: 2,
-          title: "Amol's Portfolio",
+          title: "AmolWorks",
           description:
-            'A responsive and visually engaging portfolio website designed and developed to showcase my skills, experience, and projects.',
-          technologies: ['HTML/SCSS', 'Bootstrap', 'Angular'],
+            'A responsive and attractive portfolio website created to showcase my skills, experience, and projects in a clear, engaging, and professional manner across all devices.',
+          technologies: ['HTML/SCSS', 'Bootstrap', 'Angular', 'TypeScript'],
           imageUrl: 'assets/images/portfolio-placeholder.jpg',
           animationUrl: 'assets/lottie/portfolio-animation.json',
           link: 'https://www.thematrixworld.in/',
@@ -89,19 +87,18 @@ export class AdminService {
         },
         {
           id: 5,
-          title: 'Matrix Notes - Tutorial Management System',
+          title: 'MatrixNotes',
           description:
-            'A comprehensive tutorial and notes management application with rich text editing, real-time collaboration, and advanced content management features.',
+            'A comprehensive tutorial and notes management application with rich-text editing, real-time collaboration, and advanced content-management features.',
           technologies: [
             'Angular',
-            'TypeScript',
-            'Firebase',
-            'Firestore',
+            'CSS/SCSS',
             'Bootstrap',
             'Rich Text Editor',
+            'Firebase Database'
           ],
           imageUrl: 'assets/images/matrix-notes-placeholder.jpg',
-          animationUrl: 'assets/lottie/notes-animation.json',
+          animationUrl: 'assets/lottie/matrix-notes.json',
           link: '/tutorials', // This will take users to tutorials list
           githubLink: 'https://github.com/thematrixxworld/matrix-notes',
           category: 'Web Application',
@@ -129,16 +126,6 @@ export class AdminService {
         },
         */
         
-      ],
-      testimonials: [
-        {
-          id: 1,
-          name: 'Vijay Gheji',
-          position: 'Project Manager at TCS',
-          text: 'Amol is an exceptional developer with an unwavering commitment to delivering high-quality work.',
-          image: 'assets/images/profile-user.png',
-          rating: 5,
-        },
       ],
       skills: this.getInitialSkills(),
       experiences: [
@@ -423,36 +410,6 @@ export class AdminService {
     const currentData = this.portfolioData.value;
     const updatedSkills = currentData.skills.filter((s) => s.id !== skillId);
     const newData = { ...currentData, skills: updatedSkills };
-    this.portfolioData.next(newData);
-    this.saveToLocalStorage(newData);
-  }
-
-  // ========== TESTIMONIALS MANAGEMENT ==========
-  updateTestimonial(testimonial: Testimonial): void {
-    const currentData = this.portfolioData.value;
-    const updatedTestimonials = currentData.testimonials.map((t) =>
-      t.id === testimonial.id ? testimonial : t
-    );
-    const newData = { ...currentData, testimonials: updatedTestimonials };
-    this.portfolioData.next(newData);
-    this.saveToLocalStorage(newData);
-  }
-
-  addTestimonial(testimonial: Testimonial): void {
-    const currentData = this.portfolioData.value;
-    const newTestimonial = { ...testimonial, id: Date.now() };
-    const updatedTestimonials = [newTestimonial, ...currentData.testimonials];
-    const newData = { ...currentData, testimonials: updatedTestimonials };
-    this.portfolioData.next(newData);
-    this.saveToLocalStorage(newData);
-  }
-
-  deleteTestimonial(testimonialId: number): void {
-    const currentData = this.portfolioData.value;
-    const updatedTestimonials = currentData.testimonials.filter(
-      (t) => t.id !== testimonialId
-    );
-    const newData = { ...currentData, testimonials: updatedTestimonials };
     this.portfolioData.next(newData);
     this.saveToLocalStorage(newData);
   }

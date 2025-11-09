@@ -5,81 +5,107 @@ import { OnlineClipboardComponent } from './components/online-clipboard/online-c
 import { adminGuard } from './guards/admin.guard';
 
 export const routes: Routes = [
-  { 
-    path: '', 
-    loadComponent: () => import('./home/home.component').then(m => m.HomeComponent),
-    title: 'Amol Nagare - Full Stack Developer'
+  {
+    path: '',
+    loadComponent: () =>
+      import('./home/home.component').then((m) => m.HomeComponent),
+    title: 'Amol Nagare - Full Stack Developer',
   },
-  { 
-    path: 'about', 
-    loadComponent: () => import('./about/about.component').then(m => m.AboutComponent),
-    title: 'About Me - Amol Nagare'
+  {
+    path: 'about',
+    loadComponent: () =>
+      import('./about/about.component').then((m) => m.AboutComponent),
+    title: 'About Me - Amol Nagare',
   },
-  { 
-    path: 'skills', 
-    loadComponent: () => import('./skills/skills.component').then(m => m.SkillsComponent),
-    title: 'My Skills - Amol Nagare'
+  {
+    path: 'skills',
+    loadComponent: () =>
+      import('./skills/skills.component').then((m) => m.SkillsComponent),
+    title: 'My Skills - Amol Nagare',
   },
-  { 
-    path: 'projects', 
-    loadComponent: () => import('./projects/projects.component').then(m => m.ProjectsComponent),
-    title: 'My Projects - Amol Nagare'
+  {
+    path: 'projects',
+    loadComponent: () =>
+      import('./projects/projects.component').then((m) => m.ProjectsComponent),
+    title: 'My Projects - Amol Nagare',
   },
-  { 
-    path: 'online-clipboard', 
-    loadComponent: () => import('./components/online-clipboard/online-clipboard.component').then(m => m.OnlineClipboardComponent),
-    title: 'Online Clipboard - Share Text Across Devices'
+  {
+    path: 'online-clipboard',
+    loadComponent: () =>
+      import('./components/online-clipboard/online-clipboard.component').then(
+        (m) => m.OnlineClipboardComponent
+      ),
+    title: 'Online Clipboard - Share Text Across Devices',
   },
-  { 
-    path: 'experience', 
-    loadComponent: () => import('./experience/experience.component').then(m => m.ExperienceComponent),
-    title: 'Experience - Amol Nagare'
+  {
+    path: 'experience',
+    loadComponent: () =>
+      import('./experience/experience.component').then(
+        (m) => m.ExperienceComponent
+      ),
+    title: 'Experience - Amol Nagare',
   },
-  { 
-    path: 'contact', 
-    loadComponent: () => import('./contact/contact.component').then(m => m.ContactComponent),
-    title: 'Contact - Amol Nagare'
+  {
+    path: 'contact',
+    loadComponent: () =>
+      import('./contact/contact.component').then((m) => m.ContactComponent),
+    title: 'Contact - Amol Nagare',
   },
-  { 
-    path: 'admin/login', 
+  {
+    path: 'admin/login',
     component: AdminLoginComponent,
-    title: 'Admin Login'
+    title: 'Admin Login',
   },
-  { 
-    path: 'admin', 
+  {
+    path: 'admin',
     component: AdminDashboardComponent,
     title: 'Admin Dashboard',
-    canActivate: [adminGuard]
+    canActivate: [adminGuard],
   },
   // Matrix Notes Routes - Public
-  { 
-    path: 'tutorials', 
-    loadComponent: () => import('./projects/matrix-notes/tutorials-list/tutorials-list.component').then(m => m.TutorialsListComponent),
-    title: 'Matrix Notes - Tutorials'
+  {
+    path: 'tutorials',
+    loadComponent: () =>
+      import(
+        './projects/matrix-notes/tutorials-list/tutorials-list.component'
+      ).then((m) => m.TutorialsListComponent),
+    title: 'Matrix Notes - Tutorials',
   },
-  { 
-    path: 'tutorials/:id', 
-    loadComponent: () => import('./projects/matrix-notes/tutorial-detail/tutorial-detail.component').then(m => m.TutorialDetailComponent),
-    title: 'Matrix Notes - Tutorial'
+  {
+    path: 'tutorials/:id',
+    loadComponent: () =>
+      import(
+        './projects/matrix-notes/tutorial-detail/tutorial-detail.component'
+      ).then((m) => m.TutorialDetailComponent),
+    title: 'Matrix Notes - Tutorial',
   },
   // Matrix Notes Routes - Admin Protected
-  { 
-    path: 'admin/matrix-notes', 
-    loadComponent: () => import('./projects/matrix-notes/matrix-notes-dashboard/matrix-notes-dashboard.component').then(m => m.MatrixNotesDashboardComponent),
+  {
+    path: 'admin/matrix-notes',
+    loadComponent: () =>
+      import(
+        './projects/matrix-notes/matrix-notes-dashboard/matrix-notes-dashboard.component'
+      ).then((m) => m.MatrixNotesDashboardComponent),
     title: 'Matrix Notes Dashboard',
-    canActivate: [adminGuard]
+    canActivate: [adminGuard],
   },
-  { 
-    path: 'admin/matrix-notes/editor', 
-    loadComponent: () => import('./projects/matrix-notes/matrix-notes-editor/matrix-notes-editor.component').then(m => m.MatrixNotesEditorComponent),
+  {
+    path: 'admin/matrix-notes/editor',
+    loadComponent: () =>
+      import(
+        './projects/matrix-notes/matrix-notes-editor/matrix-notes-editor.component'
+      ).then((m) => m.MatrixNotesEditorComponent),
     title: 'Matrix Notes Editor',
-    canActivate: [adminGuard]
+    canActivate: [adminGuard],
   },
-  { 
-    path: 'admin/matrix-notes/editor/:id', 
-    loadComponent: () => import('./projects/matrix-notes/matrix-notes-editor/matrix-notes-editor.component').then(m => m.MatrixNotesEditorComponent),
+  {
+    path: 'admin/matrix-notes/editor/:id',
+    loadComponent: () =>
+      import(
+        './projects/matrix-notes/matrix-notes-editor/matrix-notes-editor.component'
+      ).then((m) => m.MatrixNotesEditorComponent),
     title: 'Matrix Notes Editor',
-    canActivate: [adminGuard]
+    canActivate: [adminGuard],
   },
-  { path: '**', redirectTo: '' }
+  { path: '**', redirectTo: '' },
 ];

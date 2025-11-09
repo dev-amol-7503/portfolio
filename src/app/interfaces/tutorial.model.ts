@@ -1,3 +1,4 @@
+// interfaces/tutorial.model.ts mai yeh add karen
 export interface Tutorial {
   id: string;
   title: string;
@@ -10,19 +11,29 @@ export interface Tutorial {
   featured: boolean;
   createdAt: Date;
   updatedAt: Date;
-  publishedAt?: Date;
   readingTime: number;
-  difficulty: 'beginner' | 'intermediate' | 'advanced';
-  coverImage?: string;
+  difficulty: string;
   bookmarks: string[];
   views: number;
   likes: number;
+  
+  // Roadmap related fields
+  roadmapStep?: number;
+  roadmapType?: 'frontend' | 'backend';
+  stepTitle?: string;
+  technologies: string[];
+  prerequisites: string[];
+  learningObjectives: string[];
+  
+  // NEW: Topic tracking fields
+  topicOrder?: number;        // 1, 2, 3... for ordering within roadmap step
+  totalTopics?: number;       // Total topics in this roadmap step
+  topicTitle?: string;        // Specific topic title
 }
 
-// In your tutorial.model.ts
 export interface TutorialContent {
   id: string;
-  type: 'text' | 'code' | 'image' | 'video' | 'diagram' | 'callout' | 'table';
+  type: 'text' | 'code' | 'image' | 'video' | 'callout' | 'table' | 'diagram';
   content: string;
   order: number;
   language?: string;
@@ -30,22 +41,36 @@ export interface TutorialContent {
   caption?: string;
   title?: string;
   metadata?: any;
-  showPreview?: boolean; // Add this line
+  showPreview?: boolean;
 }
 
-export interface TutorialComment {
-  id: string;
-  tutorialId: string;
-  userId: string;
-  userName: string;
-  content: string;
-  createdAt: Date;
-  parentId?: string;
+export interface RoadmapStep {
+  id: number;
+  title: string;
+  description: string;
+  category: 'backend' | 'frontend' | 'core';
+  technologies: string[];
+  topics: string[];
+  tutorials: Tutorial[];
+  isActive: boolean;
+  isCompleted: boolean;
+  order: number;
+  badgeClass?: string;
+  badgeText?: string;
+  progressClass?: string;
+  totalTopics: number;
+  prerequisites?: number[]; // Previous step IDs
+  estimatedHours?: number; // Estimated learning time
 }
 
-export interface TutorialBookmark {
-  id: string;
-  tutorialId: string;
-  userId: string;
-  createdAt: Date;
+
+
+// Helper function to get roadmap step by ID
+export function getRoadmapStepById(steps: RoadmapStep[], id: number): RoadmapStep | null {
+  return steps.find(step => step.id === id) || null;
+}
+
+// Helper function to get tutorials for a roadmap step
+export function getTutorialsForRoadmapStep(tutorials: Tutorial[], stepId: number): Tutorial[] {
+  return tutorials.filter(tutorial => tutorial.roadmapStep === stepId);
 }

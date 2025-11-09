@@ -85,30 +85,6 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
     }
   }
 
-  // Testimonial Methods
-  addTestimonial() {
-    if (this.newTestimonial.name && this.newTestimonial.text) {
-      const testimonial: Testimonial = {
-        id: Date.now(),
-        name: this.newTestimonial.name!,
-        position: this.newTestimonial.position || 'Colleague',
-        text: this.newTestimonial.text!,
-        image: this.newTestimonial.image || 'assets/images/profile-user.png',
-        rating: this.newTestimonial.rating || 5
-      };
-      this.adminService.addTestimonial(testimonial);
-      this.newTestimonial = {};
-      this.toastr.success('Testimonial added successfully');
-    }
-  }
-
-  deleteTestimonial(testimonialId: number) {
-    if (confirm('Are you sure you want to delete this testimonial?')) {
-      this.adminService.deleteTestimonial(testimonialId);
-      this.toastr.success('Testimonial deleted successfully');
-    }
-  }
-
   ngOnDestroy() {
     this.subscriptions.forEach(sub => sub.unsubscribe());
   }

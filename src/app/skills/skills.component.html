@@ -15,18 +15,18 @@
     </div>
     
     <!-- Skills Filter -->
-    <div class="skills-filter mb-5">
+    <div class="tabs-wrapper mb-5">
       <div class="row justify-content-center">
         <div class="col-auto">
           <button 
-            class="btn btn-filter rounded-pill mx-1 mb-2" 
+            class="btn btn-tab rounded-pill mx-1 mb-2" 
             [class.active]="activeCategory === 'all'"
             (click)="filterSkills('all')">
             All Skills
           </button>
           <button 
             *ngFor="let category of skillCategories" 
-            class="btn btn-filter rounded-pill mx-1 mb-2" 
+            class="btn btn-tab rounded-pill mx-1 mb-2" 
             [class.active]="activeCategory === category.name"
             (click)="filterSkills(category.name)">
             <i [class]="category.icon" class="me-2"></i>{{ category.displayName }}
