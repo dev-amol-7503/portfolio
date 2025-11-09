@@ -1,12 +1,12 @@
-<section class="skills-section py-5">
+<section class="skills-section py-4">
   <div class="container">
     
     <!-- Edit Mode Controls -->
-    <div class="row mb-4" *ngIf="isEditMode">
+    <div class="row mb-3" *ngIf="isEditMode">
       <div class="col-12">
-        <div class="alert alert-info d-flex align-items-center">
+        <div class="alert alert-info d-flex align-items-center py-2">
           <i class="fas fa-edit me-2"></i>
-          <span>Edit Mode: Click on skills to modify them</span>
+          <span class="small">Edit Mode: Click on skills to modify them</span>
           <button class="btn btn-sm btn-success ms-auto" (click)="addNewSkill()">
             <i class="fas fa-plus me-1"></i> Add Skill
           </button>
@@ -15,66 +15,68 @@
     </div>
     
     <!-- Skills Filter -->
-    <div class="tabs-wrapper mb-5">
+    <div class="tabs-wrapper mb-4">
       <div class="row justify-content-center">
         <div class="col-auto">
-          <button 
-            class="btn btn-tab rounded-pill mx-1 mb-2" 
-            [class.active]="activeCategory === 'all'"
-            (click)="filterSkills('all')">
-            All Skills
-          </button>
-          <button 
-            *ngFor="let category of skillCategories" 
-            class="btn btn-tab rounded-pill mx-1 mb-2" 
-            [class.active]="activeCategory === category.name"
-            (click)="filterSkills(category.name)">
-            <i [class]="category.icon" class="me-2"></i>{{ category.displayName }}
-          </button>
+          <div class="btn-group btn-group-sm flex-wrap justify-content-center" role="group">
+            <button 
+              class="btn btn-tab rounded-pill px-3"
+              [class.active]="activeCategory === 'all'"
+              (click)="filterSkills('all')">
+              All Skills
+            </button>
+            <button 
+              *ngFor="let category of skillCategories" 
+              class="btn btn-tab rounded-pill px-3"
+              [class.active]="activeCategory === category.name"
+              (click)="filterSkills(category.name)">
+              <i [class]="category.icon" class="me-1"></i>{{ category.displayName }}
+            </button>
+          </div>
         </div>
       </div>
     </div>
     
     <!-- Skills with Glass Effect -->
-    <div class="skills-grid mb-5">
-      <div class="row g-4">
+    <div class="skills-grid mb-4">
+      <div class="row g-3">
         <div class="col-md-6 col-lg-4" *ngFor="let skill of filteredSkills">
           <div class="skill-glass-card">
             <div class="skill-icon-container">
               <i [class]="getSkillIcon(skill.name)" class="skill-icon"></i>
             </div>
             <div class="skill-content">
-              <div class="skill-header d-flex justify-content-between align-items-center mb-3">
-                <div>
+              <div class="skill-header d-flex justify-content-between align-items-center mb-2">
+                <div class="flex-grow-1">
                   <input 
                     *ngIf="isEditMode"
                     [value]="skill.name"
                     (change)="onSkillNameChange(skill, $event)"
-                    class="skill-edit-input"
+                    class="skill-edit-input small"
                   >
-                  <h5 class="skill-name mb-0" *ngIf="!isEditMode">{{ skill.name }}</h5>
+                  <h6 class="skill-name mb-0" *ngIf="!isEditMode">{{ skill.name }}</h6>
                 </div>
-                <div class="d-flex align-items-center">
+                <div class="d-flex align-items-center ms-2">
                   <input 
                     *ngIf="isEditMode"
                     type="number" 
                     [value]="skill.level"
                     (change)="onSkillLevelChange(skill, $event)"
-                    class="skill-level-edit me-2"
+                    class="skill-level-edit me-2 small"
                     min="0"
                     max="100"
                   >
-                  <span class="skill-percent">{{ skill.level }}%</span>
+                  <span class="skill-percent small fw-bold">{{ skill.level }}%</span>
                   <button 
                     *ngIf="isEditMode"
-                    class="btn btn-sm btn-danger ms-2"
+                    class="btn btn-xs btn-danger ms-2"
                     (click)="deleteSkill(skill)"
                   >
                     <i class="fas fa-trash"></i>
                   </button>
                 </div>
               </div>
-              <div class="progress" style="height: 8px;">
+              <div class="progress" style="height: 6px;">
                 <div class="progress-bar" 
                      role="progressbar" 
                      [style.width]="skill.level + '%'"
@@ -91,21 +93,20 @@
       </div>
     </div>
     
-    
     <!-- Skills Summary -->
-    <div class="skills-summary mt-5 pt-4">
+    <div class="skills-summary mt-4 pt-3">
       <div class="row align-items-center">
         <div class="col-lg-8">
-          <h3 class="mb-3">Full Stack Development Expertise</h3>
-          <p class="mb-0">
+          <h5 class="mb-2">Full Stack Development Expertise</h5>
+          <p class="mb-0 small text-muted">
             With 4 years of professional experience, I specialize in building enterprise-scale applications using 
             Java, Spring Boot, and Angular. My expertise spans from creating responsive user interfaces to 
             developing robust backend systems and implementing CI/CD pipelines.
           </p>
         </div>
-        <div class="col-lg-4 text-lg-end mt-3 mt-lg-0">
-          <button class="btn btn-primary btn-lg" (click)="goToProjects()">
-            View My Projects <i class="fas fa-arrow-right ms-2"></i>
+        <div class="col-lg-4 text-lg-end mt-2 mt-lg-0">
+          <button class="btn btn-primary btn-sm" (click)="goToProjects()">
+            View My Projects <i class="fas fa-arrow-right ms-1"></i>
           </button>
         </div>
       </div>

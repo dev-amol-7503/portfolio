@@ -80,7 +80,7 @@ export class AdminService {
           technologies: ['HTML/SCSS', 'Bootstrap', 'Angular', 'TypeScript'],
           imageUrl: 'assets/images/portfolio-placeholder.jpg',
           animationUrl: 'assets/lottie/portfolio-animation.json',
-          link: 'https://www.thematrixworld.in/',
+          link: 'https://amol-works.vercel.app/',
           githubLink: 'https://github.com/thematrixxworld/amol-portfolio.git',
           category: 'Web Application',
           featured: true,

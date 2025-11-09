@@ -1,4 +1,4 @@
-<div class="online-clipboard-container py-5">
+<div class="online-clipboard-container py-4">
   <!-- Enhanced Background Animation -->
   <div class="background-animation"></div>
 
@@ -14,7 +14,7 @@
             (click)="switchTab('share')"
           >
             <i class="fas fa-share-alt"></i>
-            Share Content
+            Share
           </button>
           <button
             class="nav-link"
@@ -22,7 +22,7 @@
             (click)="switchTab('retrieve')"
           >
             <i class="fas fa-download"></i>
-            Retrieve Content
+            Retrieve
           </button>
           <button
             class="nav-link"
@@ -30,12 +30,12 @@
             (click)="switchTab('files')"
           >
             <i class="fas fa-folder"></i>
-            My Files
+            Files
           </button>
         </div>
       </div>
 
-      <!-- Share Tab - Enhanced for Multiple Content Types -->
+      <!-- Share Tab -->
       <div *ngIf="activeTab === 'share'" class="tab-content share-tab">
         <div class="split-layout">
           <!-- Left Side - Content Input -->
@@ -46,7 +46,7 @@
                   <i class="fas fa-rocket"></i>
                 </div>
                 <div class="app-info">
-                  <h1>MatrixShare Pro</h1>
+                  <h1>MatrixShare</h1>
                 </div>
               </div>
 
@@ -69,7 +69,7 @@
               </div>
             </div>
 
-            <!-- Dynamic Content Area Based on Type -->
+            <!-- Dynamic Content Area -->
             <div class="content-input-container">
               <!-- Text/Code Input -->
               <div
@@ -94,23 +94,15 @@
                     <button
                       class="tool-btn"
                       (click)="pasteFromClipboard()"
-                      title="Paste from clipboard"
+                      title="Paste"
                     >
                       <i class="fas fa-paste"></i>
                     </button>
                     <button
                       class="tool-btn"
-                      (click)="clearFormatting()"
-                      [disabled]="!textToShare"
-                      title="Remove formatting"
-                    >
-                      <i class="fas fa-remove-format"></i>
-                    </button>
-                    <button
-                      class="tool-btn"
                       (click)="clearFields()"
                       [disabled]="!textToShare"
-                      title="Clear content"
+                      title="Clear"
                     >
                       <i class="fas fa-eraser"></i>
                     </button>
@@ -123,8 +115,7 @@
                     class="code-textarea"
                     [(ngModel)]="textToShare"
                     (input)="onTextChange()"
-                    (dblclick)="onDoubleClick($event)"
-                    placeholder="Enter your text or code here..."
+                    placeholder="Enter text or code..."
                   ></textarea>
                 </div>
 
@@ -137,10 +128,6 @@
                     <span class="stat">
                       <i class="fas fa-code-branch"></i>
                       {{ lineCount }} lines
-                    </span>
-                    <span class="stat">
-                      <i class="fas fa-weight-hanging"></i>
-                      {{ getFileSize() }}
                     </span>
                     <span *ngIf="isTextTooLong" class="stat error">
                       <i class="fas fa-exclamation-triangle"></i>
@@ -169,28 +156,21 @@
                     multiple
                   />
                   <div class="upload-content">
-                    <i class="fas fa-cloud-upload-alt fa-3x"></i>
-                    <h4>Drop files here or click to upload</h4>
-                    <p>Supports multiple files up to 1MB each</p>
-                    <div class="supported-formats">
-                      <span class="format-badge">PDF</span>
-                      <span class="format-badge">DOC</span>
-                      <span class="format-badge">ZIP</span>
-                      <span class="format-badge">TXT</span>
-                      <span class="format-badge">More...</span>
-                    </div>
+                    <i class="fas fa-cloud-upload-alt fa-2x"></i>
+                    <h5>Drop files or click to upload</h5>
+                    <p class="small">Max 1MB per file</p>
                   </div>
                 </div>
 
-                <!-- Selected Files List -->
+                <!-- Selected Files -->
                 <div *ngIf="selectedFiles.length > 0" class="selected-files">
-                  <h5>Selected Files ({{ selectedFiles.length }})</h5>
+                  <h6>Files ({{ selectedFiles.length }})</h6>
                   <div class="file-list">
                     <div *ngFor="let file of selectedFiles" class="file-item">
                       <i class="fas" [class]="getFileIcon(file)"></i>
                       <div class="file-info">
-                        <span class="file-name">{{ file.name }}</span>
-                        <span class="file-size">{{
+                        <span class="file-name small">{{ file.name }}</span>
+                        <span class="file-size small">{{
                           formatFileSize(file.size)
                         }}</span>
                       </div>
@@ -221,16 +201,16 @@
                     style="display: none"
                   />
                   <div class="upload-content">
-                    <i class="fas fa-image fa-3x"></i>
-                    <h4>Drop image here or click to upload</h4>
-                    <p>Supports JPG, PNG, GIF, WEBP up to 1MB</p>
+                    <i class="fas fa-image fa-2x"></i>
+                    <h5>Drop image or click to upload</h5>
+                    <p class="small">JPG, PNG, GIF, WEBP - Max 1MB</p>
                   </div>
                 </div>
 
                 <!-- Image Preview -->
                 <div *ngIf="selectedImage" class="image-preview">
                   <img [src]="selectedImagePreview" alt="Preview" />
-                  <div class="image-info">
+                  <div class="image-info small">
                     <span>{{ selectedImage.name }}</span>
                     <span>{{ formatFileSize(selectedImage.size) }}</span>
                   </div>
@@ -250,19 +230,6 @@
                     placeholder="https://example.com"
                     (input)="validateUrl()"
                   />
-                  <div class="url-preview" *ngIf="urlPreview">
-                    <div class="preview-header">
-                      <img
-                        [src]="urlPreview.favicon"
-                        alt="Favicon"
-                        class="favicon"
-                      />
-                      <span class="preview-title">{{ urlPreview.title }}</span>
-                    </div>
-                    <p class="preview-description">
-                      {{ urlPreview.description }}
-                    </p>
-                  </div>
                 </div>
               </div>
 
@@ -293,65 +260,47 @@
                   >
                     <i class="fas fa-heading"></i>
                   </button>
-                  <button
-                    class="tool-btn"
-                    (click)="insertMarkdown('- ', '')"
-                    title="List"
-                  >
-                    <i class="fas fa-list"></i>
-                  </button>
-                  <button
-                    class="tool-btn"
-                    (click)="insertMarkdown('`', '`')"
-                    title="Code"
-                  >
-                    <i class="fas fa-code"></i>
-                  </button>
                 </div>
                 <textarea
                   #markdownArea
                   class="markdown-textarea"
                   [(ngModel)]="markdownContent"
-                  placeholder="Write your markdown content here..."
+                  placeholder="Write markdown content..."
                 ></textarea>
-                <div class="markdown-preview" *ngIf="markdownContent">
-                  <h6>Preview:</h6>
-                  <div [innerHTML]="markdownContent | markdown"></div>
-                </div>
               </div>
             </div>
 
             <!-- Action Section -->
             <div class="action-section">
               <div class="share-options" *ngIf="selectedContentType !== 'file'">
-                <label class="option-item">
+                <label class="option-item small">
                   <input type="checkbox" [(ngModel)]="options.encrypt" />
                   <i class="fas fa-lock"></i>
-                  Encrypt Content
+                  Encrypt
                 </label>
-                <label class="option-item">
+                <label class="option-item small">
                   <input
                     type="checkbox"
                     [(ngModel)]="options.passwordProtect"
                   />
                   <i class="fas fa-key"></i>
-                  Password Protect
+                  Password
                 </label>
-                <label class="option-item">
+                <label class="option-item small">
                   <input type="checkbox" [(ngModel)]="options.selfDestruct" />
                   <i class="fas fa-bomb"></i>
-                  Self-destruct after view
+                  Self-destruct
                 </label>
               </div>
 
               <button
-                class="btn btn-primary btn-lg generate-btn"
+                class="btn btn-primary generate-btn"
                 (click)="shareContent()"
                 [disabled]="!canShare() || isLoading"
               >
                 <i class="fas fa-bolt" *ngIf="!isLoading"></i>
                 <div class="spinner" *ngIf="isLoading"></div>
-                {{ isLoading ? "Generating..." : "Generate Share Code" }}
+                {{ isLoading ? "Generating..." : "Generate Code" }}
               </button>
             </div>
           </div>
@@ -360,13 +309,13 @@
           <div class="right-panel" *ngIf="generatedCode">
             <div class="share-result">
               <div class="result-header">
-                <h3>
+                <h5>
                   <i class="fas fa-check-circle text-success"></i>
-                  Content Ready to Share!
-                </h3>
+                  Ready to Share!
+                </h5>
                 <div class="countdown-timer">
                   <div class="timer-circle">
-                    <svg width="50" height="50" viewBox="0 0 44 44">
+                    <svg width="40" height="40" viewBox="0 0 44 44">
                       <circle
                         cx="22"
                         cy="22"
@@ -392,8 +341,8 @@
               </div>
 
               <div class="share-code-section">
-                <p class="instruction">
-                  Share this 6-digit code to access your content:
+                <p class="instruction small">
+                  Share this 6-digit code:
                 </p>
 
                 <div class="code-display">
@@ -408,103 +357,48 @@
                       [class.fa-copy]="!isCopied"
                       [class.fa-check]="isCopied"
                     ></i>
-                    {{ isCopied ? "Copied!" : "Copy Code" }}
-                  </button>
-                </div>
-
-                <div class="share-actions">
-                  <button
-                    class="btn btn-outline-info"
-                    (click)="copyShareLink()"
-                  >
-                    <i class="fas fa-link"></i>
-                    Copy Share Link
+                    {{ isCopied ? "Copied!" : "Copy" }}
                   </button>
                 </div>
 
                 <div class="content-details">
                   <div class="detail-item">
                     <i class="fas fa-clock text-warning"></i>
-                    <span>Expires in 2 minutes</span>
+                    <span class="small">Expires in 2 min</span>
                   </div>
                   <div class="detail-item">
-                    <i
-                      [class]="getContentTypeIcon()"
-                      [style.color]="getContentTypeColor()"
-                    ></i>
-                    <span>{{ getContentTypeName() }}</span>
+                    <i [class]="getContentTypeIcon()" class="text-info"></i>
+                    <span class="small">{{ getContentTypeName() }}</span>
                   </div>
-                  <div class="detail-item">
-                    <i class="fas fa-file-code text-info"></i>
-                    <span>{{ getContentSize() }}</span>
-                  </div>
-                </div>
-
-                <div
-                  class="security-features"
-                  *ngIf="options.encrypt || options.passwordProtect"
-                >
-                  <h5>
-                    <i class="fas fa-shield-alt"></i>
-                    Security Features
-                  </h5>
-                  <ul>
-                    <li *ngIf="options.encrypt">
-                      <i class="fas fa-lock text-success"></i>
-                      End-to-end encrypted
-                    </li>
-                    <li *ngIf="options.passwordProtect">
-                      <i class="fas fa-key text-warning"></i>
-                      Password protected
-                    </li>
-                    <li *ngIf="options.selfDestruct">
-                      <i class="fas fa-bomb text-danger"></i>
-                      Self-destruct after view
-                    </li>
-                  </ul>
                 </div>
               </div>
             </div>
           </div>
 
-          <!-- Empty State for Right Panel -->
+          <!-- Empty State -->
           <div class="right-panel empty-panel" *ngIf="!generatedCode">
             <div class="empty-state">
               <div class="empty-icon">
                 <i class="fas fa-share-alt"></i>
               </div>
-              <h4>Ready to Share</h4>
-              <p>Generate a share code to see it here</p>
-              <div class="features-list">
-                <div class="feature-item feature-1">
-                  <i class="fas fa-bolt text-success"></i>
-                  <span>Instant sharing</span>
-                </div>
-                <div class="feature-item feature-2">
-                  <i class="fas fa-shield-alt text-primary"></i>
-                  <span>Secure & encrypted</span>
-                </div>
-                <div class="feature-item feature-3">
-                  <i class="fas fa-infinity text-info"></i>
-                  <span>Multiple formats</span>
-                </div>
-              </div>
+              <h5>Ready to Share</h5>
+              <p class="small">Generate a code to see it here</p>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- Retrieve Tab - Enhanced -->
+      <!-- Retrieve Tab -->
       <div *ngIf="activeTab === 'retrieve'" class="tab-content retrieve-tab">
         <div class="retrieve-container">
-          <!-- Code Input Section -->
+          <!-- Code Input -->
           <div class="retrieve-input">
             <div class="input-header">
-              <h3>
+              <h5>
                 <i class="fas fa-key"></i>
                 Enter Share Code
-              </h3>
-              <p>Enter the 6-digit code to retrieve the shared content</p>
+              </h5>
+              <p class="small">Enter 6-digit code to retrieve content</p>
             </div>
 
             <div class="code-input-group">
@@ -525,12 +419,12 @@
               >
                 <i class="fas fa-download" *ngIf="!isLoading"></i>
                 <div class="spinner" *ngIf="isLoading"></div>
-                {{ isLoading ? "Retrieving..." : "Retrieve Content" }}
+                {{ isLoading ? "Retrieving..." : "Retrieve" }}
               </button>
             </div>
           </div>
 
-          <!-- Enhanced Retrieved Content Section -->
+          <!-- Retrieved Content -->
           <div class="retrieved-content" *ngIf="retrievedContent">
             <!-- Text Content -->
             <div
@@ -551,31 +445,24 @@
                     ></i>
                     {{ getLanguageName(autoDetectedLanguage) }}
                   </span>
-                  <h4>Retrieved Content</h4>
+                  <h5>Retrieved Content</h5>
                 </div>
                 <div class="header-actions">
                   <button
-                    class="btn btn-success"
+                    class="btn btn-success btn-sm"
                     (click)="copyToClipboard(retrievedContent.data)"
                   >
                     <i class="fas fa-copy"></i>
-                    Copy Text
+                    Copy
                   </button>
                   <button
-                    class="btn btn-outline-primary"
+                    class="btn btn-outline-primary btn-sm"
                     (click)="
                       downloadAsFile(retrievedContent.data, 'content.txt')
                     "
                   >
                     <i class="fas fa-download"></i>
                     Download
-                  </button>
-                  <button
-                    class="btn btn-outline-secondary"
-                    (click)="clearRetrievedContent()"
-                  >
-                    <i class="fas fa-times"></i>
-                    Clear
                   </button>
                 </div>
               </div>
@@ -585,7 +472,6 @@
                   #resultArea
                   class="result-textarea"
                   [value]="retrievedContent.data || 'No content available'"
-                  (dblclick)="onDoubleClick($event)"
                   readonly
                   spellcheck="false"
                 >
@@ -598,7 +484,6 @@
               *ngIf="retrievedContent.type === 'file'"
               class="retrieved-files-section"
             >
-              <!-- Header Section -->
               <div class="files-header">
                 <div class="header-content">
                   <div class="title-wrapper">
@@ -606,69 +491,27 @@
                       <i class="fas fa-cloud-download-alt"></i>
                     </div>
                     <div class="title-group">
-                      <h2 class="section-title">Files Ready for Download</h2>
-                      <p class="section-subtitle">
-                        Your shared files have been retrieved successfully
-                      </p>
-                    </div>
-                  </div>
-                  <div class="header-stats">
-                    <div class="stat-item">
-                      <div class="stat-icon">
-                        <i class="fas fa-layer-group"></i>
-                      </div>
-                      <div class="stat-info">
-                        <span class="stat-value">{{
-                          retrievedContent.files?.length || 0
-                        }}</span>
-                        <span class="stat-label">Total Files</span>
-                      </div>
-                    </div>
-                    <div class="stat-item">
-                      <div class="stat-icon">
-                        <i class="fas fa-database"></i>
-                      </div>
-                      <div class="stat-info">
-                        <span class="stat-value">{{
-                          getTotalFileSize() || "0 KB"
-                        }}</span>
-                        <span class="stat-label">Total Size</span>
-                      </div>
+                      <h5>Files Ready</h5>
+                      <p class="small">Your shared files</p>
                     </div>
                   </div>
                 </div>
 
-                <div
-                  class="header-actions"
-                  *ngIf="retrievedContent.files?.length"
-                >
+                <div class="header-actions">
                   <button class="btn-download-all" (click)="downloadAllFiles()">
-                    <div class="btn-content">
-                      <i class="fas fa-download"></i>
-                      <span>Download All</span>
-                    </div>
-                    <div class="btn-badge">
-                      {{ retrievedContent.files?.length }}
-                    </div>
+                    <i class="fas fa-download"></i>
+                    Download All
                   </button>
                 </div>
               </div>
 
-              <!-- Files Grid -->
               <div class="files-content">
                 <div class="files-grid" *ngIf="retrievedContent.files?.length">
                   <div
-                    *ngFor="let file of retrievedContent.files; let i = index"
+                    *ngFor="let file of retrievedContent.files"
                     class="file-card"
-                    [class.featured]="i === 0"
                   >
-                    <div class="card-background"></div>
-
                     <div class="file-card-header">
-                      <div
-                        class="file-type-indicator"
-                        [class]="getFileTypeClass(file)"
-                      ></div>
                       <div class="file-icon">
                         <i class="fas" [class]="getFileIcon(file)"></i>
                       </div>
@@ -680,102 +523,29 @@
                         >
                           <i class="fas fa-download"></i>
                         </button>
-                        <button
-                          class="btn-action"
-                          (click)="previewFile(file)"
-                          *ngIf="isPreviewable(file)"
-                          title="Preview"
-                        >
-                          <i class="fas fa-eye"></i>
-                        </button>
                       </div>
                     </div>
 
                     <div class="file-card-body">
                       <div class="file-info">
-                        <h4
-                          class="file-name"
-                          [title]="file.name || 'Unnamed file'"
-                        >
+                        <h6 class="file-name">
                           {{ file.name || "Unnamed file" }}
-                        </h4>
+                        </h6>
                         <div class="file-meta">
-                          <div class="meta-item">
+                          <div class="meta-item small">
                             <i class="fas fa-weight-hanging"></i>
-                            <span>{{
-                              formatFileSize(file.size) || "0 KB"
-                            }}</span>
-                          </div>
-                          <div class="meta-item">
-                            <i class="fas fa-tag"></i>
-                            <span>{{
-                              getFileType(file.name) || "Unknown"
-                            }}</span>
+                            <span>{{ formatFileSize(file.size) || "0 KB" }}</span>
                           </div>
                         </div>
                       </div>
                     </div>
 
                     <div class="file-card-footer">
-                      <div class="file-badge" [class]="getFileTypeClass(file)">
-                        {{ getFileExtension(file.name) || "???" }}
-                      </div>
                       <button class="btn-download" (click)="downloadFile(file)">
                         <i class="fas fa-download"></i>
                         Download
                       </button>
                     </div>
-
-                    <div class="file-card-hover">
-                      <div class="hover-content">
-                        <i class="fas fa-download"></i>
-                        <span>Click to Download</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- Empty State for Files -->
-                <div
-                  class="empty-state"
-                  *ngIf="!retrievedContent.files?.length"
-                >
-                  <div class="empty-icon">
-                    <i class="fas fa-folder-open"></i>
-                  </div>
-                  <h3>No Files Available</h3>
-                  <p>
-                    The retrieved content doesn't contain any files to display
-                  </p>
-                  <button
-                    class="btn btn-primary"
-                    (click)="clearRetrievedContent()"
-                  >
-                    <i class="fas fa-arrow-left"></i>
-                    Back to Retrieve
-                  </button>
-                </div>
-              </div>
-
-              <!-- Quick Actions Footer -->
-              <div class="files-footer" *ngIf="retrievedContent.files?.length">
-                <div class="footer-content">
-                  <div class="footer-info">
-                    <i class="fas fa-info-circle"></i>
-                    <span
-                      >All files will be automatically deleted in 2
-                      minutes</span
-                    >
-                  </div>
-                  <div class="footer-actions">
-                    <button class="btn-secondary" (click)="downloadAllFiles()">
-                      <i class="fas fa-download"></i>
-                      Download All Files
-                    </button>
-                    <button class="btn-secondary" (click)="copyAllFileLinks()">
-                      <i class="fas fa-link"></i>
-                      Copy Links
-                    </button>
                   </div>
                 </div>
               </div>
@@ -784,10 +554,10 @@
             <!-- Image Content -->
             <div *ngIf="retrievedContent.type === 'image'" class="image-result">
               <div class="result-header">
-                <h4>
+                <h5>
                   <i class="fas fa-image"></i>
                   Retrieved Image
-                </h4>
+                </h5>
               </div>
               <div class="image-content">
                 <img
@@ -799,11 +569,11 @@
                 />
                 <div class="image-actions">
                   <button
-                    class="btn btn-success"
+                    class="btn btn-success btn-sm"
                     (click)="downloadImage(retrievedContent.data)"
                   >
                     <i class="fas fa-download"></i>
-                    Download Image
+                    Download
                   </button>
                 </div>
               </div>
@@ -812,10 +582,10 @@
             <!-- URL Content -->
             <div *ngIf="retrievedContent.type === 'url'" class="url-result">
               <div class="result-header">
-                <h4>
+                <h5>
                   <i class="fas fa-link"></i>
                   Retrieved URL
-                </h4>
+                </h5>
               </div>
               <div class="url-content">
                 <div class="url-preview">
@@ -826,84 +596,35 @@
                     [class.disabled]="!retrievedContent.data"
                   >
                     <i class="fas fa-external-link-alt"></i>
-                    {{ retrievedContent.data || "No URL available" }}
+                    {{ retrievedContent.data || "No URL" }}
                   </a>
                 </div>
                 <button
-                  class="btn btn-primary"
+                  class="btn btn-primary btn-sm"
                   (click)="openUrl(retrievedContent.data)"
                   [disabled]="!retrievedContent.data"
                 >
                   <i class="fas fa-external-link-alt"></i>
-                  Open URL
-                </button>
-              </div>
-            </div>
-
-            <!-- Content Info Footer -->
-            <div
-              class="content-info"
-              *ngIf="retrievedContent.timestamp || retrievedContent.size"
-            >
-              <div class="info-item" *ngIf="retrievedContent.timestamp">
-                <i class="fas fa-calendar"></i>
-                <span
-                  >Shared:
-                  {{ retrievedContent.timestamp | date : "medium" }}</span
-                >
-              </div>
-              <div class="info-item" *ngIf="retrievedContent.size">
-                <i class="fas fa-expand-arrows-alt"></i>
-                <span>Size: {{ retrievedContent.size || "Unknown" }}</span>
-              </div>
-            </div>
-
-            <!-- Empty Content State -->
-            <div
-              class="empty-content-state"
-              *ngIf="!retrievedContent.data && !retrievedContent.files?.length"
-            >
-              <div class="empty-content">
-                <i class="fas fa-inbox fa-3x"></i>
-                <h4>Content Unavailable</h4>
-                <p>The retrieved content appears to be empty or unavailable</p>
-                <button
-                  class="btn btn-primary"
-                  (click)="clearRetrievedContent()"
-                >
-                  <i class="fas fa-sync"></i>
-                  Try Again
+                  Open
                 </button>
               </div>
             </div>
           </div>
 
-          <!-- Empty State for Retrieve -->
+          <!-- Empty State -->
           <div
             class="empty-retrieve-state"
             *ngIf="!retrievedContent && retrievalCode && !isLoading"
           >
             <div class="empty-retrieve">
               <div class="empty-content">
-                <i class="fas fa-search fa-3x"></i>
-                <h4>No Content Found</h4>
-                <p>
-                  The provided code didn't return any content. Please check the
-                  code and try again.
-                </p>
-                <div class="empty-actions">
-                  <button class="btn btn-primary" (click)="clearRetrieval()">
-                    <i class="fas fa-redo"></i>
-                    Try Another Code
-                  </button>
-                  <button
-                    class="btn btn-outline-secondary"
-                    (click)="copyToClipboard(retrievalCode)"
-                  >
-                    <i class="fas fa-copy"></i>
-                    Copy Code
-                  </button>
-                </div>
+                <i class="fas fa-search fa-2x"></i>
+                <h5>No Content Found</h5>
+                <p class="small">Check the code and try again</p>
+                <button class="btn btn-primary btn-sm" (click)="clearRetrieval()">
+                  <i class="fas fa-redo"></i>
+                  Try Again
+                </button>
               </div>
             </div>
           </div>
@@ -912,8 +633,7 @@
           <div class="loading-state" *ngIf="isLoading">
             <div class="loading-content">
               <div class="spinner"></div>
-              <h4>Retrieving Content...</h4>
-              <p>Please wait while we fetch your content</p>
+              <h5>Retrieving...</h5>
             </div>
           </div>
         </div>
@@ -923,12 +643,12 @@
       <div *ngIf="activeTab === 'files'" class="tab-content files-tab">
         <div class="files-container">
           <div class="files-header">
-            <h3>
+            <h5>
               <i class="fas fa-folder-open"></i>
               My Shared Files
-            </h3>
+            </h5>
             <button
-              class="btn btn-primary refresh-btn"
+              class="btn btn-primary btn-sm refresh-btn"
               (click)="refreshFiles()"
             >
               <i class="fas fa-sync-alt"></i>
@@ -938,30 +658,15 @@
 
           <div class="files-stats">
             <div class="stat-card">
-              <div class="stat-icon text-primary">
-                <i class="fas fa-share-alt"></i>
-              </div>
               <div class="stat-info">
                 <span class="stat-number">{{ sharedItems.length }}</span>
-                <span class="stat-label">Total Shared</span>
+                <span class="stat-label small">Total</span>
               </div>
             </div>
             <div class="stat-card">
-              <div class="stat-icon text-success">
-                <i class="fas fa-check-circle"></i>
-              </div>
               <div class="stat-info">
                 <span class="stat-number">{{ getActiveItems().length }}</span>
-                <span class="stat-label">Active</span>
-              </div>
-            </div>
-            <div class="stat-card">
-              <div class="stat-icon text-warning">
-                <i class="fas fa-clock"></i>
-              </div>
-              <div class="stat-info">
-                <span class="stat-number">{{ getExpiredItems().length }}</span>
-                <span class="stat-label">Expired</span>
+                <span class="stat-label small">Active</span>
               </div>
             </div>
           </div>
@@ -981,22 +686,18 @@
               <div class="file-details">
                 <h6 class="file-title">{{ item.title || "Untitled" }}</h6>
                 <div class="file-meta">
-                  <span class="meta-item">
+                  <span class="meta-item small">
                     <i class="fas fa-code"></i>
                     {{ item.code }}
                   </span>
-                  <span class="meta-item">
+                  <span class="meta-item small">
                     <i class="fas fa-clock"></i>
                     {{ item.timestamp | date : "short" }}
-                  </span>
-                  <span class="meta-item">
-                    <i class="fas fa-expand-arrows-alt"></i>
-                    {{ item.size }}
                   </span>
                 </div>
                 <div class="file-status">
                   <span
-                    class="status-badge"
+                    class="status-badge small"
                     [class]="item.expired ? 'expired' : 'active'"
                   >
                     {{ item.expired ? "Expired" : "Active" }}
@@ -1010,20 +711,14 @@
                 >
                   <i class="fas fa-copy"></i>
                 </button>
-                <button
-                  class="btn btn-sm btn-outline-danger"
-                  (click)="deleteItem(item.code)"
-                >
-                  <i class="fas fa-trash"></i>
-                </button>
               </div>
             </div>
           </div>
 
           <div *ngIf="sharedItems.length === 0" class="no-files">
-            <i class="fas fa-folder-open fa-3x text-muted"></i>
-            <h5>No Shared Files</h5>
-            <p class="text-muted">Start sharing content to see it here</p>
+            <i class="fas fa-folder-open fa-2x text-muted"></i>
+            <h6>No Shared Files</h6>
+            <p class="small text-muted">Start sharing to see files here</p>
           </div>
         </div>
       </div>

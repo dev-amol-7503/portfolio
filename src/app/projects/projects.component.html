@@ -1,18 +1,15 @@
-<section class="projects-section py-5" [class.bg-light]="!isDarkTheme" [class.bg-dark]="isDarkTheme">
+<section class="projects-section py-4" [class.bg-light]="!isDarkTheme" [class.bg-dark]="isDarkTheme">
   <div class="container">
-
     <!-- Add Project Form (Edit Mode) -->
-    <div *ngIf="isEditMode && activeTab === 'projects'" class="add-project-form mb-5">
+    <div *ngIf="isEditMode && activeTab === 'projects'" class="add-project-form mb-4">
       <div class="card glass-card">
-        <div class="card-header">
-          <h5 class="card-title mb-0">Add New Project</h5>
-        </div>
-        <div class="card-body">
-          <div class="row g-3">
+        <div class="card-body p-3">
+          <h6 class="card-title mb-3">Add New Project</h6>
+          <div class="row g-2">
             <div class="col-md-6">
               <input
                 type="text"
-                class="form-control"
+                class="form-control form-control-sm"
                 placeholder="Project Title"
                 [(ngModel)]="newProject.title"
               />
@@ -20,23 +17,23 @@
             <div class="col-md-6">
               <input
                 type="text"
-                class="form-control"
-                placeholder="Technologies (comma separated)"
+                class="form-control form-control-sm"
+                placeholder="Technologies"
                 [(ngModel)]="newProject.technologies"
               />
             </div>
             <div class="col-12">
               <textarea
-                class="form-control"
+                class="form-control form-control-sm"
                 placeholder="Project Description"
                 [(ngModel)]="newProject.description"
-                rows="3"
+                rows="2"
               ></textarea>
             </div>
             <div class="col-md-4">
               <input
                 type="text"
-                class="form-control"
+                class="form-control form-control-sm"
                 placeholder="Project Link"
                 [(ngModel)]="newProject.link"
               />
@@ -44,7 +41,7 @@
             <div class="col-md-4">
               <input
                 type="text"
-                class="form-control"
+                class="form-control form-control-sm"
                 placeholder="GitHub Link"
                 [(ngModel)]="newProject.githubLink"
               />
@@ -52,14 +49,14 @@
             <div class="col-md-4">
               <input
                 type="text"
-                class="form-control"
-                placeholder="Animation URL (Lottie)"
+                class="form-control form-control-sm"
+                placeholder="Animation URL"
                 [(ngModel)]="newProject.animationUrl"
               />
             </div>
-            <div class="col-12">
-              <button class="btn btn-primary" (click)="addNewProject()">
-                <i class="fas fa-plus me-2"></i>Add Project
+            <div class="col-12 mt-2">
+              <button class="btn btn-primary btn-sm" (click)="addNewProject()">
+                <i class="fas fa-plus me-1"></i>Add Project
               </button>
             </div>
           </div>
@@ -67,53 +64,52 @@
       </div>
     </div>
 
-    <!-- Enhanced Tabs Navigation -->
-    <div class="tabs-wrapper mb-5">
+    <!-- Compact Tabs Navigation -->
+    <div class="tabs-wrapper mb-4">
       <div class="row justify-content-center">
         <div class="col-auto">
-          <div class="btn-group" role="group">
+          <div class="btn-group btn-group-sm" role="group">
             <button
-              class="btn btn-tab rounded-pill mx-1 mb-2"
+              class="btn btn-tab rounded-pill px-3"
               [class.active]="activeTab === 'projects'"
               (click)="onTabChange('projects')"
             >
-              <i class="fas fa-code me-2"></i> Projects
+              <i class="fas fa-code me-1"></i> Projects
             </button>
             <button
-              class="btn btn-tab rounded-pill mx-1 mb-2"
+              class="btn btn-tab rounded-pill px-3"
               [class.active]="activeTab === 'medium'"
               (click)="onTabChange('medium')"
             >
-              <i class="fab fa-medium me-2"></i> Medium
+              <i class="fab fa-medium me-1"></i> Medium
             </button>
             <button
-              class="btn btn-tab rounded-pill mx-1 mb-2"
+              class="btn btn-tab rounded-pill px-3"
               [class.active]="activeTab === 'quora'"
               (click)="onTabChange('quora')"
             >
-              <i class="fab fa-quora me-2"></i> Quora
+              <i class="fab fa-quora me-1"></i> Quora
             </button>
             <button
-              class="btn btn-tab rounded-pill mx-1 mb-2"
+              class="btn btn-tab rounded-pill px-3"
               [class.active]="activeTab === 'linkedin'"
               (click)="onTabChange('linkedin')"
             >
-              <i class="fab fa-linkedin me-2"></i> LinkedIn
+              <i class="fab fa-linkedin me-1"></i> LinkedIn
             </button>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Tabs Content - FIXED STRUCTURE -->
+    <!-- Tabs Content -->
     <div class="tab-content">
       <!-- Projects Tab -->
       <div *ngIf="activeTab === 'projects'" class="tab-pane active">
-        <!-- Show Cards if data exists -->
         <div *ngIf="projects.length > 0; else noProjects" class="projects-grid-container">
-          <div class="row g-4">
+          <div class="row g-3">
             <div
-              class="col-xl-4 col-lg-6 col-md-6 mb-4"
+              class="col-xl-4 col-lg-6 col-md-6 mb-3"
               *ngFor="let project of projects; let i = index"
             >
               <div class="project-card glass-card" [class.editable]="isEditMode">
@@ -134,13 +130,13 @@
                   />
 
                   <div class="project-overlay d-flex flex-column">
-                    <h5 class="text-white mb-3">{{ project.title }}</h5>
+                    <h6 class="text-white mb-2">{{ project.title }}</h6>
                     <div class="mt-auto">
                       <!-- Matrix Notes - Goes to tutorials page -->
                       <a
                         *ngIf="project.title === 'Matrix Notes - Tutorial Management System'"
                         [routerLink]="['/tutorials']"
-                        class="btn btn-light btn-sm me-2"
+                        class="btn btn-light btn-xs me-1"
                       >
                         <i class="fas fa-external-link-alt me-1"></i>View Live
                       </a>
@@ -149,7 +145,7 @@
                       <a
                         *ngIf="project.title.includes('MatrixShare') || project.title.includes('Online Clipboard')"
                         [routerLink]="['/online-clipboard']"
-                        class="btn btn-light btn-sm me-2"
+                        class="btn btn-light btn-xs me-1"
                       >
                         <i class="fas fa-external-link-alt me-1"></i>View Live
                       </a>
@@ -159,7 +155,7 @@
                         *ngIf="project.link && !project.link.startsWith('/') && project.title !== 'Matrix Notes - Tutorial Management System' && !project.title.includes('MatrixShare')"
                         [href]="project.link"
                         target="_blank"
-                        class="btn btn-light btn-sm me-2"
+                        class="btn btn-light btn-xs me-1"
                       >
                         <i class="fas fa-external-link-alt me-1"></i>View Live
                       </a>
@@ -168,7 +164,7 @@
                       <a
                         *ngIf="project.link && project.link.startsWith('/') && project.title !== 'Matrix Notes - Tutorial Management System' && !project.title.includes('MatrixShare')"
                         [routerLink]="project.link"
-                        class="btn btn-light btn-sm me-2"
+                        class="btn btn-light btn-xs me-1"
                       >
                         <i class="fas fa-external-link-alt me-1"></i>View Live
                       </a>
@@ -177,7 +173,7 @@
                       <a
                         [href]="project.githubLink"
                         target="_blank"
-                        class="btn btn-dark btn-sm"
+                        class="btn btn-dark btn-xs"
                         *ngIf="project.githubLink && project.githubLink !== '#'"
                       >
                         <i class="fab fa-github me-1"></i>Code
@@ -187,11 +183,11 @@
 
                   <!-- Edit Controls -->
                   <div class="edit-controls" *ngIf="isEditMode">
-                    <button class="btn btn-warning btn-sm me-1">
+                    <button class="btn btn-warning btn-xs me-1">
                       <i class="fas fa-edit"></i>
                     </button>
                     <button
-                      class="btn btn-danger btn-sm"
+                      class="btn btn-danger btn-xs"
                       (click)="deleteProject(project, $event)"
                     >
                       <i class="fas fa-trash"></i>
@@ -200,9 +196,9 @@
                 </div>
                 <div class="project-body">
                   <div class="d-flex justify-content-between align-items-start mb-2">
-                    <h5 class="project-title mb-0">{{ project.title }}</h5>
+                    <h6 class="project-title mb-0">{{ project.title }}</h6>
                     <span class="badge bg-primary" *ngIf="project.featured">
-                      Web Application
+                      Web App
                     </span>
                   </div>
                   <p class="project-description">{{ project.description }}</p>
@@ -230,21 +226,20 @@
                 </div>
               </div>
               <div class="no-data-text-content">
-                <h3 class="no-data-title">No Projects Yet</h3>
+                <h5 class="no-data-title">No Projects Yet</h5>
                 <p class="no-data-description">
-                  It looks like you haven't added any projects yet. Start
-                  showcasing your amazing work by adding your first project!
+                  Start showcasing your amazing work by adding your first project!
                 </p>
                 <div class="no-data-actions" *ngIf="isEditMode">
                   <button
-                    class="btn btn-primary btn-lg"
+                    class="btn btn-primary btn-sm"
                     (click)="addNewProject()"
                   >
-                    <i class="fas fa-plus me-2"></i>Add Your First Project
+                    <i class="fas fa-plus me-1"></i>Add Your First Project
                   </button>
                 </div>
                 <div class="no-data-actions" *ngIf="!isEditMode">
-                  <p class="text-muted">
+                  <p class="text-muted small">
                     Check back later for amazing projects!
                   </p>
                 </div>
@@ -257,9 +252,9 @@
       <!-- Medium Tab -->
       <div *ngIf="activeTab === 'medium'" class="tab-pane active">
         <div *ngIf="mediumPosts.length > 0; else noMedium" class="projects-grid-container">
-          <div class="row g-4">
+          <div class="row g-3">
             <div
-              class="col-xl-4 col-lg-6 col-md-6 mb-4"
+              class="col-xl-4 col-lg-6 col-md-6 mb-3"
               *ngFor="let post of mediumPosts"
             >
               <div class="project-card glass-card" [class.editable]="isEditMode">
@@ -270,22 +265,21 @@
                   </div>
 
                   <div class="project-overlay d-flex flex-column">
-                    <h5 class="text-white mb-3">{{ post.title }}</h5>
+                    <h6 class="text-white mb-2">{{ post.title }}</h6>
                     <div class="mt-auto">
                       <a
                         [href]="post.link"
                         target="_blank"
-                        class="btn btn-light btn-sm"
+                        class="btn btn-light btn-xs"
                       >
-                        <i class="fas fa-external-link-alt me-1"></i>Read
-                        Article
+                        <i class="fas fa-external-link-alt me-1"></i>Read Article
                       </a>
                     </div>
                   </div>
                 </div>
                 <div class="project-body">
                   <div class="d-flex justify-content-between align-items-start mb-2">
-                    <h5 class="project-title mb-0">{{ post.title }}</h5>
+                    <h6 class="project-title mb-0">{{ post.title }}</h6>
                     <span class="badge bg-dark">
                       <i class="fab fa-medium me-1"></i> Medium
                     </span>
@@ -293,10 +287,10 @@
                   <p class="project-description">{{ post.description }}</p>
                   <div class="project-tech">
                     <span class="tech-badge">
-                      <i class="fas fa-clock"></i> {{ post.readTime }} read
+                      <i class="fas fa-clock"></i> {{ post.readTime }}
                     </span>
                     <span class="tech-badge">
-                      <i class="fas fa-heart"></i> {{ post.likes }} likes
+                      <i class="fas fa-heart"></i> {{ post.likes }}
                     </span>
                     <span class="tech-badge">
                       <i class="fas fa-calendar"></i> {{ post.date }}
@@ -318,18 +312,17 @@
                 </div>
               </div>
               <div class="no-data-text-content">
-                <h3 class="no-data-title">No Medium Articles</h3>
+                <h5 class="no-data-title">No Medium Articles</h5>
                 <p class="no-data-description">
-                  No articles published on Medium yet. Share your knowledge and
-                  experiences with the community!
+                  Share your knowledge and experiences with the community!
                 </p>
                 <div class="no-data-actions">
                   <a
                     href="https://medium.com/"
                     target="_blank"
-                    class="btn btn-dark btn-lg"
+                    class="btn btn-dark btn-sm"
                   >
-                    <i class="fab fa-medium me-2"></i>Start Writing on Medium
+                    <i class="fab fa-medium me-1"></i>Start Writing
                   </a>
                 </div>
               </div>
@@ -341,9 +334,9 @@
       <!-- Quora Tab -->
       <div *ngIf="activeTab === 'quora'" class="tab-pane active">
         <div *ngIf="quoraPosts.length > 0; else noQuora" class="projects-grid-container">
-          <div class="row g-4">
+          <div class="row g-3">
             <div
-              class="col-xl-4 col-lg-6 col-md-6 mb-4"
+              class="col-xl-4 col-lg-6 col-md-6 mb-3"
               *ngFor="let post of quoraPosts"
             >
               <div class="project-card glass-card" [class.editable]="isEditMode">
@@ -353,12 +346,12 @@
                   </div>
 
                   <div class="project-overlay d-flex flex-column">
-                    <h5 class="text-white mb-3">{{ post.title }}</h5>
+                    <h6 class="text-white mb-2">{{ post.title }}</h6>
                     <div class="mt-auto">
                       <a
                         [href]="post.link"
                         target="_blank"
-                        class="btn btn-light btn-sm"
+                        class="btn btn-light btn-xs"
                       >
                         <i class="fas fa-external-link-alt me-1"></i>View Answer
                       </a>
@@ -367,7 +360,7 @@
                 </div>
                 <div class="project-body">
                   <div class="d-flex justify-content-between align-items-start mb-2">
-                    <h5 class="project-title mb-0">{{ post.title }}</h5>
+                    <h6 class="project-title mb-0">{{ post.title }}</h6>
                     <span class="badge bg-danger">
                       <i class="fab fa-quora me-1"></i> Quora
                     </span>
@@ -375,11 +368,11 @@
                   <p class="project-description">{{ post.description }}</p>
                   <div class="project-tech">
                     <span class="tech-badge">
-                      <i class="fas fa-eye"></i> {{ post.views || '0' }} views
+                      <i class="fas fa-eye"></i> {{ post.views || '0' }}
                     </span>
                     <span class="tech-badge">
                       <i class="fas fa-thumbs-up"></i>
-                      {{ post.upvotes || '0' }} upvotes
+                      {{ post.upvotes || '0' }}
                     </span>
                     <span class="tech-badge">
                       <i class="fas fa-calendar"></i> {{ post.date }}
@@ -401,18 +394,17 @@
                 </div>
               </div>
               <div class="no-data-text-content">
-                <h3 class="no-data-title">No Quora Answers</h3>
+                <h5 class="no-data-title">No Quora Answers</h5>
                 <p class="no-data-description">
-                  No answers posted on Quora yet. Share your expertise and help
-                  others by answering questions!
+                  Share your expertise and help others by answering questions!
                 </p>
                 <div class="no-data-actions">
                   <a
                     href="https://www.quora.com/"
                     target="_blank"
-                    class="btn btn-danger btn-lg"
+                    class="btn btn-danger btn-sm"
                   >
-                    <i class="fab fa-quora me-2"></i>Answer Questions on Quora
+                    <i class="fab fa-quora me-1"></i>Answer Questions
                   </a>
                 </div>
               </div>
@@ -424,9 +416,9 @@
       <!-- LinkedIn Tab -->
       <div *ngIf="activeTab === 'linkedin'" class="tab-pane active">
         <div *ngIf="linkedinPosts.length > 0; else noLinkedIn" class="projects-grid-container">
-          <div class="row g-4">
+          <div class="row g-3">
             <div
-              class="col-xl-4 col-lg-6 col-md-6 mb-4"
+              class="col-xl-4 col-lg-6 col-md-6 mb-3"
               *ngFor="let post of linkedinPosts"
             >
               <div class="project-card glass-card" [class.editable]="isEditMode">
@@ -436,12 +428,12 @@
                   </div>
 
                   <div class="project-overlay d-flex flex-column">
-                    <h5 class="text-white mb-3">{{ post.title }}</h5>
+                    <h6 class="text-white mb-2">{{ post.title }}</h6>
                     <div class="mt-auto">
                       <a
                         [href]="post.link"
                         target="_blank"
-                        class="btn btn-light btn-sm"
+                        class="btn btn-light btn-xs"
                       >
                         <i class="fas fa-external-link-alt me-1"></i>View Post
                       </a>
@@ -450,7 +442,7 @@
                 </div>
                 <div class="project-body">
                   <div class="d-flex justify-content-between align-items-start mb-2">
-                    <h5 class="project-title mb-0">{{ post.title }}</h5>
+                    <h6 class="project-title mb-0">{{ post.title }}</h6>
                     <span class="badge bg-primary">
                       <i class="fab fa-linkedin me-1"></i> LinkedIn
                     </span>
@@ -459,11 +451,11 @@
                   <div class="project-tech">
                     <span class="tech-badge">
                       <i class="fas fa-comment"></i>
-                      {{ post.comments || '0' }} comments
+                      {{ post.comments || '0' }}
                     </span>
                     <span class="tech-badge">
                       <i class="fas fa-chart-line"></i>
-                      {{ post.engagement || '0' }} engagement
+                      {{ post.engagement || '0' }}
                     </span>
                     <span class="tech-badge">
                       <i class="fas fa-calendar"></i> {{ post.date }}
@@ -485,18 +477,17 @@
                 </div>
               </div>
               <div class="no-data-text-content">
-                <h3 class="no-data-title">No LinkedIn Posts</h3>
+                <h5 class="no-data-title">No LinkedIn Posts</h5>
                 <p class="no-data-description">
-                  No posts shared on LinkedIn yet. Connect with professionals
-                  and share your insights with the community!
+                  Connect with professionals and share your insights!
                 </p>
                 <div class="no-data-actions">
                   <a
                     href="https://www.linkedin.com/"
                     target="_blank"
-                    class="btn btn-primary btn-lg"
+                    class="btn btn-primary btn-sm"
                   >
-                    <i class="fab fa-linkedin me-2"></i>Share on LinkedIn
+                    <i class="fab fa-linkedin me-1"></i>Share on LinkedIn
                   </a>
                 </div>
               </div>
@@ -507,24 +498,24 @@
     </div>
 
     <!-- Admin Matrix Notes Access Button -->
-    <div *ngIf="isEditMode" class="text-center mt-5">
+    <div *ngIf="isEditMode" class="text-center mt-4">
       <div class="card glass-card">
-        <div class="card-body">
-          <h5 class="card-title">
-            <i class="fas fa-book me-2"></i>Matrix Notes Admin
-          </h5>
-          <p class="card-text text-muted">
-            As an admin, you can manage tutorials and educational content in the Matrix Notes system.
+        <div class="card-body p-3">
+          <h6 class="card-title">
+            <i class="fas fa-book me-1"></i>Matrix Notes Admin
+          </h6>
+          <p class="card-text text-muted small mb-2">
+            Manage tutorials and educational content in the Matrix Notes system.
           </p>
-          <div class="btn-group">
+          <div class="btn-group btn-group-sm">
             <a [routerLink]="['/admin/matrix-notes']" class="btn btn-primary">
-              <i class="fas fa-tachometer-alt me-2"></i>Matrix Notes Dashboard
+              <i class="fas fa-tachometer-alt me-1"></i>Dashboard
             </a>
             <a [routerLink]="['/admin/matrix-notes/editor']" class="btn btn-success">
-              <i class="fas fa-plus me-2"></i>Create New Tutorial
+              <i class="fas fa-plus me-1"></i>New Tutorial
             </a>
             <a [routerLink]="['/tutorials']" class="btn btn-outline-info">
-              <i class="fas fa-eye me-2"></i>View Public Tutorials
+              <i class="fas fa-eye me-1"></i>View Tutorials
             </a>
           </div>
         </div>

@@ -1,7 +1,7 @@
-<section class="about-section py-5">
+<section class="about-section py-4">
   <div class="container">
-    <div class="row align-items-center">
-      <div class="col-lg-6 mb-5 mb-lg-0">
+    <div class="row align-items-center g-4">
+      <div class="col-lg-6">
         <div class="about-image-container position-relative">
           <img
             src="assets/images/profile.jpg"
@@ -14,12 +14,13 @@
           </div>
         </div>
       </div>
+      
       <div class="col-lg-6">
-        <h2 class="section-title mb-4">About Me</h2>
+        <h2 class="section-title h4 mb-3">About Me</h2>
 
-        <!-- Editable About Text -->
-        <div *ngIf="!isEditMode" class="about-text mb-4">
-          <p>
+        <!-- About Text -->
+        <div *ngIf="!isEditMode" class="about-text mb-3">
+          <p class="mb-3">
             {{
               personalInfo.about ||
                 "I'm a passionate Full Stack Developer with 4+ years of experience crafting scalable web and mobile applications. I specialize in Angular and Spring Boot, blending elegant UI design with powerful backend logic. With a strong grasp of Microservices, DevOps, and modern development tools, I turn complex ideas into smooth, high-performing digital experiences."
@@ -27,73 +28,67 @@
           </p>
         </div>
 
-        <div *ngIf="isEditMode" class="edit-about mb-4">
+        <div *ngIf="isEditMode" class="edit-about mb-3">
           <textarea
             class="form-control"
-            rows="4"
+            rows="3"
             [(ngModel)]="personalInfo.about"
             placeholder="Enter about description..."
           ></textarea>
-          <button
-            class="btn btn-primary btn-sm mt-2"
-            (click)="updatePersonalInfo()"
-          >
+          <button class="btn btn-primary btn-sm mt-2" (click)="updatePersonalInfo()">
             <i class="fas fa-save me-1"></i>Save
           </button>
         </div>
 
-        <!-- about.component.html -->
-<div class="about-section">
-  <div class="about-details mb-4">
-    <div class="personal-info-grid">
-      <div class="detail-item">
-        <i class="fas fa-user-tie text-primary me-2"></i>
-        <span><strong>Name:</strong> {{ personalInfo.name || "Amol Nagare" }}</span>
-      </div>
-      <div class="detail-item">
-        <i class="fas fa-envelope text-primary me-2"></i>
-        <span><strong>Email:</strong> {{ personalInfo.email || "amolnagare279@gmail.com" }}</span>
-      </div>
-      <div class="detail-item">
-        <i class="fas fa-phone-alt text-primary me-2"></i>
-        <span><strong>Phone:</strong> {{ personalInfo.phone || "+91 9975607503" }}</span>
-      </div>
-      <div class="detail-item">
-        <i class="fas fa-map-marker-alt text-primary me-2"></i>
-        <span><strong>Location:</strong> {{ personalInfo.location || "Pune, India" }}</span>
-      </div>
-    </div>
-  </div>
-</div>
+        <!-- Personal Info -->
+        <div class="personal-info-grid mb-4">
+          <div class="detail-item">
+            <i class="fas fa-user-tie text-primary me-2"></i>
+            <span><strong>Name:</strong> {{ personalInfo.name || "Amol Nagare" }}</span>
+          </div>
+          <div class="detail-item">
+            <i class="fas fa-envelope text-primary me-2"></i>
+            <span><strong>Email:</strong> {{ personalInfo.email || "amolnagare279@gmail.com" }}</span>
+          </div>
+          <div class="detail-item">
+            <i class="fas fa-phone-alt text-primary me-2"></i>
+            <span><strong>Phone:</strong> {{ personalInfo.phone || "+91 9975607503" }}</span>
+          </div>
+          <div class="detail-item">
+            <i class="fas fa-map-marker-alt text-primary me-2"></i>
+            <span><strong>Location:</strong> {{ personalInfo.location || "Pune, India" }}</span>
+          </div>
+        </div>
 
+        <!-- Education -->
         <div class="education-section">
-          <h5 class="mb-3">Education</h5>
-          <div
-            class="education-item mb-3 p-3 bg-light rounded d-flex justify-content-between align-items-center"
-          >
-            <div>
-              <h6 class="mb-1">Bachelor of Computer Engineering</h6>
-              <p class="text-muted mb-0">Pune University (2017-2021)</p>
+          <h5 class="h6 mb-3 fw-bold">Education</h5>
+          <div class="education-item">
+            <div class="d-flex justify-content-between align-items-start mb-2">
+              <div>
+                <h6 class="mb-1 fw-semibold">Bachelor of Computer Engineering</h6>
+                <small class="text-muted">Pune University (2017-2021)</small>
+              </div>
+              <span class="badge bg-info ms-2">7.06 CGPA</span>
             </div>
-            <span class="percentage-badge badge bg-info">7.06 CGPA</span>
           </div>
-          <div
-            class="education-item mb-3 p-3 bg-light rounded d-flex justify-content-between align-items-center"
-          >
-            <div>
-              <h6 class="mb-1">HSC</h6>
-              <p class="text-muted mb-0">Maharashtra State Board (2016-2017)</p>
+          <div class="education-item">
+            <div class="d-flex justify-content-between align-items-start mb-2">
+              <div>
+                <h6 class="mb-1 fw-semibold">HSC</h6>
+                <small class="text-muted">Maharashtra State Board (2016-2017)</small>
+              </div>
+              <span class="badge bg-info ms-2">54%</span>
             </div>
-            <span class="percentage-badge badge bg-info">54 %</span>
           </div>
-          <div
-            class="education-item p-3 bg-light rounded d-flex justify-content-between align-items-center"
-          >
-            <div>
-              <h6 class="mb-1">SSC</h6>
-              <p class="text-muted mb-0">Maharashtra State Board (2014-2015)</p>
+          <div class="education-item">
+            <div class="d-flex justify-content-between align-items-start">
+              <div>
+                <h6 class="mb-1 fw-semibold">SSC</h6>
+                <small class="text-muted">Maharashtra State Board (2014-2015)</small>
+              </div>
+              <span class="badge bg-info ms-2">69%</span>
             </div>
-            <span class="percentage-badge badge bg-info">69 %</span>
           </div>
         </div>
       </div>

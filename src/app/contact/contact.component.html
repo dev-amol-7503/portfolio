@@ -1,15 +1,15 @@
-<section class="contact-section py-5">
+<section class="contact-section py-4">
   <div class="container">
     <div class="row">
-      <div class="col-lg-6 mb-5 mb-lg-0">
+      <div class="col-lg-6 mb-4 mb-lg-0">
         <div class="contact-info">
-          <h2 class="section-title mb-4">Get In Touch</h2>
-          <p class="contact-description mb-4">
+          <h2 class="section-title mb-3">Get In Touch</h2>
+          <p class="contact-description mb-3">
             Feel free to reach out to me for any questions or opportunities. I'll get back to you as soon as possible.
           </p>
           
           <div class="contact-details">
-            <div class="contact-item mb-4">
+            <div class="contact-item mb-3">
               <div class="contact-icon">
                 <i class="fas fa-map-marker-alt"></i>
               </div>
@@ -19,7 +19,7 @@
               </div>
             </div>
             
-            <div class="contact-item mb-4">
+            <div class="contact-item mb-3">
               <div class="contact-icon">
                 <i class="fas fa-envelope"></i>
               </div>
@@ -40,7 +40,7 @@
             </div>
           </div>
           
-          <div class="social-links mt-5">
+          <div class="social-links mt-4">
             <a href="https://www.linkedin.com/in/amol-nagare-33628b21a/" target="_blank" class="social-link">
               <i class="fab fa-linkedin-in"></i>
             </a>
@@ -59,7 +59,7 @@
       
       <div class="col-lg-6">
         <div class="contact-form">
-          <h2 class="section-title mb-4">Send Me a Message</h2>
+          <h2 class="section-title mb-3">Send Message</h2>
           <form (ngSubmit)="onSubmit()" #contactFormRef="ngForm">
             <div class="mb-3">
               <label for="name" class="form-label">Your Name</label>
@@ -103,7 +103,7 @@
                 class="form-control" 
                 id="message" 
                 name="message" 
-                rows="5" 
+                rows="4" 
                 required 
                 [(ngModel)]="formData.message"
                 [disabled]="isSubmitting"></textarea>
@@ -121,14 +121,14 @@
             </button>
             
             <div class="alert alert-success mt-3" *ngIf="isSuccess">
-              <i class="fas fa-check-circle me-2"></i> Your message has been sent successfully! I'll get back to you soon.
+              <i class="fas fa-check-circle me-2"></i> Message sent successfully!
             </div>
             
             <div class="alert alert-danger mt-3" *ngIf="isError">
               <i class="fas fa-exclamation-circle me-2"></i> 
-              There was an error sending your message. 
+              Error sending message.
               <span *ngIf="!isSubmitting">
-                A fallback email client has been opened. Please send your message manually.
+                Please try again or email directly.
               </span>
             </div>
           </form>
