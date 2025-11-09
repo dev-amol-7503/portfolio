@@ -1,5 +1,5 @@
 .hero-section {
-  padding: 120px 0 80px;
+  padding: 30px 0 80px;
   
   .hero-content {
     .hero-title {
@@ -67,30 +67,57 @@
   }
 }
 
-.trusted-by {
-  .trusted-logo {
-    height: 60px;
-    display: flex;
+.hero-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1.5rem;
+  margin-top: 3rem;
+
+  a {
+    display: inline-flex;
     align-items: center;
-    opacity: 0.7;
+    justify-content: center;
+    font-size: 1.1rem;
+    font-weight: 500;
+    text-decoration: none;
+    border-radius: 0.5rem;
+    padding: 0.75rem 1.5rem;
     transition: all 0.3s ease;
-    
-    &:hover {
-      opacity: 1;
-      transform: scale(1.05);
+    cursor: pointer;
+
+    i {
+      margin-right: 0.5rem;
     }
-    
-    img {
-      max-height: 100%;
-      width: auto;
+
+    /* Primary button */
+    &.btn-primary-custom {
+      background-color: var(--bs-primary);
+      color: #fff;
+      border: 2px solid var(--bs-primary);
+
+      &:hover {
+        /* fallback color if darken(var(--bs-primary)) fails */
+        background-color: #0056b3; // darker shade of Bootstrap blue
+        transform: translateY(-3px);
+        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+      }
+    }
+
+    /* Outline button */
+    &.btn-outline-custom {
+      background-color: transparent;
+      color: var(--bs-primary);
+      border: 2px solid var(--bs-primary);
+
+      &:hover {
+        background-color: var(--bs-primary);
+        color: #fff;
+        transform: translateY(-3px);
+        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+      }
     }
   }
-}
-
-@keyframes float {
-  0% { transform: translateY(0); }
-  50% { transform: translateY(-10px); }
-  100% { transform: translateY(0); }
 }
 
 @media (max-width: 992px) {
@@ -123,6 +150,70 @@
     
     .hero-image-container {
       margin-bottom: 40px;
+    }
+  }
+}
+
+.hero-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 3rem;
+  margin-top: 3rem;
+
+  a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    font-weight: 500;
+    text-decoration: none;
+    border-radius: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    transition: all 0.3s ease;
+    cursor: pointer;
+
+    i {
+      margin-right: 0.5rem;
+    }
+
+    /* Primary button */
+    &.btn-primary-custom {
+      background-color: var(--bs-primary);
+      color: #fff;
+      border: 2px solid var(--bs-primary);
+
+      &:hover {
+        /* fallback color if darken(var(--bs-primary)) fails */
+        background-color: #0056b3; // darker shade of Bootstrap blue
+        transform: translateY(-3px);
+        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+      }
+    }
+
+    /* Outline button */
+    &.btn-outline-custom {
+      background-color: transparent;
+      color: var(--bs-primary);
+      border: 2px solid var(--bs-primary);
+
+      &:hover {
+        background-color: var(--bs-primary);
+        color: #fff;
+        transform: translateY(-3px);
+        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+      }
+    }
+  }
+}
+
+@media (max-width: 576px) {
+  .hero-buttons {
+    gap: 1rem;
+
+    a {
+      font-size: 1rem;
+      padding: 0.6rem 1.2rem;
     }
   }
 }

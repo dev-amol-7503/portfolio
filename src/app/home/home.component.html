@@ -1,32 +1,37 @@
-<section class="hero-section">
+<section class="hero-section py-5">
   <div class="container">
     <div class="row align-items-center">
       <div class="col-lg-6 order-lg-1 order-2">
         <div class="hero-content">
           <h6 class="text-primary mb-3">Hello, I'm</h6>
-          <h1 class="hero-title">{{ personalInfo.name || 'Amol Nagare' }}</h1>
-          <h2 class="text-primary mb-4">{{ personalInfo.title || 'Full Stack Developer' }}</h2>
+          <h1 class="hero-title">{{ personalInfo.name || "Amol Nagare" }}</h1>
+          <h2 class="text-primary mb-4">
+            {{ personalInfo.title || "Full Stack Developer" }}
+          </h2>
           <p class="hero-description">
-            {{ personalInfo.about || 'Full Stack Developer with 4+ years of experience in Angular, Java (Spring Boot), and RESTful APIs. Skilled in UI/UX design, database management, and mobile development.' }}
+            {{
+              personalInfo.about ||
+                "Full Stack Developer with 4+ years of experience in Angular, Java (Spring Boot), and RESTful APIs. Skilled in UI/UX design, database management, and mobile development."
+            }}
           </p>
-          
-          <div class="d-flex gap-3 mt-4 flex-wrap justify-content-center">
-            <a routerLink="/contact" class="btn btn-primary btn-lg px-4 py-2">
-              <i class="fas fa-paper-plane me-2"></i>Hire Me
+
+          <div class="hero-buttons">
+            <a routerLink="/contact" class="btn-primary-custom">
+              <i class="fas fa-paper-plane"></i> Hire Me
             </a>
-            <a routerLink="/projects" class="btn btn-outline-primary btn-lg px-4 py-2">
-              <i class="fas fa-eye me-2"></i>View Work
+            <a routerLink="/projects" class="btn-outline-custom">
+              <i class="fas fa-eye"></i> View Work
             </a>
-          </div>
-          
-          <div class="hero-stats mt-5">
-            <app-stats></app-stats>
           </div>
         </div>
       </div>
       <div class="col-lg-6 order-lg-2 order-1 mb-4 mb-lg-0">
         <div class="hero-image-container">
-          <img src="assets/images/profile.jpg" alt="Amol Nagare" class="img-fluid rounded-circle shadow-lg hero-image">
+          <img
+            src="assets/images/profile.jpg"
+            alt="Amol Nagare"
+            class="img-fluid rounded-circle shadow-lg hero-image"
+          />
           <div class="tech-bubble angular">
             <i class="fab fa-angular"></i>
           </div>
@@ -41,4 +46,3 @@
     </div>
   </div>
 </section>
-

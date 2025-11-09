@@ -262,112 +262,146 @@
         }
 
         // Code Content Block
-        .code-content-block {
-          margin: 2rem 0;
-          border-radius: 12px;
-          overflow: hidden;
-          box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
-          border: 1px solid #e9ecef;
+        // Code Content Block
+.code-content-block {
+  margin: 2rem 0;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+  border: 1px solid #e9ecef;
 
-          .code-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0.75rem 1rem;
-            background: #1f2937;
-            color: #e5e7eb;
-            border-bottom: 1px solid #374151;
+  .code-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    background: #1f2937;
+    color: #e5e7eb;
+    border-bottom: 1px solid #374151;
 
-            .code-meta {
-              display: flex;
-              align-items: center;
-              gap: 1rem;
+    .code-meta {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
 
-              .code-language {
-                background: rgba(59, 130, 246, 0.2);
-                padding: 0.25rem 0.75rem;
-                border-radius: 20px;
-                font-size: 0.75rem;
-                font-weight: 600;
-                text-transform: uppercase;
-              }
+      .code-language {
+        background: rgba(59, 130, 246, 0.2);
+        padding: 0.25rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+      }
 
-              .code-filename {
-                font-size: 0.875rem;
-                color: #9ca3af;
-                display: flex;
-                align-items: center;
-              }
-            }
+      .code-filename {
+        font-size: 0.875rem;
+        color: #9ca3af;
+        display: flex;
+        align-items: center;
+      }
+    }
 
-            .copy-btn {
-              background: rgba(255, 255, 255, 0.1);
-              border: 1px solid rgba(255, 255, 255, 0.2);
-              color: #e5e7eb;
-              font-size: 0.75rem;
-              padding: 0.25rem 0.75rem;
+    .copy-btn {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: #e5e7eb;
+      font-size: 0.75rem;
+      padding: 0.25rem 0.75rem;
 
-              &:hover {
-                background: rgba(255, 255, 255, 0.2);
-                border-color: rgba(255, 255, 255, 0.3);
-              }
-            }
-          }
+      &:hover {
+        background: rgba(255, 255, 255, 0.2);
+        border-color: rgba(255, 255, 255, 0.3);
+      }
+    }
+  }
 
-          .code-display {
-            background: #1f2937;
-            color: #e5e7eb;
-            margin: 0;
-            padding: 1.5rem;
-            overflow-x: auto;
-            font-family: "Monaco", "Menlo", "Ubuntu Mono", monospace;
-            font-size: 0.9rem;
-            line-height: 1.5;
+  .code-display {
+    background: #1f2937;
+    color: #e5e7eb;
+    margin: 0;
+    padding: 1.5rem;
+    
+    /* Scrollable container */
+    max-height: 400px; /* Adjust this value as needed */
+    overflow: auto; /* Enables both vertical and horizontal scrolling */
+    
+    font-family: "Monaco", "Menlo", "Ubuntu Mono", monospace;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    
+    /* Custom scrollbar styling for better appearance */
+    scrollbar-width: thin;
+    scrollbar-color: #4b5563 #1f2937;
 
-            code {
-              background: transparent;
-              font-family: inherit;
-              color: inherit;
-              white-space: pre;
-            }
+    /* Webkit scrollbar styling */
+    &::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
 
-            // Syntax highlighting colors (basic)
-            .language-javascript,
-            .language-typescript {
-              .keyword {
-                color: #f472b6;
-              }
-              .function {
-                color: #60a5fa;
-              }
-              .string {
-                color: #84cc16;
-              }
-              .number {
-                color: #f59e0b;
-              }
-              .comment {
-                color: #6b7280;
-              }
-            }
+    &::-webkit-scrollbar-track {
+      background: #1f2937;
+    }
 
-            .language-html,
-            .language-css {
-              .tag {
-                color: #f472b6;
-              }
-              .attribute {
-                color: #60a5fa;
-              }
-              .value {
-                color: #84cc16;
-              }
-              .comment {
-                color: #6b7280;
-              }
-            }
-          }
-        }
+    &::-webkit-scrollbar-thumb {
+      background: #4b5563;
+      border-radius: 4px;
+    }
+
+    &::-webkit-scrollbar-thumb:hover {
+      background: #6b7280;
+    }
+
+    &::-webkit-scrollbar-corner {
+      background: #1f2937;
+    }
+
+    code {
+      background: transparent;
+      font-family: inherit;
+      color: inherit;
+      white-space: pre; /* Preserves formatting and enables horizontal scrolling */
+      display: block;
+      min-width: min-content; /* Ensures content doesn't get cut off */
+    }
+
+    // Syntax highlighting colors (basic)
+    .language-javascript,
+    .language-typescript {
+      .keyword {
+        color: #f472b6;
+      }
+      .function {
+        color: #60a5fa;
+      }
+      .string {
+        color: #84cc16;
+      }
+      .number {
+        color: #f59e0b;
+      }
+      .comment {
+        color: #6b7280;
+      }
+    }
+
+    .language-html,
+    .language-css {
+      .tag {
+        color: #f472b6;
+      }
+      .attribute {
+        color: #60a5fa;
+      }
+      .value {
+        color: #84cc16;
+      }
+      .comment {
+        color: #6b7280;
+      }
+    }
+  }
+}
 
         // Image Content Block
         .image-content-block {
@@ -1129,18 +1163,146 @@
         }
 
         // Code Content
-        .code-content-block {
-          border-color: #374151;
+        // Code Content Block
+.code-content-block {
+  margin: 2rem 0;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+  border: 1px solid #e9ecef;
 
-          .code-header {
-            background: #0f172a;
-            border-bottom-color: #1e293b;
-          }
+  .code-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    background: #1f2937;
+    color: #e5e7eb;
+    border-bottom: 1px solid #374151;
 
-          .code-display {
-            background: #0f172a;
-          }
-        }
+    .code-meta {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+
+      .code-language {
+        background: rgba(59, 130, 246, 0.2);
+        padding: 0.25rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+      }
+
+      .code-filename {
+        font-size: 0.875rem;
+        color: #9ca3af;
+        display: flex;
+        align-items: center;
+      }
+    }
+
+    .copy-btn {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: #e5e7eb;
+      font-size: 0.75rem;
+      padding: 0.25rem 0.75rem;
+
+      &:hover {
+        background: rgba(255, 255, 255, 0.2);
+        border-color: rgba(255, 255, 255, 0.3);
+      }
+    }
+  }
+
+  .code-display {
+    background: #1f2937;
+    color: #e5e7eb;
+    margin: 0;
+    padding: 1.5rem;
+    
+    /* Scrollable container */
+    max-height: 400px; /* Adjust this value as needed */
+    overflow: auto; /* Enables both vertical and horizontal scrolling */
+    
+    font-family: "Monaco", "Menlo", "Ubuntu Mono", monospace;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    
+    /* Custom scrollbar styling for better appearance */
+    scrollbar-width: thin;
+    scrollbar-color: #4b5563 #1f2937;
+
+    /* Webkit scrollbar styling */
+    &::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+
+    &::-webkit-scrollbar-track {
+      background: #1f2937;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: #4b5563;
+      border-radius: 4px;
+    }
+
+    &::-webkit-scrollbar-thumb:hover {
+      background: #6b7280;
+    }
+
+    &::-webkit-scrollbar-corner {
+      background: #1f2937;
+    }
+
+    code {
+      background: transparent;
+      font-family: inherit;
+      color: inherit;
+      white-space: pre; /* Preserves formatting and enables horizontal scrolling */
+      display: block;
+      min-width: min-content; /* Ensures content doesn't get cut off */
+    }
+
+    // Syntax highlighting colors (basic)
+    .language-javascript,
+    .language-typescript {
+      .keyword {
+        color: #f472b6;
+      }
+      .function {
+        color: #60a5fa;
+      }
+      .string {
+        color: #84cc16;
+      }
+      .number {
+        color: #f59e0b;
+      }
+      .comment {
+        color: #6b7280;
+      }
+    }
+
+    .language-html,
+    .language-css {
+      .tag {
+        color: #f472b6;
+      }
+      .attribute {
+        color: #60a5fa;
+      }
+      .value {
+        color: #84cc16;
+      }
+      .comment {
+        color: #6b7280;
+      }
+    }
+  }
+}
 
         // Callout Content
         .callout-content-block .callout-container .callout {
