@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { AdminService } from '../services/admin.service';
+import { ThemeService, ThemeConfig } from '../services/theme.service';
 import { Skill } from '../interfaces/social-post.model';
 
 @Component({
@@ -16,6 +17,8 @@ export class SkillsComponent implements OnInit {
   filteredSkills: Skill[] = [];
   activeCategory: string = 'all';
   isEditMode = false;
+  currentTheme!: ThemeConfig;
+  isDarkTheme = false;
 
   skillCategories = [
     { 
@@ -44,7 +47,11 @@ export class SkillsComponent implements OnInit {
     }
   ];
 
-  constructor(private adminService: AdminService, private router: Router) {}
+  constructor(
+    private adminService: AdminService, 
+    private router: Router,
+    private themeService: ThemeService
+  ) {}
 
   ngOnInit() {
     this.loadSkills();
@@ -52,9 +59,18 @@ export class SkillsComponent implements OnInit {
     this.adminService.editMode$.subscribe(mode => {
       this.isEditMode = mode;
     });
+
+    // Subscribe to theme changes
+    this.themeService.currentTheme$.subscribe(theme => {
+      this.currentTheme = theme;
+    });
+
+    this.themeService.isDarkTheme$.subscribe(isDark => {
+      this.isDarkTheme = isDark;
+    });
   }
 
-   goToProjects() {
+  goToProjects() {
     this.router.navigate(['/projects']);
   }
 
@@ -157,37 +173,36 @@ export class SkillsComponent implements OnInit {
     }
   }
 
-  // Add this method to your SkillsComponent class
-getSkillIcon(skillName: string): string {
-  const iconMap: {[key: string]: string} = {
-    // Frontend
-    'HTML/CSS': 'fab fa-html5',
-    'JavaScript': 'fab fa-js-square',
-    'TypeScript': 'fab fa-js-square',
-    'Angular': 'fab fa-angular',
-    'Bootstrap': 'fab fa-bootstrap',
+  getSkillIcon(skillName: string): string {
+    const iconMap: {[key: string]: string} = {
+      // Frontend
+      'HTML/CSS': 'fab fa-html5',
+      'JavaScript': 'fab fa-js-square',
+      'TypeScript': 'fab fa-js-square',
+      'Angular': 'fab fa-angular',
+      'Bootstrap': 'fab fa-bootstrap',
+      
+      // Backend
+      'Java': 'fab fa-java',
+      'Spring Boot': 'fas fa-leaf',
+      'Spring Framework': 'fas fa-leaf',
+      'Hibernate': 'fas fa-database',
+      'Spring Data JPA': 'fas fa-database',
+      'Microservices': 'fas fa-cubes',
+      'RESTful APIs': 'fas fa-code',
+      
+      // Database
+      'PostgreSQL': 'fas fa-database',
+      'MySQL': 'fas fa-database',
+      
+      // DevOps & Tools
+      'Docker': 'fab fa-docker',
+      'Jenkins': 'fas fa-tools',
+      'Git/GitHub': 'fab fa-github',
+      'AWS DevOps': 'fab fa-aws',
+      'Maven': 'fas fa-tools'
+    };
     
-    // Backend
-    'Java': 'fab fa-java',
-    'Spring Boot': 'fas fa-leaf',
-    'Spring Framework': 'fas fa-leaf',
-    'Hibernate': 'fas fa-database',
-    'Spring Data JPA': 'fas fa-database',
-    'Microservices': 'fas fa-cubes',
-    'RESTful APIs': 'fas fa-code',
-    
-    // Database
-    'PostgreSQL': 'fas fa-database',
-    'MySQL': 'fas fa-database',
-    
-    // DevOps & Tools
-    'Docker': 'fab fa-docker',
-    'Jenkins': 'fas fa-tools',
-    'Git/GitHub': 'fab fa-github',
-    'AWS DevOps': 'fab fa-aws',
-    'Maven': 'fas fa-tools'
-  };
-  
-  return iconMap[skillName] || 'fas fa-code';
-}
+    return iconMap[skillName] || 'fas fa-code';
+  }
 }

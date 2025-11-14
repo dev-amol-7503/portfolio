@@ -9,7 +9,7 @@ import {
   ChangeDetectorRef
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ThemeService } from '../services/theme.service';
+import { ThemeService, ThemeConfig } from '../services/theme.service';
 import { AdminService } from '../services/admin.service';
 import { Project, SocialPost } from '../interfaces/social-post.model';
 import { FormsModule } from '@angular/forms';
@@ -26,9 +26,14 @@ import lottie from 'lottie-web';
 export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChildren('lottieContainer') lottieContainers!: QueryList<ElementRef>;
 
+  isScrolledStart = false;
+  isScrolledEnd = false;
+  isScrolledMiddle = false;
+  showScrollHint = false;
+
   isDarkTheme = false;
   isEditMode = false;
-
+  currentTheme!: ThemeConfig;
   activeTab: string = 'projects';
 
   projects: Project[] = [];
@@ -62,38 +67,45 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
       this.isDarkTheme = isDark;
     });
 
+    this.themeService.currentTheme$.subscribe((theme) => {
+      this.currentTheme = theme;
+    });
+
     this.adminService.editMode$.subscribe((mode) => {
       this.isEditMode = mode;
     });
 
     this.adminService.portfolioData$.subscribe((data) => {
       console.log('🔄 Portfolio Data Received:', data);
-      
+
       // FIXED: Proper data filtering with debugging
       this.projects = data.projects || [];
-      
+
       // Debug social posts before filtering
       console.log('🔍 All Social Posts:', data.socialPosts);
-      
+
       // FIXED: Case-insensitive platform filtering
-      this.mediumPosts = data.socialPosts?.filter((post) => 
-        post.platform?.toLowerCase() === 'medium'
-      ) || [];
-      
-      this.quoraPosts = data.socialPosts?.filter((post) => 
-        post.platform?.toLowerCase() === 'quora'
-      ) || [];
-      
-      this.linkedinPosts = data.socialPosts?.filter((post) => 
-        post.platform?.toLowerCase() === 'linkedin'
-      ) || [];
-      
+      this.mediumPosts =
+        data.socialPosts?.filter(
+          (post) => post.platform?.toLowerCase() === 'medium'
+        ) || [];
+
+      this.quoraPosts =
+        data.socialPosts?.filter(
+          (post) => post.platform?.toLowerCase() === 'quora'
+        ) || [];
+
+      this.linkedinPosts =
+        data.socialPosts?.filter(
+          (post) => post.platform?.toLowerCase() === 'linkedin'
+        ) || [];
+
       // DEBUG: Log current state
       this.logCurrentState();
-      
+
       // Force change detection
       this.cdRef.detectChanges();
-      
+
       // Reinitialize Lottie animations when data changes
       setTimeout(() => {
         this.initializeLottieAnimations();
@@ -107,6 +119,16 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     this.lottieContainers.changes.subscribe(() => {
       this.initializeLottieAnimations();
     });
+
+    setTimeout(() => {
+      this.checkScrollHint();
+    }, 1000);
+
+    if (typeof window !== 'undefined') {
+      window.addEventListener('resize', () => {
+        this.checkScrollHint();
+      });
+    }
   }
 
   ngOnDestroy() {
@@ -118,9 +140,13 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     console.log('   Projects:', this.projects.length, this.projects);
     console.log('   Medium Posts:', this.mediumPosts.length, this.mediumPosts);
     console.log('   Quora Posts:', this.quoraPosts.length, this.quoraPosts);
-    console.log('   LinkedIn Posts:', this.linkedinPosts.length, this.linkedinPosts);
+    console.log(
+      '   LinkedIn Posts:',
+      this.linkedinPosts.length,
+      this.linkedinPosts
+    );
     console.log('   Active Tab:', this.activeTab);
-    
+
     // Additional debug for medium posts
     if (this.mediumPosts.length > 0) {
       console.log('🔍 Medium Post Details:', this.mediumPosts[0]);
@@ -129,7 +155,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private destroyLottieAnimations() {
-    this.lottieAnimations.forEach(animation => {
+    this.lottieAnimations.forEach((animation) => {
       if (animation && typeof animation.destroy === 'function') {
         animation.destroy();
       }
@@ -142,7 +168,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.lottieContainers.forEach((container, index) => {
       let items: any[] = [];
-      
+
       switch (this.activeTab) {
         case 'projects':
           items = this.projects;
@@ -180,10 +206,10 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
   onTabChange(tabId: string) {
     console.log('🔁 Tab changing to:', tabId);
     this.activeTab = tabId;
-    
+
     this.destroyLottieAnimations();
     this.cdRef.detectChanges();
-    
+
     setTimeout(() => {
       this.initializeLottieAnimations();
       this.logCurrentState();
@@ -225,7 +251,11 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   addNewProject() {
-    if (this.isEditMode && this.newProject.title && this.newProject.description) {
+    if (
+      this.isEditMode &&
+      this.newProject.title &&
+      this.newProject.description
+    ) {
       const project: Project = {
         id: Date.now(),
         title: this.newProject.title,
@@ -233,8 +263,10 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
         technologies: this.newProject.technologies
           ? this.newProject.technologies.split(',').map((t) => t.trim())
           : ['Angular'],
-        imageUrl: this.newProject.imageUrl || 'assets/images/project-placeholder.jpg',
-        animationUrl: this.newProject.animationUrl ||
+        imageUrl:
+          this.newProject.imageUrl || 'assets/images/project-placeholder.jpg',
+        animationUrl:
+          this.newProject.animationUrl ||
           'https://assets1.lottiefiles.com/packages/lf20_vybwn7df.json',
         link: this.newProject.link || '#',
         githubLink: this.newProject.githubLink,
@@ -244,7 +276,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
       this.adminService.addProject(project);
       this.newProject = {};
-      
+
       setTimeout(() => {
         this.initializeLottieAnimations();
       }, 100);
@@ -258,7 +290,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
       if (confirm(`Are you sure you want to delete "${project.title}"?`)) {
         this.adminService.deleteProject(project.id);
-        
+
         setTimeout(() => {
           this.initializeLottieAnimations();
         }, 100);
@@ -269,7 +301,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
   // TEST METHOD: Clear specific tab data for testing
   clearTabDataForTesting(tabName: string) {
     console.log('🧪 Clearing data for:', tabName);
-    
+
     switch (tabName) {
       case 'projects':
         this.projects = [];
@@ -284,9 +316,40 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
         this.linkedinPosts = [];
         break;
     }
-    
+
     this.cdRef.detectChanges();
     console.log('✅ Data cleared for:', tabName);
     this.logCurrentState();
+  }
+
+  onTabsScroll(event: Event) {
+    const container = event.target as HTMLElement;
+    const scrollLeft = container.scrollLeft;
+    const scrollWidth = container.scrollWidth;
+    const clientWidth = container.clientWidth;
+
+    // Update scroll states
+    this.isScrolledStart = scrollLeft === 0;
+    this.isScrolledEnd = scrollLeft + clientWidth >= scrollWidth - 5; // 5px tolerance
+    this.isScrolledMiddle = !this.isScrolledStart && !this.isScrolledEnd;
+  }
+
+  // Add this method to check if scroll hint should be shown
+  checkScrollHint() {
+    if (typeof window !== 'undefined') {
+      const container = document.querySelector(
+        '.tabs-container'
+      ) as HTMLElement;
+      if (container) {
+        this.showScrollHint = container.scrollWidth > container.clientWidth;
+
+        // Hide hint after 5 seconds
+        if (this.showScrollHint) {
+          setTimeout(() => {
+            this.showScrollHint = false;
+          }, 5000);
+        }
+      }
+    }
   }
 }

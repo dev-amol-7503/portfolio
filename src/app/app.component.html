@@ -1,95 +1,74 @@
 <div class="portfolio-container" [class.dark-theme]="isDarkTheme">
   <!-- Header -->
-<header class="portfolio-header">
-  <nav class="navbar navbar-expand-lg">
-    <div class="container-fluid px-3 px-lg-5">
-      <!-- Brand section -->
-      <a class="navbar-brand d-flex align-items-center" routerLink="/">
-        <div class="brand-logo me-2">A</div>
-        <span class="brand-name">Amol Works</span>
-        <span *ngIf="isAdmin" class="badge bg-success ms-2">Admin</span>
-      </a>
-
-      <!-- Desktop navigation -->
-      <div class="desktop-nav d-none d-lg-flex">
-        <ul class="navbar-nav me-auto">
-          <li class="nav-item" *ngFor="let item of navItems">
-            <a
-              class="nav-link"
-              [routerLink]="item.link"
-              routerLinkActive="active"
-              [routerLinkActiveOptions]="{ exact: true }"
-            >
-              <i [class]="item.icon + ' me-2'"></i>{{ item.label }}
-            </a>
-          </li>
-        </ul>
-        <div class="desktop-actions d-flex align-items-center">
-          <a
-            href="/assets/docs/resume.pdf"
-            download="Amol_Nagare_JavaAngular_Full_Stack_Developer.pdf"
-            class="btn btn-primary me-2"
-          >
-            <fa-icon [icon]="faDownload" class="me-2"></fa-icon>Download CV
-          </a>
-          <a
-            *ngIf="!isAdmin"
-            routerLink="/admin/login"
-            class="btn btn-outline-secondary"
-          >
-            <fa-icon [icon]="faSignInAlt" class="me-2"></fa-icon>Admin
-          </a>
-        </div>
-      </div>
-
-      <!-- Right side controls -->
-      <div class="header-controls d-flex align-items-center">
-        <button class="btn theme-toggle me-2" (click)="toggleTheme()">
-          <fa-icon [icon]="isDarkTheme ? faMoon : faSun"></fa-icon>
-        </button>
-        <button class="navbar-toggler" type="button" (click)="toggleMenu()">
-          <span class="navbar-toggler-icon"></span>
-        </button>
-      </div>
-
-      <!-- Mobile navigation menu -->
-      <div class="mobile-nav d-lg-none" [ngbCollapse]="isMenuCollapsed">
-        <div class="mobile-nav-content">
-          <ul class="navbar-nav">
+  <header class="portfolio-header">
+    <nav class="navbar navbar-expand-lg">
+      <div class="container-fluid px-3 px-lg-4">
+        <!-- Brand section -->
+        <a class="navbar-brand d-flex align-items-center" routerLink="/">
+          <div class="brand-logo me-2">A</div>
+          <span class="brand-name">Amol Works</span>
+          <span *ngIf="isAdmin" class="badge bg-success ms-2">Admin</span>
+        </a>
+  
+        <!-- Desktop navigation -->
+        <div class="desktop-nav d-none d-lg-flex align-items-center">
+          <ul class="navbar-nav me-3">
             <li class="nav-item" *ngFor="let item of navItems">
-              <a
-                class="nav-link"
-                [routerLink]="item.link"
-                routerLinkActive="active"
-                [routerLinkActiveOptions]="{ exact: true }"
-                (click)="isMenuCollapsed = true"
-              >
-                <i [class]="item.icon + ' me-2'"></i>{{ item.label }}
+              <a class="nav-link" [routerLink]="item.link" routerLinkActive="active"
+                [routerLinkActiveOptions]="{ exact: true }">
+                <i [class]="item.icon + ' me-1'"></i>{{ item.label }}
               </a>
             </li>
           </ul>
-          <div class="mobile-actions d-flex flex-row">
-            <a
-              href="/assets/docs/resume.pdf"
-              download="Amol_Nagare_JavaAngular_Full_Stack_Developer.pdf"
-              class="btn btn-primary mb-2"
-            >
-              <fa-icon [icon]="faDownload" class="me-2"></fa-icon>Download CV
+          <div class="desktop-actions d-flex align-items-center">
+            <a href="/assets/docs/resume.pdf" download="Amol_Nagare_JavaAngular_Full_Stack_Developer.pdf"
+              class="btn btn-primary btn-sm me-2">
+              <fa-icon [icon]="faDownload" class="me-1"></fa-icon>Download CV
             </a>
-            <a
-              *ngIf="!isAdmin"
-              routerLink="/admin/login"
-              class="btn btn-outline-secondary"
-              (click)="isMenuCollapsed = true"
-            >
-              <fa-icon [icon]="faSignInAlt" class="me-2"></fa-icon>Admin
+            <a *ngIf="!isAdmin" routerLink="/admin/login" class="btn btn-outline-secondary btn-sm">
+              <fa-icon [icon]="faSignInAlt" class="me-1"></fa-icon>Admin
             </a>
           </div>
         </div>
+  
+        <!-- Right side controls -->
+        <div class="header-controls d-flex align-items-center">
+          <button class="btn theme-toggle me-2" (click)="toggleTheme()">
+            <fa-icon [icon]="isDarkTheme ? faMoon : faSun"></fa-icon>
+          </button>
+          <!-- Hide toggler on desktop, show only on mobile -->
+          <button class="navbar-toggler compact-toggler d-lg-none" type="button" (click)="toggleMenu()">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+        </div>
+  
+        <!-- Mobile navigation menu -->
+        <div class="mobile-nav d-lg-none" [class.show]="!isMenuCollapsed" [ngbCollapse]="isMenuCollapsed">
+          <div class="mobile-nav-content">
+            <ul class="navbar-nav mb-3">
+              <li class="nav-item" *ngFor="let item of navItems">
+                <a class="nav-link" [routerLink]="item.link" routerLinkActive="active"
+                  [routerLinkActiveOptions]="{ exact: true }" (click)="isMenuCollapsed = true">
+                  <i [class]="item.icon + ' me-2'"></i>{{ item.label }}
+                </a>
+              </li>
+            </ul>
+            <!-- Updated: Buttons in one row for mobile -->
+            <div class="mobile-actions d-flex flex-row gap-2 align-items-stretch">
+              <a href="/assets/docs/resume.pdf" download="Amol_Nagare_JavaAngular_Full_Stack_Developer.pdf"
+                class="btn btn-primary btn-sm flex-fill">
+                <fa-icon [icon]="faDownload" class="me-1"></fa-icon>Download CV
+              </a>
+              <a *ngIf="!isAdmin" routerLink="/admin/login" class="btn btn-outline-secondary btn-sm flex-fill"
+                (click)="isMenuCollapsed = true">
+                <fa-icon [icon]="faSignInAlt" class="me-1"></fa-icon>Admin
+              </a>
+            </div>
+          </div>
+        </div>
       </div>
-    </div>
-  </nav>
-</header>
+    </nav>
+  </header>
 
   <!-- Admin Controls -->
   <div *ngIf="isAdmin" class="admin-controls-bar">
@@ -130,35 +109,16 @@
         <div class="footer-social">
           <h5 class="footer-title">Connect with me</h5>
           <div class="social-links">
-            <a
-              href="https://www.linkedin.com/in/amol-nagare-33628b21a/"
-              target="_blank"
-              class="social-link"
-              aria-label="LinkedIn"
-            >
+            <a href="https://www.linkedin.com/in/amol-nagare-33628b21a/" target="_blank" class="social-link" title="LinkedIn">
               <i class="fab fa-linkedin-in"></i>
             </a>
-            <a
-              href="https://github.com/dev-amol-7503"
-              target="_blank"
-              class="social-link"
-              aria-label="GitHub"
-            >
+            <a href="https://github.com/thematrixxworld/" target="_blank" class="social-link" title="GitHub">
               <i class="fab fa-github"></i>
             </a>
-            <a
-              href="https://twitter.com"
-              target="_blank"
-              class="social-link"
-              aria-label="Twitter"
-            >
+            <a href="https://twitter.com" target="_blank" class="social-link" title="Twitter">
               <i class="fab fa-twitter"></i>
             </a>
-            <a
-              href="mailto:amolnagare279@gmail.com"
-              class="social-link"
-              aria-label="Email"
-            >
+            <a href="mailto:amolnagare279@gmail.com" class="social-link" title="Email">
               <i class="fas fa-envelope"></i>
             </a>
           </div>

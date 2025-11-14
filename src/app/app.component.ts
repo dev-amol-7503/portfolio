@@ -24,7 +24,7 @@ import { NavItem } from './interfaces/social-post.model';
   standalone: true,
   imports: [CommonModule, RouterModule, NgbCollapseModule, FontAwesomeModule],
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.scss']
+  styleUrls: ['./app.component.scss'],
 })
 export class AppComponent implements OnInit {
   title = 'Amol Nagare - Full Stack Developer';
@@ -36,7 +36,7 @@ export class AppComponent implements OnInit {
   showDesktopRecommendation = false;
   isAdmin = false;
   isEditMode = false;
-  
+
   // Font Awesome Icons
   faDownload = faDownload;
   faArrowUp = faArrowUp;
@@ -57,37 +57,42 @@ export class AppComponent implements OnInit {
     { label: 'Technical Skills', link: '/skills', icon: 'fas fa-code' },
     { label: 'My Work', link: '/projects', icon: 'fas fa-project-diagram' },
     { label: 'Experience', link: '/experience', icon: 'fas fa-briefcase' },
-    { label: 'Contact', link: '/contact', icon: 'fas fa-envelope' }
+    { label: 'Contact', link: '/contact', icon: 'fas fa-envelope' },
   ];
 
   constructor(
-    private themeService: ThemeService, 
+    private themeService: ThemeService,
     private adminService: AdminService
   ) {}
 
   ngOnInit() {
     this.checkScrollPosition();
-    
-    this.themeService.isDarkTheme$.subscribe(isDark => {
+
+    this.themeService.isDarkTheme$.subscribe((isDark) => {
       this.isDarkTheme = isDark;
     });
-    
-    this.adminService.isAdmin$.subscribe(isAdmin => {
+
+    this.adminService.isAdmin$.subscribe((isAdmin) => {
       this.isAdmin = isAdmin;
     });
 
-    this.adminService.editMode$.subscribe(editMode => {
+    this.adminService.editMode$.subscribe((editMode) => {
       this.isEditMode = editMode;
     });
-    
+
     this.checkIfMobile();
   }
 
   private checkIfMobile() {
     if (typeof window !== 'undefined') {
-      this.isMobileDevice = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-      
-      const hasSeenMessage = sessionStorage.getItem('hasSeenDesktopRecommendation');
+      this.isMobileDevice =
+        /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+          navigator.userAgent
+        );
+
+      const hasSeenMessage = sessionStorage.getItem(
+        'hasSeenDesktopRecommendation'
+      );
       if (this.isMobileDevice && !hasSeenMessage) {
         this.showDesktopRecommendation = true;
         sessionStorage.setItem('hasSeenDesktopRecommendation', 'true');
@@ -105,14 +110,10 @@ export class AppComponent implements OnInit {
     this.showScrollButton = window.scrollY > 300;
   }
 
-  toggleMenu() {
-    this.isMenuCollapsed = !this.isMenuCollapsed;
-  }
-
   scrollToTop() {
     window.scrollTo({
       top: 0,
-      behavior: 'smooth'
+      behavior: 'smooth',
     });
   }
 
@@ -132,8 +133,21 @@ export class AppComponent implements OnInit {
     this.showDesktopRecommendation = false;
   }
   closeMobileMenu() {
-  if (window.innerWidth < 992) {
-    this.isMenuCollapsed = true;
+    if (window.innerWidth < 992) {
+      this.isMenuCollapsed = true;
+    }
   }
-}
+
+  toggleMenu() {
+    this.isMenuCollapsed = !this.isMenuCollapsed;
+    // Force a reflow to ensure smooth animation
+    if (!this.isMenuCollapsed) {
+      setTimeout(() => {
+        const mobileNav = document.querySelector('.mobile-nav');
+        if (mobileNav) {
+          mobileNav.classList.add('show');
+        }
+      }, 10);
+    }
+  }
 }

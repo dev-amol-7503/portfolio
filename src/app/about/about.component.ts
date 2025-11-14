@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { AdminService } from '../services/admin.service';
 import { FormsModule } from '@angular/forms';
+import { AdminService } from '../services/admin.service';
+import { ThemeService, ThemeConfig } from '../services/theme.service';
 
 @Component({
   selector: 'app-about',
@@ -13,8 +14,13 @@ import { FormsModule } from '@angular/forms';
 export class AboutComponent implements OnInit {
   personalInfo: any = {};
   isEditMode = false;
+  currentTheme!: ThemeConfig;
+  isDarkTheme = false;
 
-  constructor(private adminService: AdminService) {}
+  constructor(
+    private adminService: AdminService,
+    private themeService: ThemeService
+  ) {}
 
   ngOnInit() {
     this.adminService.portfolioData$.subscribe(data => {
@@ -23,6 +29,15 @@ export class AboutComponent implements OnInit {
 
     this.adminService.editMode$.subscribe(mode => {
       this.isEditMode = mode;
+    });
+
+    // Subscribe to theme changes
+    this.themeService.currentTheme$.subscribe(theme => {
+      this.currentTheme = theme;
+    });
+
+    this.themeService.isDarkTheme$.subscribe(isDark => {
+      this.isDarkTheme = isDark;
     });
   }
 

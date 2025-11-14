@@ -1,4 +1,28 @@
-// interfaces/tutorial.model.ts mai yeh add karen
+export interface TutorialContent {
+  id: string;
+  type: 'text' | 'code' | 'image' | 'video' | 'table' | 'diagram' | 'callout';
+  content: string;
+  order: number;
+  showPreview?: boolean;
+  
+  // Code specific properties
+  language?: string;
+  fileName?: string;
+  
+  // Image specific properties  
+  caption?: string;
+  altText?: string;
+  
+  // Video specific properties
+  title?: string;
+  
+  // Table specific properties
+  rows?: number;
+  columns?: number;
+  
+  // Other metadata
+  metadata?: any;
+}
 export interface Tutorial {
   id: string;
   title: string;

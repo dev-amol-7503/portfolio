@@ -1,6 +1,7 @@
 import { Component, OnInit, AfterViewInit, ElementRef, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AdminService } from '../services/admin.service';
+import { ThemeConfig, ThemeService } from '../services/theme.service';
 
 interface Experience {
   company: string;
@@ -26,9 +27,20 @@ export class ExperienceComponent implements OnInit, AfterViewInit {
   isEditMode = false;
   activeExperience: number = 0;
 
-  constructor(private adminService: AdminService) {}
+  currentTheme!: ThemeConfig;
+  isDarkTheme = false;
+
+  constructor(private adminService: AdminService, private themeService: ThemeService) {}
 
   ngOnInit() {
+
+    this.themeService.currentTheme$.subscribe(theme => {
+      this.currentTheme = theme;
+    });
+
+    this.themeService.isDarkTheme$.subscribe(isDark => {
+      this.isDarkTheme = isDark;
+    });
     // Initialize with static data from resume
     this.experiences = [
       {

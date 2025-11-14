@@ -2,6 +2,7 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, NgForm } from '@angular/forms';
 import { AdminService } from '../services/admin.service';
+import { ThemeService, ThemeConfig } from '../services/theme.service';
 import emailjs from 'emailjs-com';
 
 @Component({
@@ -19,6 +20,8 @@ export class ContactComponent implements OnInit {
   isError = false;
   personalInfo: any = {};
   isEditMode = false;
+  currentTheme!: ThemeConfig;
+  isDarkTheme = false;
 
   // Form model - separate from template reference
   formData = {
@@ -28,7 +31,10 @@ export class ContactComponent implements OnInit {
     message: ''
   };
 
-  constructor(private adminService: AdminService) {}
+  constructor(
+    private adminService: AdminService,
+    private themeService: ThemeService
+  ) {}
 
   ngOnInit() {
     this.adminService.portfolioData$.subscribe(data => {
@@ -37,6 +43,15 @@ export class ContactComponent implements OnInit {
 
     this.adminService.editMode$.subscribe(mode => {
       this.isEditMode = mode;
+    });
+
+    // Subscribe to theme changes
+    this.themeService.currentTheme$.subscribe(theme => {
+      this.currentTheme = theme;
+    });
+
+    this.themeService.isDarkTheme$.subscribe(isDark => {
+      this.isDarkTheme = isDark;
     });
 
     // Initialize EmailJS with your credentials

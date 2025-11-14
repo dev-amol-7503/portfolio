@@ -4,17 +4,12 @@ import {
   OnDestroy,
   ViewChild,
   ElementRef,
+  HostListener,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
-import {
-  CdkDragDrop,
-  moveItemInArray,
-  CdkDrag,
-  CdkDropList,
-} from '@angular/cdk/drag-drop';
 import { MatrixNotesService } from '../../../services/matrix-notes.service';
 import {
   RoadmapStep,
@@ -26,7 +21,7 @@ import { AdminService } from '../../../services/admin.service';
 @Component({
   selector: 'app-matrix-notes-editor',
   standalone: true,
-  imports: [CommonModule, FormsModule, CdkDropList, CdkDrag],
+  imports: [CommonModule, FormsModule],
   templateUrl: './matrix-notes-editor.component.html',
   styleUrls: ['./matrix-notes-editor.component.scss'],
 })
@@ -39,38 +34,56 @@ export class MatrixNotesEditorComponent implements OnInit, OnDestroy {
   autoSaveInterval: any;
   previewMode = false;
   activeContentType: string = 'text';
-  currentTextBlockIndex: number = -1;
-
   currentTextAreaIndex: number = -1;
-  textAreaElements: { [key: number]: ElementRef } = {};
+  showSaveStatus = false;
+  saveStatus: 'saved' | 'saving' | 'error' = 'saved';
 
-  // Available content types
+  // Content types
   contentTypes = [
-    { value: 'text', label: 'Text', icon: 'fas fa-paragraph' },
-    { value: 'code', label: 'Code', icon: 'fas fa-code' },
-    { value: 'image', label: 'Image', icon: 'fas fa-image' },
-    { value: 'video', label: 'Video', icon: 'fas fa-video' },
-    { value: 'diagram', label: 'Diagram', icon: 'fas fa-project-diagram' },
-    { value: 'callout', label: 'Callout', icon: 'fas fa-quote-left' },
-    { value: 'table', label: 'Table', icon: 'fas fa-table' },
+    {
+      value: 'text',
+      label: 'Text',
+      icon: 'fas fa-paragraph',
+      description: 'Rich text content with formatting',
+    },
+    {
+      value: 'code',
+      label: 'Code',
+      icon: 'fas fa-code',
+      description: 'Code snippets with syntax highlighting',
+    },
+    {
+      value: 'image',
+      label: 'Image',
+      icon: 'fas fa-image',
+      description: 'Images with captions',
+    },
+    {
+      value: 'video',
+      label: 'Video',
+      icon: 'fas fa-video',
+      description: 'Embedded video content',
+    },
+    {
+      value: 'table',
+      label: 'Table',
+      icon: 'fas fa-table',
+      description: 'Structured data tables',
+    },
   ];
 
+  popularContentTypes = this.contentTypes.slice(0, 3);
   programmingLanguages = [
     'html',
     'css',
-    'scss',
     'typescript',
     'javascript',
     'java',
-    'spring',
-    'springboot',
-    'hibernate',
-    'jpa',
-    'restapi',
-    'microservices',
+    'python',
+    'sql',
   ];
 
-  // Roadmap steps for selection
+  // Roadmap steps
   roadmapSteps: RoadmapStep[] = [];
   backendSteps: RoadmapStep[] = [];
   frontendSteps: RoadmapStep[] = [];
@@ -91,16 +104,13 @@ export class MatrixNotesEditorComponent implements OnInit, OnDestroy {
       }
     });
 
-    // Initialize roadmap steps
     this.initializeRoadmapSteps();
 
-    // Check if editing existing tutorial
     const tutorialId = this.route.snapshot.paramMap.get('id');
     if (tutorialId) {
       this.loadTutorial(tutorialId);
     }
 
-    // Auto-save every 30 seconds
     this.autoSaveInterval = setInterval(() => {
       if (this.tutorial.title || this.tutorial.content.length > 0) {
         this.autoSave();
@@ -114,7 +124,6 @@ export class MatrixNotesEditorComponent implements OnInit, OnDestroy {
     }
   }
 
-  // FIXED: Initialize tutorial with proper optional properties
   private getEmptyTutorial(): Tutorial {
     return {
       id: '',
@@ -122,7 +131,7 @@ export class MatrixNotesEditorComponent implements OnInit, OnDestroy {
       description: '',
       content: [],
       tags: [],
-      category: 'web-development',
+      category: 'java',
       author: 'admin',
       published: false,
       featured: false,
@@ -136,21 +145,13 @@ export class MatrixNotesEditorComponent implements OnInit, OnDestroy {
       roadmapStep: undefined,
       technologies: [],
       prerequisites: [],
-      learningObjectives: [],
+      learningObjectives: [
+        'Understand the core concepts',
+        'Learn practical implementation',
+      ],
     };
   }
 
-  // Toggle preview with proper typing
-  public togglePreview1(index: number) {
-    this.previewMode = !this.previewMode;
-    if (!this.tutorial.content[index].showPreview) {
-      this.tutorial.content[index].showPreview = true;
-    } else {
-      this.tutorial.content[index].showPreview = false;
-    }
-  }
-
-  // FIXED: Initialize roadmap steps
   private initializeRoadmapSteps() {
     this.backendSteps = [
       {
@@ -840,130 +841,67 @@ export class MatrixNotesEditorComponent implements OnInit, OnDestroy {
     this.roadmapSteps = [...this.backendSteps, ...this.frontendSteps];
   }
 
-  // FIXED: Handle roadmap step change with proper type checking
-  onRoadmapStepChange(stepId: number | undefined): void {
-    if (!stepId) return;
-
-    const selectedStep = this.roadmapSteps.find((step) => step.id === stepId);
-    if (selectedStep) {
-      // Initialize arrays if they don't exist
-      if (!this.tutorial.technologies) this.tutorial.technologies = [];
-      if (!this.tutorial.tags) this.tutorial.tags = [];
-      if (!this.tutorial.learningObjectives)
-        this.tutorial.learningObjectives = [];
-
-      // Auto-populate technologies and tags from roadmap step
-      this.tutorial.technologies = [...selectedStep.technologies];
-      this.tutorial.tags = [
-        ...selectedStep.technologies,
-        ...selectedStep.topics.slice(0, 3),
-      ];
-      this.tutorial.category = selectedStep.category;
-
-      // Add learning objectives based on roadmap step topics
-      this.tutorial.learningObjectives = selectedStep.topics.slice(0, 5);
-    }
-  }
-
-  // FIXED: Technology methods
-  addTechnology(tech: string): void {
-    if (tech && tech.trim()) {
-      if (!this.tutorial.technologies) {
-        this.tutorial.technologies = [];
-      }
-      if (!this.tutorial.technologies.includes(tech.trim())) {
-        this.tutorial.technologies.push(tech.trim());
-      }
-    }
-  }
-
-  removeTechnology(index: number): void {
-    if (
-      this.tutorial.technologies &&
-      this.tutorial.technologies.length > index
-    ) {
-      this.tutorial.technologies.splice(index, 1);
-    }
-  }
-
-  // FIXED: Prerequisite methods
-  addPrerequisite(prereq: string): void {
-    if (prereq && prereq.trim()) {
-      if (!this.tutorial.prerequisites) {
-        this.tutorial.prerequisites = [];
-      }
-      if (!this.tutorial.prerequisites.includes(prereq.trim())) {
-        this.tutorial.prerequisites.push(prereq.trim());
-      }
-    }
-  }
-
-  removePrerequisite(index: number): void {
-    if (
-      this.tutorial.prerequisites &&
-      this.tutorial.prerequisites.length > index
-    ) {
-      this.tutorial.prerequisites.splice(index, 1);
-    }
-  }
-
-  // FIXED: Get roadmap step name
-  getRoadmapStepName(stepId: number | undefined): string {
-    if (!stepId) return 'Not assigned';
-    const step = this.roadmapSteps.find((s) => s.id === stepId);
-    return step ? step.title : 'Unknown step';
-  }
-
-  // Get all roadmap steps for dropdown
-  getRoadmapSteps(): RoadmapStep[] {
-    return this.roadmapSteps;
-  }
-
-  // Get steps by category
-  getStepsByCategory(category: string): RoadmapStep[] {
-    return this.roadmapSteps.filter((step) => step.category === category);
-  }
-
-  // ... rest of your existing methods (loadTutorial, addContentBlock, removeContentBlock, etc.) ...
-
-  async loadTutorial(tutorialId: string) {
-    try {
-      const tutorial = await this.matrixNotesService.getTutorial(tutorialId);
-      if (tutorial) {
-        // Ensure optional arrays are initialized
-        this.tutorial = {
-          ...tutorial,
-          technologies: tutorial.technologies || [],
-          prerequisites: tutorial.prerequisites || [],
-          learningObjectives: tutorial.learningObjectives || [],
-        };
-        this.isEditMode = true;
-      }
-    } catch (error) {
-      this.toastr.error('Failed to load tutorial');
-    }
-  }
-
+  // CONTENT EDITING METHODS
   addContentBlock() {
-    const newContent: TutorialContent = {
+    const baseContent: TutorialContent = {
       id: Date.now().toString(),
       type: this.activeContentType as any,
       content: '',
       order: this.tutorial.content.length,
-      language: this.activeContentType === 'code' ? 'javascript' : '',
-      fileName: this.activeContentType === 'code' ? '' : '',
-      caption: this.activeContentType === 'image' ? '' : '',
-      title: this.activeContentType === 'video' ? '' : '',
-      metadata: this.activeContentType === 'callout' ? { type: 'info' } : {},
       showPreview: false,
     };
 
-    this.tutorial.content.push(newContent);
+    const typeDefaults: { [key: string]: Partial<TutorialContent> } = {
+      code: {
+        language: 'typescript',
+        fileName: '',
+        ...baseContent,
+      },
+      image: {
+        caption: '',
+        altText: '',
+        ...baseContent,
+      },
+      video: {
+        title: '',
+        ...baseContent,
+      },
+      table: {
+        rows: 3,
+        columns: 3,
+        ...baseContent,
+      },
+    };
+
+    const newContent = typeDefaults[this.activeContentType] || baseContent;
+    this.tutorial.content.push(newContent as TutorialContent);
   }
 
   removeContentBlock(index: number) {
-    this.tutorial.content.splice(index, 1);
-    this.updateContentOrder();
+    if (confirm('Are you sure you want to delete this content block?')) {
+      this.tutorial.content.splice(index, 1);
+      this.updateContentOrder();
+    }
+  }
+
+  moveBlockUp(index: number) {
+    if (index > 0) {
+      [this.tutorial.content[index - 1], this.tutorial.content[index]] = [
+        this.tutorial.content[index],
+        this.tutorial.content[index - 1],
+      ];
+      this.updateContentOrder();
+    }
+  }
+
+  moveBlockDown(index: number) {
+    if (index < this.tutorial.content.length - 1) {
+      [this.tutorial.content[index], this.tutorial.content[index + 1]] = [
+        this.tutorial.content[index + 1],
+        this.tutorial.content[index],
+      ];
+      this.updateContentOrder();
+    }
   }
 
   updateContentOrder() {
@@ -972,72 +910,246 @@ export class MatrixNotesEditorComponent implements OnInit, OnDestroy {
     });
   }
 
-  dropContent(event: CdkDragDrop<TutorialContent[]>) {
-    moveItemInArray(
-      this.tutorial.content,
-      event.previousIndex,
-      event.currentIndex
-    );
-    this.updateContentOrder();
-  }
-
-  addTag(tag: string) {
-    if (tag && !this.tutorial.tags.includes(tag)) {
-      this.tutorial.tags.push(tag);
+  // Update content from contenteditable div
+  updateContentFromEditor(index: number) {
+    const editor = document.getElementById(`text-editor-${index}`);
+    if (editor) {
+      this.tutorial.content[index].content = editor.innerHTML;
     }
   }
 
-  removeTag(index: number) {
-    this.tutorial.tags.splice(index, 1);
+  // Handle tab key in contenteditable - FIXED TYPE
+  handleTabKey(event: KeyboardEvent, index: number) {
+    if (event.key === 'Tab') {
+      event.preventDefault();
+      this.execCommand('insertHTML', '&nbsp;&nbsp;&nbsp;&nbsp;', index);
+    }
+  }
+
+  // Get plain text from HTML (for word count)
+  getPlainText(html: string): string {
+    // Create a temporary div element
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = html;
+    return tempDiv.textContent || tempDiv.innerText || '';
+  }
+
+  // Get word count for HTML content
+  getWordCountFromHtml(html: string): number {
+    const plainText = this.getPlainText(html);
+    return this.getWordCount(plainText);
+  }
+
+  // Get word count for text
+  getWordCount(text: string): number {
+    if (!text || !text.trim()) return 0;
+    return text.trim().split(/\s+/).length;
+  }
+
+  // IMAGE HANDLING
+  handleImageUpload(event: any, index: number) {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e: any) => {
+        this.tutorial.content[index].content = e.target.result;
+        this.tutorial.content[index].altText = file.name;
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
+  // VIDEO EMBED
+  embedVideo(url: string, index: number) {
+    let videoHTML = '';
+    if (url.includes('youtube.com') || url.includes('youtu.be')) {
+      const videoId = this.extractYouTubeId(url);
+      videoHTML = `<div class="video-embed">
+        <iframe width="560" height="315" src="https://www.youtube.com/embed/${videoId}" 
+                frameborder="0" allowfullscreen></iframe>
+      </div>`;
+    } else {
+      videoHTML = `<div class="video-embed">
+        <video controls width="100%">
+          <source src="${url}" type="video/mp4">
+          Your browser does not support the video tag.
+        </video>
+      </div>`;
+    }
+
+    this.execCommand('insertHTML', videoHTML, index);
+  }
+
+  private extractYouTubeId(url: string): string {
+    const regExp =
+      /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#&?]*).*/;
+    const match = url.match(regExp);
+    return match && match[7].length === 11 ? match[7] : '';
+  }
+
+  // PREVIEW AND SAVE METHODS
+  togglePreview() {
+    this.previewMode = !this.previewMode;
+    if (this.previewMode) {
+      this.calculateReadingTime();
+    }
+  }
+
+  toggleTextPreview(index: number) {
+    this.tutorial.content[index].showPreview =
+      !this.tutorial.content[index].showPreview;
   }
 
   async saveDraft() {
+    await this.saveTutorial(false);
+  }
+
+  async publishTutorial() {
+    if (!this.validateTutorial()) return;
+    await this.saveTutorial(true);
+  }
+
+  private validateTutorial(): boolean {
+    if (!this.tutorial.title?.trim()) {
+      this.toastr.error('Please add a title before publishing');
+      return false;
+    }
+    if (!this.tutorial.description?.trim()) {
+      this.toastr.error('Please add a description before publishing');
+      return false;
+    }
+    if (this.tutorial.content.length === 0) {
+      this.toastr.error('Please add some content before publishing');
+      return false;
+    }
+    return true;
+  }
+
+  private async saveTutorial(publish: boolean = false) {
     this.isSaving = true;
+    this.showSaveStatus = true;
+    this.saveStatus = 'saving';
+
     try {
+      this.prepareTutorialForSave();
+
+      let tutorialId: string;
       if (this.isEditMode) {
         await this.matrixNotesService.updateTutorial(
           this.tutorial.id,
           this.tutorial
         );
-        this.toastr.success('Draft saved successfully');
+        tutorialId = this.tutorial.id;
       } else {
-        const tutorialId = await this.matrixNotesService.createTutorial(
+        tutorialId = await this.matrixNotesService.createTutorial(
           this.tutorial
         );
         this.tutorial.id = tutorialId;
         this.isEditMode = true;
+      }
+
+      if (publish) {
+        await this.matrixNotesService.publishTutorial(tutorialId);
+        this.tutorial.published = true;
+        this.toastr.success('Tutorial published successfully!');
+
+        setTimeout(() => {
+          this.router.navigate(['/tutorials', tutorialId]);
+        }, 1500);
+      } else {
+        this.saveStatus = 'saved';
         this.toastr.success('Draft saved successfully');
       }
     } catch (error) {
-      this.toastr.error('Failed to save draft');
+      this.saveStatus = 'error';
+      this.toastr.error(
+        publish ? 'Failed to publish tutorial' : 'Failed to save draft'
+      );
+      console.error('Save error:', error);
     } finally {
       this.isSaving = false;
+      setTimeout(() => {
+        this.showSaveStatus = false;
+      }, 3000);
     }
   }
 
-  async autoSave() {
-    if (
-      this.isEditMode &&
-      (this.tutorial.title || this.tutorial.content.length > 0)
-    ) {
+  private prepareTutorialForSave() {
+    this.tutorial.updatedAt = new Date();
+    this.tutorial.readingTime = this.calculateReadingTime();
+
+    this.tutorial.technologies = this.tutorial.technologies || [];
+    this.tutorial.tags = this.tutorial.tags || [];
+    this.tutorial.prerequisites = this.tutorial.prerequisites || [];
+    this.tutorial.learningObjectives = this.tutorial.learningObjectives || [];
+  }
+
+  private async autoSave() {
+    if (this.tutorial.title || this.tutorial.content.length > 0) {
       try {
-        await this.matrixNotesService.updateTutorial(this.tutorial.id, {
-          ...this.tutorial,
-          updatedAt: new Date(),
-        });
-        console.log('Auto-saved tutorial');
+        this.prepareTutorialForSave();
+        if (this.isEditMode) {
+          await this.matrixNotesService.updateTutorial(this.tutorial.id, {
+            ...this.tutorial,
+            updatedAt: new Date(),
+          });
+        }
       } catch (error) {
         console.error('Auto-save failed:', error);
       }
     }
   }
 
+  // UTILITY METHODS
+  getContentBlocksCount(type: string): number {
+    return this.tutorial.content.filter((content) => content.type === type)
+      .length;
+  }
+
+  getActiveContentTypeLabel(): string {
+    const type = this.contentTypes.find(
+      (t) => t.value === this.activeContentType
+    );
+    return type?.label || 'Content';
+  }
+
+  getLanguageDisplayName(lang: string): string {
+    const names: { [key: string]: string } = {
+      typescript: 'TypeScript',
+      javascript: 'JavaScript',
+      springboot: 'Spring Boot',
+    };
+    return names[lang] || lang.charAt(0).toUpperCase() + lang.slice(1);
+  }
+
+  getSaveStatusText(): string {
+    switch (this.saveStatus) {
+      case 'saved':
+        return 'All changes saved';
+      case 'saving':
+        return 'Saving changes...';
+      case 'error':
+        return 'Failed to save';
+      default:
+        return '';
+    }
+  }
+
   calculateReadingTime(): number {
     const wordCount = this.tutorial.content
       .filter((content) => content.type === 'text')
-      .reduce((count, content) => count + content.content.split(' ').length, 0);
+      .reduce((count, content) => {
+        // Strip HTML tags and count words
+        const text = this.getPlainText(content.content);
+        return count + this.getWordCount(text);
+      }, 0);
 
-    return Math.max(1, Math.ceil(wordCount / 200));
+    const codeBlocks = this.tutorial.content.filter(
+      (content) => content.type === 'code'
+    ).length;
+    const readingTime = Math.max(1, Math.ceil(wordCount / 200) + codeBlocks);
+    this.tutorial.readingTime = readingTime;
+    return readingTime;
   }
 
   getContentIcon(type: string): string {
@@ -1045,24 +1157,116 @@ export class MatrixNotesEditorComponent implements OnInit, OnDestroy {
     return contentType?.icon || 'fas fa-question';
   }
 
-  editTutorial(tutorialId: string) {
-    this.router.navigate(['/admin/matrix-notes/editor', tutorialId]);
-  }
-
-  // Method to handle image upload
-  async onImageUpload(event: any, contentIndex: number) {
-    const file = event.target.files[0];
-    if (file) {
-      // In a real app, you would upload to Firebase Storage
-      const reader = new FileReader();
-      reader.onload = (e: any) => {
-        this.tutorial.content[contentIndex].content = e.target.result;
-      };
-      reader.readAsDataURL(file);
+  async loadTutorial(tutorialId: string) {
+    try {
+      const tutorial = await this.matrixNotesService.getTutorial(tutorialId);
+      if (tutorial) {
+        this.tutorial = {
+          ...tutorial,
+          technologies: tutorial.technologies || [],
+          prerequisites: tutorial.prerequisites || [],
+          learningObjectives: tutorial.learningObjectives || [],
+        };
+        this.isEditMode = true;
+        this.toastr.success('Tutorial loaded successfully');
+      }
+    } catch (error) {
+      this.toastr.error('Failed to load tutorial');
+      console.error('Error loading tutorial:', error);
     }
   }
 
-  // Enhanced renderContent method
+  // TAG AND TECHNOLOGY METHODS
+  addTechnology(tech: string) {
+    this.addToArray('technologies', tech);
+  }
+
+  addTag(tag: string) {
+    this.addToArray('tags', tag);
+  }
+
+  addPrerequisite(prereq: string) {
+    this.addToArray('prerequisites', prereq);
+  }
+
+  private addToArray(
+    arrayName: 'technologies' | 'tags' | 'prerequisites',
+    value: string
+  ) {
+    if (value && value.trim()) {
+      if (!this.tutorial[arrayName]) {
+        this.tutorial[arrayName] = [];
+      }
+      const trimmedValue = value.trim();
+      if (!this.tutorial[arrayName]!.includes(trimmedValue)) {
+        this.tutorial[arrayName]!.push(trimmedValue);
+      }
+    }
+  }
+
+  removeTechnology(index: number) {
+    this.tutorial.technologies?.splice(index, 1);
+  }
+
+  removeTag(index: number) {
+    this.tutorial.tags?.splice(index, 1);
+  }
+
+  removePrerequisite(index: number) {
+    this.tutorial.prerequisites?.splice(index, 1);
+  }
+
+  // LEARNING OBJECTIVES
+  getLearningObjectives(): string[] {
+    return this.tutorial.learningObjectives || [];
+  }
+
+  addLearningObjective() {
+    if (!this.tutorial.learningObjectives) {
+      this.tutorial.learningObjectives = [];
+    }
+    this.tutorial.learningObjectives.push('');
+  }
+
+  updateLearningObjective(index: number, value: string) {
+    if (
+      this.tutorial.learningObjectives &&
+      this.tutorial.learningObjectives.length > index
+    ) {
+      this.tutorial.learningObjectives[index] = value;
+    }
+  }
+
+  removeLearningObjective(index: number) {
+    if (
+      this.tutorial.learningObjectives &&
+      this.tutorial.learningObjectives.length > index
+    ) {
+      this.tutorial.learningObjectives.splice(index, 1);
+    }
+  }
+
+  onRoadmapStepChange(stepId: number | undefined): void {
+    if (!stepId) return;
+
+    const selectedStep = this.roadmapSteps.find((step) => step.id === stepId);
+    if (selectedStep) {
+      if (!this.tutorial.technologies) this.tutorial.technologies = [];
+      if (!this.tutorial.tags) this.tutorial.tags = [];
+      if (!this.tutorial.learningObjectives)
+        this.tutorial.learningObjectives = [];
+
+      this.tutorial.technologies = [...selectedStep.technologies];
+      this.tutorial.tags = [
+        ...selectedStep.technologies,
+        ...selectedStep.topics.slice(0, 3),
+      ];
+      this.tutorial.category = selectedStep.category;
+      this.tutorial.learningObjectives = selectedStep.topics.slice(0, 5);
+    }
+  }
+
+  // CONTENT RENDERING FOR PREVIEW
   renderContent(content: TutorialContent): string {
     switch (content.type) {
       case 'text':
@@ -1074,9 +1278,9 @@ export class MatrixNotesEditorComponent implements OnInit, OnDestroy {
         return `
           <div class="code-block-preview">
             ${fileName}
-            <pre data-language="${content.language}"><code class="language-${
-          content.language
-        }">${this.escapeHtml(content.content)}</code></pre>
+            <pre><code class="language-${
+              content.language || 'text'
+            }">${this.escapeHtml(content.content)}</code></pre>
           </div>
         `;
       case 'image':
@@ -1086,21 +1290,15 @@ export class MatrixNotesEditorComponent implements OnInit, OnDestroy {
         return `
           <div class="image-block-preview">
             <img src="${content.content}" alt="${
-          content.caption || 'Tutorial image'
+          content.altText || 'Tutorial image'
         }" class="img-fluid rounded">
             ${caption}
           </div>
         `;
       case 'video':
-        return this.renderVideo(content.content, content.title);
-      case 'callout':
-        return this.renderCallout(content.content, content.metadata?.type);
+        return content.content;
       case 'table':
-        return this.renderTable(content.content);
-      case 'diagram':
-        return `<div class="diagram-preview-content">${this.renderMarkdown(
-          content.content
-        )}</div>`;
+        return content.content;
       default:
         return content.content;
     }
@@ -1115,277 +1313,240 @@ export class MatrixNotesEditorComponent implements OnInit, OnDestroy {
       .replace(/'/g, '&#039;');
   }
 
-  private renderVideo(url: string, title?: string): string {
-    if (url.includes('youtube.com') || url.includes('youtu.be')) {
-      const videoId = this.extractYouTubeId(url);
-      return `
-        <div class="video-preview-content">
-          ${title ? `<h4>${title}</h4>` : ''}
-          <div class="video-container">
-            <iframe src="https://www.youtube.com/embed/${videoId}" frameborder="0" allowfullscreen></iframe>
-          </div>
-        </div>
-      `;
-    }
-    return `<p><a href="${url}" target="_blank">${
-      title || 'Watch Video'
-    }</a></p>`;
-  }
-
-  private extractYouTubeId(url: string): string {
-    const regExp =
-      /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#&?]*).*/;
-    const match = url.match(regExp);
-    return match && match[7].length === 11 ? match[7] : '';
-  }
-
-  private renderCallout(content: string, type: string = 'info'): string {
-    const icons = {
-      info: 'fas fa-info-circle',
-      warning: 'fas fa-exclamation-triangle',
-      danger: 'fas fa-exclamation-circle',
-      success: 'fas fa-check-circle',
-      tip: 'fas fa-lightbulb',
-    };
-
-    const icon = icons[type as keyof typeof icons] || icons.info;
-    return `
-      <div class="callout callout-${type}">
-        <div class="callout-icon">
-          <i class="${icon}"></i>
-        </div>
-        <div class="callout-content">
-          ${this.renderMarkdown(content)}
-        </div>
-      </div>
-    `;
-  }
-
-  private renderTable(content: string): string {
-    const rows = content.split('\n').filter((row) => row.trim());
-    if (rows.length === 0) return '';
-
-    let html =
-      '<div class="table-responsive"><table class="table table-striped">';
-    rows.forEach((row, index) => {
-      const cells = row.split(',').map((cell) => cell.trim());
-      const tag = index === 0 ? 'th' : 'td';
-      html += `<tr>${cells
-        .map((cell) => `<${tag}>${cell}</${tag}>`)
-        .join('')}</tr>`;
-    });
-    html += '</table></div>';
-    return html;
-  }
-
-  // Table preview for editor
-  renderTablePreview(content: string): string {
-    return this.renderTable(content);
-  }
-
-  // Add this method to handle metadata updates
-  updateCalloutType(content: TutorialContent, type: string) {
-    if (!content.metadata) {
-      content.metadata = {};
-    }
-    content.metadata.type = type;
-  }
-
-  // Enhanced paste handling for rich text
-  onTextPaste(event: ClipboardEvent, index: number) {
-    event.preventDefault();
-    this.currentTextBlockIndex = index;
-
-    const text =
-      event.clipboardData?.getData('text/html') ||
-      event.clipboardData?.getData('text/plain');
-
-    if (text) {
-      // Clean and preserve formatting
-      const cleanHtml = this.cleanPastedHtml(text);
-      document.execCommand('insertHTML', false, cleanHtml);
-
-      // Update content
-      const textEditor = event.target as HTMLElement;
-      this.tutorial.content[index].content = textEditor.innerHTML;
-    }
-  }
-
-  private cleanPastedHtml(html: string): string {
-    // Remove unwanted tags but preserve basic formatting
-    const cleanHtml = html
-      .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
-      .replace(/<style\b[^<]*(?:(?!<\/style>)<[^<]*)*<\/style>/gi, '')
-      .replace(/<meta[^>]*>/gi, '')
-      .replace(/<link[^>]*>/gi, '')
-      .replace(/class="[^"]*"/g, '')
-      .replace(/style="[^"]*"/g, '');
-
-    return cleanHtml;
-  }
-
-  // Enhanced text editor methods
-  getTextContent(index: number): string {
-    const content = this.tutorial.content[index].content;
-    return content && content.trim() !== '' ? content : '<p><br></p>';
-  }
-
-  onTextEditorBlur() {
-    console.log('Text editor blurred');
-    // Keep the current index for a short time to allow toolbar interactions
-    setTimeout(() => {
-      this.currentTextBlockIndex = -1;
-    }, 150);
-  }
-
-  onTextEditorClick(index: number) {
-    console.log('Text editor clicked:', index);
-    this.currentTextBlockIndex = index;
-
-    // Ensure the editor gets focus
-    const textEditors = document.querySelectorAll('.text-editor');
-    if (textEditors[index]) {
-      (textEditors[index] as HTMLElement).focus();
-    }
-  }
-
-  onTextEditorKeydown(index: number, event: KeyboardEvent) {
-    this.currentTextBlockIndex = index;
-  }
-
-  onTextContentChange(index: number, event: any) {
-    const newContent = event.target.innerHTML;
-    this.tutorial.content[index].content = newContent;
-    console.log('Content updated for block:', index, newContent);
-  }
-
-  // Enhanced formatting with better focus management
-  formatText(command: string, index: number, event?: any) {
-    console.log('Formatting text:', command, 'for block:', index);
-
-    // Store the current index
-    this.currentTextBlockIndex = index;
-
-    // Get the specific text editor
-    const textEditors = document.querySelectorAll('.text-editor');
-    if (textEditors[index]) {
-      const textEditor = textEditors[index] as HTMLElement;
-
-      // Focus on the editor first
-      textEditor.focus();
-
-      // Small delay to ensure focus is set
-      setTimeout(() => {
-        this.executeFormatCommand(command, event, textEditor);
-
-        // Update the content model
-        this.tutorial.content[index].content = textEditor.innerHTML;
-      }, 10);
-    }
-  }
-
-  private executeFormatCommand(
-    command: string,
-    event: any,
-    textEditor: HTMLElement
-  ) {
+  async copyCode(code: string) {
     try {
-      // Ensure we're still focused on the correct editor
-      textEditor.focus();
-
-      switch (command) {
-        case 'bold':
-          document.execCommand('bold', false, undefined);
-          break;
-        case 'italic':
-          document.execCommand('italic', false, undefined);
-          break;
-        case 'underline':
-          document.execCommand('underline', false, undefined);
-          break;
-        case 'bullet':
-          document.execCommand('insertUnorderedList', false, undefined);
-          break;
-        case 'number':
-          document.execCommand('insertOrderedList', false, undefined);
-          break;
-        case 'heading':
-          const heading = event?.target?.value;
-          if (heading) {
-            document.execCommand('formatBlock', false, `<${heading}>`);
-          } else {
-            document.execCommand('formatBlock', false, '<p>');
-          }
-          break;
-        case 'fontSize':
-          const size = event?.target?.value;
-          if (size) {
-            document.execCommand('fontSize', false, size);
-          }
-          break;
-        case 'alignLeft':
-          document.execCommand('justifyLeft', false, undefined);
-          break;
-        case 'alignCenter':
-          document.execCommand('justifyCenter', false, undefined);
-          break;
-        case 'alignRight':
-          document.execCommand('justifyRight', false, undefined);
-          break;
-        case 'alignJustify':
-          document.execCommand('justifyFull', false, undefined);
-          break;
-      }
-    } catch (error) {
-      console.error('Error executing format command:', error);
+      await navigator.clipboard.writeText(code);
+      this.toastr.success('Code copied to clipboard');
+    } catch (err) {
+      this.toastr.error('Failed to copy code');
+      console.error('Failed to copy code: ', err);
     }
   }
 
-  public renderMarkdown(text: string): string {
-    if (!text) return '';
-
-    let html = text
-      // Headers
-      .replace(/^# (.*$)/gim, '<h1>$1</h1>')
-      .replace(/^## (.*$)/gim, '<h2>$1</h2>')
-      .replace(/^### (.*$)/gim, '<h3>$1</h3>')
-      // Bold and Italic
-      .replace(/\*\*(.*?)\*\*/gim, '<strong>$1</strong>')
-      .replace(/\*(.*?)\*/gim, '<em>$1</em>')
-      // Code
-      .replace(/`(.*?)`/gim, '<code>$1</code>')
-      // Lists
-      .replace(/^- (.*$)/gim, '<ul><li>$1</li></ul>')
-      .replace(/^(\d+)\. (.*$)/gim, '<ol><li>$2</li></ol>')
-      // Line breaks
-      .replace(/\n/gim, '<br>');
-
-    // Fix list formatting
-    html = html.replace(/<\/ul><br><ul>/gim, '');
-    html = html.replace(/<\/ol><br><ol>/gim, '');
-
-    return html;
-  }
-
-  @ViewChild('textArea', { static: false }) set textAreaRef(ref: ElementRef) {
-    if (ref && this.currentTextAreaIndex !== -1) {
-      this.textAreaElements[this.currentTextAreaIndex] = ref;
+  @HostListener('window:beforeunload', ['$event'])
+  handleBeforeUnload(event: BeforeUnloadEvent) {
+    if (this.tutorial.title || this.tutorial.content.length > 0) {
+      event.preventDefault();
+      event.returnValue =
+        'You have unsaved changes. Are you sure you want to leave?';
     }
   }
 
-  onTextEditorFocus(index: number) {
-    this.currentTextAreaIndex = index;
+  // Add these methods to your MatrixNotesEditorComponent class
+
+  // Handle format block change
+  handleFormatBlockChange(event: Event, index: number) {
+    const target = event.target as HTMLSelectElement;
+    if (target && target.value) {
+      this.execCommand('formatBlock', target.value, index);
+    }
   }
 
-  // Handle keyboard shortcuts and tab key
-  handleKeydown(event: KeyboardEvent, index: number) {
-    this.currentTextAreaIndex = index;
+  // Show prompt for link URL
+  showLinkPrompt(index: number) {
+    const url = window.prompt('Enter URL:', 'https://');
+    if (url) {
+      this.execCommand('createLink', url, index);
+    }
+  }
 
-    // Tab key handling
+  // Show prompt for video URL
+  showVideoPrompt(index: number) {
+    const url = window.prompt('Enter video URL:', 'https://');
+    if (url) {
+      this.embedVideo(url, index);
+    }
+  }
+
+  // Handle tab key with specific event type
+  handleEditorTabKey(event: KeyboardEvent, index: number) {
     if (event.key === 'Tab') {
       event.preventDefault();
-      this.handleTabKey(event.shiftKey, index);
+      this.execCommand('insertHTML', '&nbsp;&nbsp;&nbsp;&nbsp;', index);
+    }
+  }
+
+  // Enhanced execCommand method that preserves cursor position
+  execCommand(command: string, value: string = '', index: number) {
+    const editor = document.getElementById(
+      `text-editor-${index}`
+    ) as HTMLElement;
+    if (!editor) return;
+
+    // Save current selection before executing command
+    this.saveSelection(editor);
+
+    // Focus the editor
+    editor.focus();
+
+    // Execute the command
+    document.execCommand(command, false, value);
+
+    // Restore selection after command
+    this.restoreSelection(editor);
+
+    // Update content
+    this.updateContentFromEditor(index);
+  }
+
+  // Save current selection
+  private saveSelection(editor: HTMLElement) {
+    const selection = window.getSelection();
+    if (!selection || selection.rangeCount === 0) return;
+
+    const range = selection.getRangeAt(0);
+    const preSelectionRange = range.cloneRange();
+    preSelectionRange.selectNodeContents(editor);
+    preSelectionRange.setEnd(range.startContainer, range.startOffset);
+
+    const start = preSelectionRange.toString().length;
+    const end = start + range.toString().length;
+
+    // Store selection in data attributes
+    editor.setAttribute('data-selection-start', start.toString());
+    editor.setAttribute('data-selection-end', end.toString());
+  }
+
+  // Restore saved selection
+  private restoreSelection(editor: HTMLElement) {
+    const start = parseInt(editor.getAttribute('data-selection-start') || '0');
+    const end = parseInt(editor.getAttribute('data-selection-end') || '0');
+
+    // Clear attributes
+    editor.removeAttribute('data-selection-start');
+    editor.removeAttribute('data-selection-end');
+
+    if (start === 0 && end === 0) return;
+
+    const selection = window.getSelection();
+    if (!selection) return;
+
+    const range = document.createRange();
+
+    try {
+      // Find the text node and offset for the given position
+      const pos = this.findTextNodeAndOffset(editor, start);
+      if (pos.node) {
+        range.setStart(pos.node, pos.offset);
+
+        const endPos = this.findTextNodeAndOffset(editor, end);
+        if (endPos.node) {
+          range.setEnd(endPos.node, endPos.offset);
+        } else {
+          range.setEnd(pos.node, pos.offset);
+        }
+
+        selection.removeAllRanges();
+        selection.addRange(range);
+      }
+    } catch (error) {
+      console.warn('Could not restore selection:', error);
+      // Fallback: set cursor to end
+      this.setCursorToEnd(editor);
+    }
+  }
+
+  // Helper method to find text node and offset
+  private findTextNodeAndOffset(
+    element: Node,
+    position: number
+  ): { node: Node | null; offset: number } {
+    let currentPos = 0;
+
+    const walker = document.createTreeWalker(
+      element,
+      NodeFilter.SHOW_TEXT,
+      null
+    );
+
+    let node: Node | null;
+    while ((node = walker.nextNode())) {
+      const nodeLength = node.textContent?.length || 0;
+      if (position <= currentPos + nodeLength) {
+        return {
+          node: node,
+          offset: position - currentPos,
+        };
+      }
+      currentPos += nodeLength;
+    }
+
+    return { node: null, offset: 0 };
+  }
+
+  // Fallback method to set cursor to end
+  private setCursorToEnd(editor: HTMLElement) {
+    const selection = window.getSelection();
+    if (!selection) return;
+
+    const range = document.createRange();
+    range.selectNodeContents(editor);
+    range.collapse(false); // false means collapse to end
+
+    selection.removeAllRanges();
+    selection.addRange(range);
+  }
+
+  // Enhanced keyboard handler for nested lists
+  onKeyDown(event: KeyboardEvent, index: number) {
+    const editor = document.getElementById(
+      `text-editor-${index}`
+    ) as HTMLElement;
+    if (!editor) return;
+
+    // Handle Tab key for nested lists
+    if (event.key === 'Tab') {
+      event.preventDefault();
+
+      const selection = window.getSelection();
+      if (!selection || selection.rangeCount === 0) return;
+
+      const range = selection.getRangeAt(0);
+      const li = this.findParentListItem(range.startContainer);
+
+      if (li) {
+        if (event.shiftKey) {
+          // Shift+Tab - Outdent (remove nested list)
+          this.outdentListItem(li);
+        } else {
+          // Tab - Indent (create nested list)
+          this.indentListItem(li);
+        }
+        this.updateContentFromEditor(index);
+      } else {
+        // Regular tab behavior
+        this.execCommand('insertHTML', '&nbsp;&nbsp;&nbsp;&nbsp;', index);
+      }
       return;
+    }
+
+    // Handle Enter key for nested lists
+    if (event.key === 'Enter') {
+      const selection = window.getSelection();
+      if (!selection || selection.rangeCount === 0) return;
+
+      const range = selection.getRangeAt(0);
+      const li = this.findParentListItem(range.startContainer);
+
+      if (li && range.startOffset === 0 && range.endOffset === 0) {
+        // Enter at beginning of list item - create new list item above
+        event.preventDefault();
+        this.createNewListItemAbove(li, index);
+        return;
+      }
+
+      if (li) {
+        // Check if we're at the end of the list item
+        const liContent = li.textContent || '';
+        const cursorPosition = this.getCursorPositionInElement(li, range);
+
+        if (cursorPosition >= liContent.length) {
+          // Enter at end of list item - create new list item below
+          event.preventDefault();
+          this.createNewListItemBelow(li, index);
+          return;
+        }
+      }
     }
 
     // Keyboard shortcuts
@@ -1393,433 +1554,446 @@ export class MatrixNotesEditorComponent implements OnInit, OnDestroy {
       switch (event.key) {
         case 'b':
           event.preventDefault();
-          this.insertMarkdown('bold', index);
+          this.execCommand('bold', '', index);
           break;
         case 'i':
           event.preventDefault();
-          this.insertMarkdown('italic', index);
+          this.execCommand('italic', '', index);
           break;
-        case 'k':
+        case 'u':
           event.preventDefault();
-          this.insertMarkdown('link', index);
+          this.execCommand('underline', '', index);
           break;
       }
     }
   }
 
-  // Handle Tab and Shift+Tab for indentation with proper typing
-  handleTabKey(isShift: boolean, index: number) {
-    const textarea = this.textAreaElements[index]?.nativeElement;
-    if (!textarea) return;
-
-    const start: number = textarea.selectionStart;
-    const end: number = textarea.selectionEnd;
-    const value: string = textarea.value;
-
-    if (isShift) {
-      // Unindent (Shift+Tab)
-      const beforeCursor: string = value.substring(0, start);
-      const afterCursor: string = value.substring(end);
-      const currentLineStart: number = beforeCursor.lastIndexOf('\n') + 1;
-      const currentLine: string = value.substring(currentLineStart, start);
-
-      if (currentLine.startsWith('    ') || currentLine.startsWith('\t')) {
-        const newValue: string =
-          value.substring(0, currentLineStart) +
-          currentLine.substring(currentLine.startsWith('    ') ? 4 : 1) +
-          afterCursor;
-
-        textarea.value = newValue;
-        this.tutorial.content[index].content = newValue;
-
-        const newPos: number = start - (currentLine.startsWith('    ') ? 4 : 1);
-        textarea.setSelectionRange(newPos, newPos);
+  // Helper method to find parent list item
+  private findParentListItem(node: Node): HTMLLIElement | null {
+    let current = node;
+    while (current && current.nodeName !== 'LI') {
+      current = current.parentNode as Node;
+      if (
+        !current ||
+        current.nodeName === 'DIV' ||
+        current.nodeName === 'BODY'
+      ) {
+        return null;
       }
-    } else {
-      // Indent (Tab)
-      const newValue: string =
-        value.substring(0, start) + '    ' + value.substring(end);
-      textarea.value = newValue;
-      this.tutorial.content[index].content = newValue;
+    }
+    return current as HTMLLIElement;
+  }
 
-      const newPos: number = start + 4;
-      textarea.setSelectionRange(newPos, newPos);
+  // Indent list item (create nested list)
+  private indentListItem(li: HTMLLIElement) {
+    const previousLi = li.previousElementSibling as HTMLLIElement;
+    if (!previousLi) return;
+
+    let nestedList = previousLi.querySelector('ul, ol') as
+      | HTMLUListElement
+      | HTMLOListElement;
+
+    if (!nestedList) {
+      // Create new nested list
+      nestedList = document.createElement(
+        li.parentElement?.nodeName === 'OL' ? 'ol' : 'ul'
+      );
+      previousLi.appendChild(nestedList);
+    }
+
+    // Move current li to nested list
+    nestedList.appendChild(li);
+  }
+
+  // Outdent list item (remove from nested list)
+  private outdentListItem(li: HTMLLIElement) {
+    const nestedList = li.parentElement;
+    const parentList = nestedList?.parentElement;
+
+    if (
+      !nestedList ||
+      !parentList ||
+      !(nestedList.nodeName === 'UL' || nestedList.nodeName === 'OL')
+    ) {
+      return;
+    }
+
+    // Move li to parent list
+    const parentListElement = parentList.parentElement;
+    if (
+      parentListElement &&
+      (parentListElement.nodeName === 'UL' ||
+        parentListElement.nodeName === 'OL')
+    ) {
+      parentListElement.insertBefore(li, parentList.nextSibling);
+
+      // Remove empty nested list
+      if (nestedList.children.length === 0) {
+        parentList.removeChild(nestedList);
+      }
     }
   }
 
-  // Insert markdown formatting with proper typing
-  insertMarkdown(type: string, index: number) {
-    const textarea = this.textAreaElements[index]?.nativeElement;
-    if (!textarea) return;
+  // Create new list item above current one
+  private createNewListItemAbove(li: HTMLLIElement, index: number) {
+    const newLi = document.createElement('li');
+    newLi.innerHTML = '&nbsp;';
 
-    const start: number = textarea.selectionStart;
-    const end: number = textarea.selectionEnd;
-    const value: string = textarea.value;
-    const selectedText: string = value.substring(start, end);
+    const list = li.parentElement;
+    if (list) {
+      list.insertBefore(newLi, li);
 
-    let newValue: string = '';
-    let newCursorPos: number = start;
-
-    switch (type) {
-      case 'bold':
-        newValue =
-          value.substring(0, start) +
-          `**${selectedText}**` +
-          value.substring(end);
-        newCursorPos = start + (selectedText ? 0 : 2);
-        break;
-
-      case 'italic':
-        newValue =
-          value.substring(0, start) +
-          `*${selectedText}*` +
-          value.substring(end);
-        newCursorPos = start + (selectedText ? 0 : 1);
-        break;
-
-      case 'code':
-        newValue =
-          value.substring(0, start) +
-          `\`${selectedText}\`` +
-          value.substring(end);
-        newCursorPos = start + (selectedText ? 0 : 1);
-        break;
-
-      case 'bullet':
-        if (selectedText) {
-          const bulletedText: string = selectedText
-            .split('\n')
-            .map((line: string) => (line.trim() ? `- ${line}` : ''))
-            .join('\n');
-          newValue =
-            value.substring(0, start) + bulletedText + value.substring(end);
-        } else {
-          newValue = value.substring(0, start) + `- ` + value.substring(end);
-          newCursorPos = start + 2;
+      // Set cursor in new list item
+      setTimeout(() => {
+        const editor = document.getElementById(
+          `text-editor-${index}`
+        ) as HTMLElement;
+        if (editor) {
+          this.setCursorInElement(newLi, editor);
         }
-        break;
+      }, 0);
+    }
+  }
 
-      case 'number':
-        if (selectedText) {
-          const numberedText: string = selectedText
-            .split('\n')
-            .filter((line: string) => line.trim())
-            .map((line: string, idx: number) => `${idx + 1}. ${line}`)
-            .join('\n');
-          newValue =
-            value.substring(0, start) + numberedText + value.substring(end);
-        } else {
-          newValue = value.substring(0, start) + `1. ` + value.substring(end);
-          newCursorPos = start + 3;
+  // Create new list item below current one
+  private createNewListItemBelow(li: HTMLLIElement, index: number) {
+    const newLi = document.createElement('li');
+    newLi.innerHTML = '&nbsp;';
+
+    const list = li.parentElement;
+    if (list) {
+      list.insertBefore(newLi, li.nextSibling);
+
+      // Set cursor in new list item
+      setTimeout(() => {
+        const editor = document.getElementById(
+          `text-editor-${index}`
+        ) as HTMLElement;
+        if (editor) {
+          this.setCursorInElement(newLi, editor);
         }
-        break;
+      }, 0);
+    }
+  }
 
-      case 'h1':
-        newValue =
-          value.substring(0, start) +
-          `# ${selectedText || 'Heading 1'}` +
-          value.substring(end);
-        newCursorPos = start + (selectedText ? 0 : 2);
-        break;
+  // Get cursor position within an element
+  private getCursorPositionInElement(element: Node, range: Range): number {
+    const preCaretRange = range.cloneRange();
+    preCaretRange.selectNodeContents(element);
+    preCaretRange.setEnd(range.endContainer, range.endOffset);
+    return preCaretRange.toString().length;
+  }
 
-      case 'h2':
-        newValue =
-          value.substring(0, start) +
-          `## ${selectedText || 'Heading 2'}` +
-          value.substring(end);
-        newCursorPos = start + (selectedText ? 0 : 3);
-        break;
+  // Set cursor inside an element
+  private setCursorInElement(element: HTMLElement, editor: HTMLElement) {
+    const selection = window.getSelection();
+    if (!selection) return;
 
-      case 'h3':
-        newValue =
-          value.substring(0, start) +
-          `### ${selectedText || 'Heading 3'}` +
-          value.substring(end);
-        newCursorPos = start + (selectedText ? 0 : 4);
-        break;
+    const range = document.createRange();
+    range.selectNodeContents(element);
+    range.collapse(true); // true means collapse to start
 
-      case 'quote':
-        if (selectedText) {
-          const quotedText: string = selectedText
-            .split('\n')
-            .map((line: string) => `> ${line}`)
-            .join('\n');
-          newValue =
-            value.substring(0, start) + quotedText + value.substring(end);
-        } else {
-          newValue = value.substring(0, start) + `> ` + value.substring(end);
-          newCursorPos = start + 2;
-        }
-        break;
+    selection.removeAllRanges();
+    selection.addRange(range);
 
-      case 'link':
-        newValue =
-          value.substring(0, start) +
-          `[${selectedText || 'link text'}](https://)` +
-          value.substring(end);
-        newCursorPos = start + (selectedText ? selectedText.length + 3 : 12);
-        break;
+    editor.focus();
+  }
 
-      case 'image':
-        newValue =
-          value.substring(0, start) +
-          `![${selectedText || 'alt text'}](https://)` +
-          value.substring(end);
-        newCursorPos = start + (selectedText ? selectedText.length + 4 : 13);
-        break;
+  // Handle paste event
+  handlePaste(event: ClipboardEvent, index: number) {
+    event.preventDefault();
+    const text = event.clipboardData?.getData('text/plain');
+    if (text) {
+      this.execCommand('insertText', text, index);
+    }
+  }
 
-      case 'table':
-        const table: string = `| Header 1 | Header 2 | Header 3 |\n|----------|----------|----------|\n| Cell 1   | Cell 2   | Cell 3   |\n| Cell 4   | Cell 5   | Cell 6   |`;
-        newValue = value.substring(0, start) + table + value.substring(end);
-        break;
+  // Add these methods to your component class
 
-      case 'hr':
-        newValue = value.substring(0, start) + `\n---\n` + value.substring(end);
-        newCursorPos = start + 5;
-        break;
+  // Enhanced table creation with caption and styling
+  createTable(
+    rows: number = 3,
+    cols: number = 3,
+    index: number,
+    tableName?: string
+  ) {
+    const editor = document.getElementById(
+      `text-editor-${index}`
+    ) as HTMLElement;
+    if (!editor) return;
 
-      default:
-        console.warn('Unknown markdown type:', type);
-        return;
+    // Save selection before creating table
+    this.saveSelection(editor);
+
+    let tableHTML = `
+    <div class="table-container">
+      ${
+        tableName
+          ? `<div class="table-caption">${this.escapeHtml(tableName)}</div>`
+          : ''
+      }
+      <table class="custom-table" border="1">
+        <thead>
+          <tr>
+  `;
+
+    // Create table header
+    for (let j = 0; j < cols; j++) {
+      tableHTML += `<th style="padding: 8px; border: 1px solid #ccc; background: #f8f9fa;">Header ${
+        j + 1
+      }</th>`;
+    }
+    tableHTML += `</tr></thead><tbody>`;
+
+    // Create table rows
+    for (let i = 0; i < rows; i++) {
+      tableHTML += '<tr>';
+      for (let j = 0; j < cols; j++) {
+        tableHTML += `<td style="padding: 8px; border: 1px solid #ccc;">Content ${
+          i + 1
+        }-${j + 1}</td>`;
+      }
+      tableHTML += '</tr>';
     }
 
-    textarea.value = newValue;
-    this.tutorial.content[index].content = newValue;
+    tableHTML += `</tbody></table></div><br>`;
 
-    // Set cursor position
-    setTimeout(() => {
-      let newEndPos: number;
-      if (selectedText) {
-        switch (type) {
-          case 'bold':
-            newEndPos = newCursorPos + selectedText.length + 4;
-            break;
-          case 'italic':
-            newEndPos = newCursorPos + selectedText.length + 2;
-            break;
-          default:
-            newEndPos = newCursorPos + selectedText.length;
-        }
-      } else {
-        newEndPos = newCursorPos;
+    // Insert table at current cursor position
+    this.execCommand('insertHTML', tableHTML, index);
+  }
+
+  // Show table creation dialog with name input
+  showTableCreationDialog(index: number) {
+    const rows = this.tutorial.content[index].rows || 3;
+    const cols = this.tutorial.content[index].columns || 3;
+
+    // Create modal dialog for table creation
+    const tableName = window.prompt('Enter table name/caption (optional):', '');
+    const confirmCreate = window.confirm(
+      `Create table with ${rows} rows and ${cols} columns?`
+    );
+
+    if (confirmCreate) {
+      this.createTable(rows, cols, index, tableName || '');
+    }
+  }
+
+  // Enhanced table editing methods
+  addTableRow(table: HTMLTableElement) {
+    const row = table.insertRow();
+    const colCount = table.rows[0].cells.length;
+
+    for (let i = 0; i < colCount; i++) {
+      const cell = row.insertCell();
+      cell.style.padding = '8px';
+      cell.style.border = '1px solid #ccc';
+      cell.innerHTML = '&nbsp;';
+    }
+  }
+
+  deleteTableRow(table: HTMLTableElement) {
+    if (table.rows.length > 1) {
+      table.deleteRow(table.rows.length - 1);
+    }
+  }
+
+  addTableColumn(table: HTMLTableElement) {
+    for (let i = 0; i < table.rows.length; i++) {
+      const cell = table.rows[i].insertCell();
+      cell.style.padding = '8px';
+      cell.style.border = '1px solid #ccc';
+      cell.innerHTML =
+        i === 0
+          ? `<strong>Header ${table.rows[0].cells.length}</strong>`
+          : '&nbsp;';
+    }
+  }
+
+  deleteTableColumn(table: HTMLTableElement) {
+    if (table.rows[0].cells.length > 1) {
+      for (let i = 0; i < table.rows.length; i++) {
+        table.rows[i].deleteCell(table.rows[i].cells.length - 1);
       }
+    }
+  }
 
-      textarea.setSelectionRange(newCursorPos, newEndPos);
-      textarea.focus();
+  // Table context menu and editing
+  setupTableEditing(index: number) {
+    const editor = document.getElementById(
+      `text-editor-${index}`
+    ) as HTMLElement;
+    if (!editor) return;
+
+    // Add click handler for table operations
+    editor.addEventListener('click', (event) => {
+      const target = event.target as HTMLElement;
+
+      if (target.tagName === 'TD' || target.tagName === 'TH') {
+        this.showTableContextMenu(target, event, index);
+      }
+    });
+  }
+
+  // Show context menu for table editing
+  private showTableContextMenu(
+    cell: HTMLElement,
+    event: MouseEvent,
+    index: number
+  ) {
+    event.preventDefault();
+
+    const table = this.findParentTable(cell);
+    if (!table) return;
+
+    // Remove existing context menu
+    this.removeTableContextMenu();
+
+    // Create context menu
+    const contextMenu = document.createElement('div');
+    contextMenu.className = 'table-context-menu';
+    contextMenu.style.cssText = `
+    position: fixed;
+    left: ${event.clientX}px;
+    top: ${event.clientY}px;
+    background: white;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    z-index: 1000;
+    padding: 8px;
+    min-width: 150px;
+  `;
+
+    const menuItems = [
+      { text: 'Add Row', action: () => this.addTableRow(table) },
+      { text: 'Delete Row', action: () => this.deleteTableRow(table) },
+      { text: 'Add Column', action: () => this.addTableColumn(table) },
+      { text: 'Delete Column', action: () => this.deleteTableColumn(table) },
+      {
+        text: 'Edit Caption',
+        action: () => this.editTableCaption(table, index),
+      },
+    ];
+
+    menuItems.forEach((item) => {
+      const menuItem = document.createElement('div');
+      menuItem.textContent = item.text;
+      menuItem.style.cssText = `
+      padding: 8px 12px;
+      cursor: pointer;
+      border-radius: 3px;
+    `;
+      menuItem.addEventListener('mouseenter', () => {
+        menuItem.style.background = '#f0f0f0';
+      });
+      menuItem.addEventListener('mouseleave', () => {
+        menuItem.style.background = 'transparent';
+      });
+      menuItem.addEventListener('click', () => {
+        item.action();
+        this.removeTableContextMenu();
+        this.updateContentFromEditor(index);
+      });
+      contextMenu.appendChild(menuItem);
+    });
+
+    document.body.appendChild(contextMenu);
+
+    // Close menu when clicking outside
+    setTimeout(() => {
+      document.addEventListener(
+        'click',
+        this.removeTableContextMenu.bind(this),
+        { once: true }
+      );
     }, 0);
   }
 
-  // Text alignment with proper typing
-  alignText(alignment: string, index: number) {
-    const textarea = this.textAreaElements[index]?.nativeElement;
-    if (!textarea) return;
+  private removeTableContextMenu() {
+    const existingMenu = document.querySelector('.table-context-menu');
+    if (existingMenu) {
+      existingMenu.remove();
+    }
+  }
 
-    const start: number = textarea.selectionStart;
-    const end: number = textarea.selectionEnd;
-    const value: string = textarea.value;
-    const selectedText: string = value.substring(start, end);
-
-    if (selectedText) {
-      let alignedText: string = '';
-
-      switch (alignment) {
-        case 'center':
-          alignedText = `<div style="text-align: center">\n${selectedText}\n</div>`;
-          break;
-        case 'right':
-          alignedText = `<div style="text-align: right">\n${selectedText}\n</div>`;
-          break;
-        case 'left':
-        default:
-          alignedText = `<div style="text-align: left">\n${selectedText}\n</div>`;
-          break;
+  private findParentTable(element: HTMLElement): HTMLTableElement | null {
+    let current = element;
+    while (current && current.tagName !== 'TABLE') {
+      current = current.parentElement as HTMLElement;
+      if (!current || current.tagName === 'DIV' || current.tagName === 'BODY') {
+        return null;
       }
-
-      const newValue: string =
-        value.substring(0, start) + alignedText + value.substring(end);
-      textarea.value = newValue;
-      this.tutorial.content[index].content = newValue;
     }
+    return current as HTMLTableElement;
   }
 
-  // Toggle preview with proper typing
-  public toggleTextPreview(index: number) {
-    if (!this.tutorial.content[index].showPreview) {
-      this.tutorial.content[index].showPreview = true;
-    } else {
-      this.tutorial.content[index].showPreview = false;
-    }
-  }
-
-  // Keep this one for global preview mode
-  togglePreview() {
-    this.previewMode = !this.previewMode;
-  }
-
-  // Enhanced markdown rendering with alignment support
-  public renderEnhancedMarkdown(text: string): string {
-    if (!text) return '';
-
-    let html: string = text
-      // Headers
-      .replace(/^# (.*$)/gim, '<h1>$1</h1>')
-      .replace(/^## (.*$)/gim, '<h2>$1</h2>')
-      .replace(/^### (.*$)/gim, '<h3>$1</h3>')
-      // Bold and Italic
-      .replace(/\*\*(.*?)\*\*/gim, '<strong>$1</strong>')
-      .replace(/\*(.*?)\*/gim, '<em>$1</em>')
-      // Code
-      .replace(/`(.*?)`/gim, '<code class="inline-code">$1</code>')
-      // Blockquotes
-      .replace(/^> (.*$)/gim, '<blockquote>$1</blockquote>')
-      // Horizontal Rule
-      .replace(/^---$/gim, '<hr>')
-      // Images
-      .replace(
-        /!\[(.*?)\]\((.*?)\)/gim,
-        '<img src="$2" alt="$1" class="img-fluid">'
-      )
-      // Links
-      .replace(/\[(.*?)\]\((.*?)\)/gim, '<a href="$2" target="_blank">$1</a>')
-      // Lists
-      .replace(/^- (.*$)/gim, '<li>$1</li>')
-      .replace(/^(\d+)\. (.*$)/gim, '<li>$2</li>')
-      // Line breaks
-      .replace(/\n/gim, '<br>');
-
-    // Wrap lists
-    html = html.replace(/(<li>.*<\/li>)/gim, '<ul>$1</ul>');
-
-    // Handle alignment divs
-    html = html.replace(
-      /<div style="text-align: center">(.*?)<\/div>/gim,
-      '<div style="text-align: center">$1</div>'
-    );
-    html = html.replace(
-      /<div style="text-align: right">(.*?)<\/div>/gim,
-      '<div style="text-align: right">$1</div>'
-    );
-    html = html.replace(
-      /<div style="text-align: left">(.*?)<\/div>/gim,
-      '<div style="text-align: left">$1</div>'
-    );
-
-    // Clean up multiple line breaks
-    html = html.replace(/<br><br>/gim, '<br>');
-
-    return html;
-  }
-
-  // FIXED: Safe getter for learning objectives
-  getLearningObjectives(): string[] {
-    return this.tutorial.learningObjectives || [];
-  }
-
-  // FIXED: Safe method to update learning objectives
-  updateLearningObjective(index: number, value: string): void {
-    if (!this.tutorial.learningObjectives) {
-      this.tutorial.learningObjectives = [];
-    }
-
-    if (this.tutorial.learningObjectives.length > index) {
-      this.tutorial.learningObjectives[index] = value;
-    }
-  }
-
-  // FIXED: Learning objectives methods with safety checks
-  addLearningObjective(): void {
-    if (!this.tutorial.learningObjectives) {
-      this.tutorial.learningObjectives = [];
-    }
-    this.tutorial.learningObjectives.push('');
-  }
-
-  removeLearningObjective(index: number): void {
+  // Edit table caption
+  editTableCaption(table: HTMLTableElement, index: number) {
+    const tableContainer = table.parentElement;
     if (
-      this.tutorial.learningObjectives &&
-      this.tutorial.learningObjectives.length > index
-    ) {
-      this.tutorial.learningObjectives.splice(index, 1);
-    }
-  }
-
-  // matrix-notes-editor.component.ts - PRODUCTION PUBLISH
-
-  async publishTutorial(): Promise<void> {
-    // Validation
-    if (!this.tutorial.title?.trim()) {
-      this.toastr.error('Please add a title before publishing');
+      !tableContainer ||
+      !tableContainer.classList.contains('table-container')
+    )
       return;
-    }
 
-    if (this.tutorial.content.length === 0) {
-      this.toastr.error('Please add some content before publishing');
-      return;
-    }
+    let caption = tableContainer.querySelector('.table-caption') as HTMLElement;
+    const currentCaption = caption?.textContent || '';
 
-    this.isSaving = true;
-
-    try {
-      // Prepare tutorial data
-      this.prepareTutorialForPublish();
-
-      // Save tutorial
-      const tutorialId = await this.saveTutorial();
-
-      // Publish tutorial
-      await this.matrixNotesService.publishTutorial(tutorialId);
-
-      // Navigate to published tutorial
-      this.navigateToPublishedTutorial(tutorialId);
-    } catch (error) {
-      console.error('❌ Failed to publish tutorial:', error);
-      this.toastr.error('Failed to publish tutorial');
-    } finally {
-      this.isSaving = false;
-    }
-  }
-
-  private prepareTutorialForPublish(): void {
-    // Calculate reading time
-    this.tutorial.readingTime = this.calculateReadingTime();
-
-    // Set roadmap metadata
-    if (this.tutorial.roadmapStep) {
-      const selectedStep = this.roadmapSteps.find(
-        (s) => s.id === this.tutorial.roadmapStep
-      );
-      if (selectedStep) {
-        this.tutorial.roadmapType = selectedStep.category as
-          | 'frontend'
-          | 'backend';
-        this.tutorial.stepTitle = selectedStep.title;
+    const newCaption = window.prompt('Enter table caption:', currentCaption);
+    if (newCaption !== null) {
+      if (!caption) {
+        caption = document.createElement('div');
+        caption.className = 'table-caption';
+        tableContainer.insertBefore(caption, table);
       }
-    }
-
-    // Ensure arrays are initialized
-    this.tutorial.technologies = this.tutorial.technologies || [];
-    this.tutorial.prerequisites = this.tutorial.prerequisites || [];
-    this.tutorial.learningObjectives = this.tutorial.learningObjectives || [];
-  }
-
-  private async saveTutorial(): Promise<string> {
-    if (this.isEditMode) {
-      await this.matrixNotesService.updateTutorial(
-        this.tutorial.id,
-        this.tutorial
-      );
-      return this.tutorial.id;
-    } else {
-      return await this.matrixNotesService.createTutorial(this.tutorial);
+      caption.textContent = newCaption;
+      this.updateContentFromEditor(index);
     }
   }
 
-  private navigateToPublishedTutorial(tutorialId: string): void {
-    const queryParams = this.tutorial.roadmapStep
-      ? { roadmapStep: this.tutorial.roadmapStep }
-      : undefined;
+  // Enhanced table styling
+  applyTableStyles() {
+    // This will be called when initializing editor content
+    const tables = document.querySelectorAll('.custom-table');
+    tables.forEach((table) => {
+      this.styleTable(table as HTMLTableElement);
+    });
+  }
 
-    this.router.navigate(['/tutorials', tutorialId], { queryParams });
-    this.toastr.success('Tutorial published successfully');
+  private styleTable(table: HTMLTableElement) {
+    table.style.borderCollapse = 'collapse';
+    table.style.width = '100%';
+    table.style.margin = '16px 0';
+
+    // Style header cells
+    const headers = table.querySelectorAll('th');
+    headers.forEach((header) => {
+      header.style.backgroundColor = '#f8f9fa';
+      header.style.fontWeight = 'bold';
+      header.style.textAlign = 'left';
+      header.style.padding = '12px';
+      header.style.border = '1px solid #dee2e6';
+    });
+
+    // Style data cells
+    const cells = table.querySelectorAll('td');
+    cells.forEach((cell) => {
+      cell.style.padding = '12px';
+      cell.style.border = '1px solid #dee2e6';
+      cell.style.verticalAlign = 'top';
+    });
+  }
+
+  // Update initEditorContent to apply table styles
+  initEditorContent(index: number) {
+    const editor = document.getElementById(`text-editor-${index}`);
+    if (editor && this.tutorial.content[index].content) {
+      editor.innerHTML = this.tutorial.content[index].content;
+      // Apply table styles after content is loaded
+      setTimeout(() => {
+        this.applyTableStyles();
+        this.setupTableEditing(index);
+      }, 0);
+    }
   }
 }

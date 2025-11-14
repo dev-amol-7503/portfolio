@@ -1,572 +1,395 @@
 <div class="tutorial-detail-container">
   <!-- Loading State -->
-  <div *ngIf="isLoading" class="text-center py-5">
-    <div class="spinner-border text-primary" role="status">
-      <span class="visually-hidden">Loading...</span>
+  <div *ngIf="isLoading" class="loading-container">
+    <div class="loading-spinner">
+      <div class="spinner"></div>
+      <p>Loading tutorial content...</p>
     </div>
-    <p class="mt-2 text-muted">Loading tutorial...</p>
   </div>
 
   <!-- Tutorial Content -->
-  <div *ngIf="!isLoading && tutorial" class="container">
-    <div class="row">
-      <!-- Main Content -->
-      <div class="col-lg-8">
-        <article class="tutorial-content">
-          <!-- Tutorial Header -->
-          <header class="tutorial-header">
-            <nav aria-label="breadcrumb" class="breadcrumb-nav">
-              <ol class="breadcrumb">
-                <li class="breadcrumb-item">
-                  <a [routerLink]="['/tutorials']" class="breadcrumb-link">
-                    <i class="bi bi-book me-1"></i>
-                    Tutorials
-                  </a>
-                </li>
-                <li class="breadcrumb-item">
-                  <a
-                    [routerLink]="['/tutorials']"
-                    [queryParams]="{ category: tutorial.category }"
-                    class="breadcrumb-link"
-                  >
-                    <i class="bi bi-folder me-1"></i>
-                    {{ tutorial.category | titlecase }}
-                  </a>
-                </li>
-                <li class="breadcrumb-item active" aria-current="page">
-                  {{ tutorial.title }}
-                </li>
-              </ol>
-            </nav>
-
-            <div class="tutorial-main">
-              <!-- Header Top Section -->
-              <div class="header-top">
-                <div class="title-block">
-                  <h1 class="tutorial-title">
-                    {{ tutorial.title }}
-                  </h1>
-                  <p class="tutorial-description">{{ tutorial.description }}</p>
-                </div>
-
-                <div class="action-block">
-                  <button
-                    class="btn btn-like"
-                    (click)="likeTutorial()"
-                    [class.liked]="hasLiked"
-                  >
-                    <i
-                      class="bi"
-                      [class.bi-heart]="!hasLiked"
-                      [class.bi-heart-fill]="hasLiked"
-                    ></i>
-                    <span class="btn-text">Like</span>
-                    <span class="btn-count">({{ tutorial.likes || 0 }})</span>
-                  </button>
-
-                  <div class="dropdown">
-                    <button
-                      class="btn btn-share dropdown-toggle"
-                      type="button"
-                      data-bs-toggle="dropdown"
-                    >
-                      <i class="bi bi-share"></i>
-                      <span class="btn-text">Share</span>
-                    </button>
-                    <ul class="dropdown-menu">
-                      <li>
-                        <a
-                          class="dropdown-item"
-                          href="#"
-                          (click)="shareOnTwitter()"
-                        >
-                          <i class="bi bi-twitter me-2"></i>Twitter
-                        </a>
-                      </li>
-                      <li>
-                        <a
-                          class="dropdown-item"
-                          href="#"
-                          (click)="shareOnLinkedIn()"
-                        >
-                          <i class="bi bi-linkedin me-2"></i>LinkedIn
-                        </a>
-                      </li>
-                      <li>
-                        <a
-                          class="dropdown-item"
-                          href="#"
-                          (click)="shareOnFacebook()"
-                        >
-                          <i class="bi bi-facebook me-2"></i>Facebook
-                        </a>
-                      </li>
-                      <li><hr class="dropdown-divider" /></li>
-                      <li>
-                        <a class="dropdown-item" href="#" (click)="copyLink()">
-                          <i class="bi bi-link-45deg me-2"></i>Copy Link
-                        </a>
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Meta Information -->
-              <div class="meta-info">
-                <div class="meta-badges">
-                  <span
-                    class="badge"
-                    [ngClass]="getDifficultyBadgeClass(tutorial.difficulty)"
-                  >
-                    <i class="bi bi-graph-up me-1"></i>
-                    {{ tutorial.difficulty | titlecase }}
-                  </span>
-                  <span class="badge badge-category">
-                    <i class="bi bi-tag me-1"></i>
-                    {{ tutorial.category | titlecase }}
-                  </span>
-                </div>
-
-                <div class="meta-stats">
-                  <div class="stat-item">
-                    <i class="bi bi-clock"></i>
-                    {{ tutorial.readingTime }} min read
-                  </div>
-                  <div class="stat-item">
-                    <i class="bi bi-calendar"></i>
-                    {{ tutorial.createdAt | date : "mediumDate" }}
-                  </div>
-                  <div class="stat-item">
-                    <i class="bi bi-eye"></i>
-                    {{ tutorial.views || 0 }} views
-                  </div>
-                </div>
-              </div>
-
-              <!-- Tags Section -->
-              <div class="tags-section">
-                <div class="tags-container">
-                  <span *ngFor="let tag of tutorial.tags" class="tag">
-                    <i class="bi bi-hash"></i>
-                    {{ tag }}
-                  </span>
-                </div>
-              </div>
-            </div>
-          </header>
-
-          <!-- Content Blocks -->
-<div class="content-blocks">
-  <div
-    *ngFor="let content of tutorial.content; let i = index"
-    class="content-block"
-    [id]="getSectionId(content, i)"
-  >
-    <div class="content-rendered">
-      <!-- Text Content -->
-      <div *ngIf="content.type === 'text'" class="text-content-block">
-        <div
-          [innerHTML]="renderMarkdown(content.content)"
-          class="rich-text-content"
-        ></div>
-      </div>
-
-      <!-- Code Content -->
-      <div *ngIf="content.type === 'code'" class="code-content-block">
-        <div class="code-header">
-          <div class="code-meta">
-            <span class="code-language">{{
-              content.language || "text" | uppercase
-            }}</span>
-            <span *ngIf="content.fileName" class="code-filename">
-              <i class="bi bi-file-text me-1"></i>
-              {{ content.fileName }}
-            </span>
-          </div>
-          <button
-            class="btn btn-copy"
-            (click)="copyCode(content.content)"
-            title="Copy code"
-          >
-            <i class="bi bi-clipboard"></i>
-            Copy
-          </button>
-        </div>
-        <pre
-          class="code-display"
-        ><code [class]="'language-' + (content.language || 'text')">{{ content.content }}</code></pre>
-      </div>
-
-      <!-- Image Content -->
-      <div
-        *ngIf="content.type === 'image'"
-        class="image-content-block"
-      >
-        <div class="image-container">
-          <img
-            [src]="content.content"
-            [alt]="content.caption || 'Tutorial image'"
-            class="tutorial-image"
-          />
-          <div *ngIf="content.caption" class="image-caption">
-            <i class="bi bi-image me-1"></i>
-            {{ content.caption }}
-          </div>
-        </div>
-      </div>
-
-      <!-- Video Content -->
-      <div
-        *ngIf="content.type === 'video'"
-        class="video-content-block"
-      >
-        <div class="video-header" *ngIf="content.title">
-          <h4>
-            <i class="bi bi-play-circle me-2"></i>
-            {{ content.title }}
-          </h4>
-        </div>
-        <div class="video-container">
-          <div
-            [innerHTML]="renderVideo(content.content)"
-            class="video-embed"
-          ></div>
-        </div>
-      </div>
-
-      <!-- Callout Content -->
-      <div
-        *ngIf="content.type === 'callout'"
-        class="callout-content-block"
-      >
-        <div
-          [innerHTML]="
-            renderCallout(content.content, content.metadata?.type)
-          "
-          class="callout-container"
-        ></div>
-      </div>
-
-      <!-- Table Content -->
-      <div
-        *ngIf="content.type === 'table'"
-        class="table-content-block"
-      >
-        <div class="table-header" *ngIf="content.title">
-          <h5>
-            <i class="bi bi-table me-2"></i>
-            {{ content.title }}
-          </h5>
-        </div>
-        <div
-          [innerHTML]="renderTable(content.content)"
-          class="table-container"
-        ></div>
-      </div>
-
-      <!-- Diagram Content -->
-      <div
-        *ngIf="content.type === 'diagram'"
-        class="diagram-content-block"
-      >
-        <div class="diagram-header">
-          <h5>
-            <i class="bi bi-diagram-3 me-2"></i>
-            Diagram
-          </h5>
-        </div>
-        <div class="diagram-container">
-          <pre
-            class="diagram-code"
-          ><code>{{ content.content }}</code></pre>
-        </div>
-      </div>
+  <div *ngIf="!isLoading && tutorial" class="tutorial-wrapper">
+    <!-- Sticky Progress Bar -->
+    <div class="reading-progress" *ngIf="!isLoading">
+      <div class="progress-bar" [style.width.%]="getScrollProgress()"></div>
     </div>
-  </div>
-</div>
 
-          <!-- Roadmap Context Section -->
-          <div *ngIf="currentRoadmapStep" class="roadmap-context-section mb-4">
-            <div class="card border-primary">
-              <div class="card-body">
-                <div class="row align-items-center">
-                  <div class="col-md-6">
-                    <div class="roadmap-badge mb-2">
-                      <span class="badge bg-primary">
-                        {{ currentRoadmapStep?.badgeText || "Roadmap Step" }} •
-                        Step {{ currentRoadmapStep?.order }} • Topic
-                        {{ getCurrentTopicNumber() }}/{{ totalTopicsInStep }}
-                      </span>
-                    </div>
-                    <h6 class="card-title mb-1">
-                      {{ currentRoadmapStep?.title }}
-                    </h6>
-                    <p class="card-text text-muted small mb-0">
-                      {{ currentRoadmapStep?.description }}
-                    </p>
-                  </div>
-                  <div class="col-md-6">
-                    <div class="progress-section mb-3">
-                      <div
-                        class="d-flex justify-content-between align-items-center mb-1"
-                      >
-                        <small class="text-muted">Step Progress</small>
-                        <small class="text-muted"
-                          >{{ getCurrentTopicNumber() }}/{{
-                            totalTopicsInStep
-                          }}
-                          topics</small
-                        >
-                      </div>
-                      <div class="progress" style="height: 8px">
-                        <div
-                          class="progress-bar bg-success"
-                          [style.width.%]="getStepProgress()"
-                        ></div>
-                      </div>
-                    </div>
-
-                    <div class="btn-group w-100">
-                      <button
-                        class="btn btn-outline-primary btn-sm"
-                        (click)="navigateToPreviousTopic()"
-                        [disabled]="!hasPreviousTopic()"
-                      >
-                        Previous Topic
-                      </button>
-                      <button
-                        class="btn btn-primary btn-sm"
-                        (click)="navigateToNextTopic()"
-                        [disabled]="!hasNextTopic()"
-                      >
-                        Next Topic
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Tutorial Footer 
-          <footer class="tutorial-footer mt-5 pt-5 border-top">
-            <div class="footer-content">
-              <div class="row align-items-center">
-                <div class="col-md-8">
-                  <div class="author-info">
-                    <div class="author-avatar">
-                      <div class="avatar-circle bg-primary">
-                        {{ getAuthorInitials(tutorial.author) }}
-                      </div>
-                    </div>
-                    <div class="author-details">
-                      <h6 class="author-name">
-                        Written by {{ tutorial.author }}
-                      </h6>
-                      <p class="author-bio text-muted">
-                        Expert developer and technical writer
-                      </p>
-                    </div>
-                  </div>
-                </div>
-                <div class="col-md-4 text-md-end">
-                  <div class="social-share">
-                    <h6 class="share-title">Share this tutorial</h6>
-                    <div class="share-buttons">
-                      <button
-                        class="btn btn-share btn-twitter"
-                        (click)="shareOnTwitter()"
-                      >
-                        Twitter
-                      </button>
-                      <button
-                        class="btn btn-share btn-linkedin"
-                        (click)="shareOnLinkedIn()"
-                      >
-                        LinkedIn
-                      </button>
-                      <button
-                        class="btn btn-share btn-facebook"
-                        (click)="shareOnFacebook()"
-                      >
-                        Facebook
-                      </button>
-                      <button
-                        class="btn btn-share btn-link"
-                        (click)="copyLink()"
-                      >
-                        Copy Link
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div class="progress-section mt-4">
-                <div class="progress-info">
-                  <span class="progress-text">Tutorial Progress</span>
-                  <span class="progress-percentage"
-                    >{{ getScrollProgress() }}%</span
-                  >
-                </div>
-                <div class="progress">
-                  <div
-                    class="progress-bar"
-                    [style.width.%]="getScrollProgress()"
-                  ></div>
-                </div>
-              </div>
-            </div>
-          </footer>
-          -->
-        </article>
-      </div>
-
-      <!-- Sidebar -->
-      <div class="col-lg-4">
-        <aside class="tutorial-sidebar">
-          <!-- Table of Contents -->
-          <div class="card sidebar-card mb-4">
-            <div class="card-header">
-              <h6 class="card-title mb-0">Table of Contents</h6>
-            </div>
-            <div class="card-body">
-              <nav class="toc-nav">
-                <ul class="list-unstyled mb-0">
-                  <li
-                    *ngFor="let item of getTableOfContents(); let i = index"
-                    [class]="'toc-item toc-level-' + item.level"
-                    [class.active]="activeSectionId === item.id"
-                  >
-                    <a
-                      [href]="'#' + item.id"
-                      class="toc-link"
-                      (click)="scrollToSection(item.id, $event)"
-                    >
-                      <span class="toc-bullet"></span>
-                      <span class="toc-text">{{ item.title }}</span>
-                    </a>
-                  </li>
-                </ul>
+    <div class="container">
+      <div class="row">
+        <!-- Main Content -->
+        <div class="col-lg-8">
+          <article class="tutorial-article">
+            <!-- Enhanced Header -->
+            <header class="article-header">
+              <nav class="breadcrumb-nav">
+                <a [routerLink]="['/tutorials']" class="breadcrumb-link">
+                  <i class="fas fa-arrow-left"></i>
+                  Back to Tutorials
+                </a>
+                <span class="breadcrumb-separator">/</span>
+                <a
+                  [routerLink]="['/tutorials']"
+                  [queryParams]="{ category: tutorial.category }"
+                  class="breadcrumb-link"
+                >
+                  {{ tutorial.category | titlecase }}
+                </a>
               </nav>
-            </div>
-          </div>
 
-          <!-- Roadmap Progress -->
-          <div class="card sidebar-card mb-4" *ngIf="currentRoadmapStep">
-            <div class="card-header">
-              <h6 class="card-title mb-0">Roadmap Progress</h6>
-            </div>
-            <div class="card-body">
-              <div class="roadmap-progress">
-                <h6 class="progress-title">{{ currentRoadmapStep.title }}</h6>
-                <div class="progress mb-2">
-                  <div
-                    class="progress-bar bg-primary"
-                    [style.width.%]="getStepProgress()"
-                  ></div>
-                </div>
-                <small class="text-muted">
-                  {{ getCurrentTopicNumber() }} of
-                  {{ totalTopicsInStep }} topics completed
-                </small>
-
-                <div class="roadmap-navigation mt-3">
-                  <h6 class="section-title">Topics in this step:</h6>
-                  <ul class="list-unstyled">
-                    <li
-                      *ngFor="let tutorial of allStepTutorials; let i = index"
-                      class="roadmap-topic"
-                      [class.text-primary]="i === currentTopicIndex"
-                      [class.fw-bold]="i === currentTopicIndex"
+              <div class="header-content">
+                <div class="title-section">
+                  <h1 class="tutorial-title">{{ tutorial.title }}</h1>
+                  <p class="tutorial-description">{{ tutorial.description }}</p>
+                  
+                  <div class="action-buttons">
+                    <button
+                      class="btn btn-like"
+                      (click)="likeTutorial()"
+                      [class.liked]="hasLiked"
                     >
-                      <span class="small">
-                        {{ i + 1 }}. {{ tutorial.topicTitle || tutorial.title }}
-                        <span
-                          *ngIf="i === currentTopicIndex"
-                          class="badge bg-primary ms-1"
-                          >Current</span
-                        >
-                      </span>
+                      <i [class]="hasLiked ? 'fas fa-heart' : 'far fa-heart'"></i>
+                      <span class="btn-text">Like</span>
+                      <span class="count">{{ tutorial.likes || 0 }}</span>
+                    </button>
+
+                    <div class="dropdown">
+                      <button class="btn btn-share dropdown-toggle" data-bs-toggle="dropdown">
+                        <i class="fas fa-share-alt"></i>
+                        <span class="btn-text">Share</span>
+                      </button>
+                      <div class="dropdown-menu">
+                        <a class="dropdown-item" (click)="shareOnTwitter()">
+                          <i class="fab fa-twitter"></i> Twitter
+                        </a>
+                        <a class="dropdown-item" (click)="shareOnLinkedIn()">
+                          <i class="fab fa-linkedin"></i> LinkedIn
+                        </a>
+                        <a class="dropdown-item" (click)="shareOnFacebook()">
+                          <i class="fab fa-facebook"></i> Facebook
+                        </a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" (click)="copyLink()">
+                          <i class="fas fa-link"></i> Copy Link
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="meta-section">
+                  <div class="meta-badges">
+                    <span class="badge difficulty" [class]="tutorial.difficulty">
+                      <i class="fas fa-chart-line"></i>
+                      {{ tutorial.difficulty | titlecase }}
+                    </span>
+                    <span class="badge category">
+                      <i class="fas fa-tag"></i>
+                      {{ tutorial.category | titlecase }}
+                    </span>
+                    <span class="badge reading-time">
+                      <i class="fas fa-clock"></i>
+                      {{ tutorial.readingTime }} min read
+                    </span>
+                  </div>
+
+                  <div class="meta-stats">
+                    <span class="stat">
+                      <i class="fas fa-eye"></i>
+                      {{ tutorial.views || 0 }} views
+                    </span>
+                    <span class="stat">
+                      <i class="fas fa-calendar"></i>
+                      {{ tutorial.createdAt | date:'mediumDate' }}
+                    </span>
+                  </div>
+                </div>
+
+                <!-- Tags -->
+                <div class="tags-section" *ngIf="tutorial.tags && tutorial.tags.length > 0">
+                  <div class="tags-container">
+                    <span *ngFor="let tag of tutorial.tags" class="tag">
+                      <i class="fas fa-hashtag"></i>
+                      {{ tag }}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </header>
+
+            <!-- Roadmap Context -->
+            <div *ngIf="currentRoadmapStep" class="roadmap-context">
+              <div class="context-card">
+                <div class="context-header">
+                  <i class="fas fa-map-marker-alt"></i>
+                  <h4>Learning Path: {{ currentRoadmapStep.title }}</h4>
+                </div>
+                <div class="context-body">
+                  <p class="context-description">{{ currentRoadmapStep.description }}</p>
+                  
+                  <div class="progress-section">
+                    <div class="progress-info">
+                      <span>Step Progress</span>
+                      <span>{{ getCurrentTopicNumber() }}/{{ totalTopicsInStep }} topics</span>
+                    </div>
+                    <div class="progress">
+                      <div class="progress-bar" [style.width.%]="getStepProgress()"></div>
+                    </div>
+                  </div>
+
+                  <div class="navigation-buttons">
+                    <button
+                      class="btn btn-outline-primary"
+                      (click)="navigateToPreviousTopic()"
+                      [disabled]="!hasPreviousTopic()"
+                    >
+                      <i class="fas fa-arrow-left"></i>
+                      Previous
+                    </button>
+                    <button
+                      class="btn btn-primary"
+                      (click)="navigateToNextTopic()"
+                      [disabled]="!hasNextTopic()"
+                    >
+                      Next
+                      <i class="fas fa-arrow-right"></i>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Content Blocks -->
+            <div class="content-sections">
+              <div
+                *ngFor="let content of tutorial.content; let i = index"
+                class="content-section"
+                [id]="'section-' + i"
+              >
+                <!-- Text Content -->
+                <div *ngIf="content.type === 'text'" class="text-section">
+                  <div [innerHTML]="renderEnhancedMarkdown(content.content)" class="rich-text"></div>
+                </div>
+
+                <!-- Code Content -->
+                <div *ngIf="content.type === 'code'" class="code-section">
+                  <div class="code-block">
+                    <div class="code-header">
+                      <div class="code-meta">
+                        <span class="language-badge">{{ content.language || 'text' | uppercase }}</span>
+                        <span *ngIf="content.fileName" class="filename">
+                          <i class="fas fa-file-code"></i>
+                          {{ content.fileName }}
+                        </span>
+                      </div>
+                      <button class="btn btn-copy" (click)="copyCode(content.content)">
+                        <i class="fas fa-copy"></i>
+                        Copy
+                      </button>
+                    </div>
+                    <pre class="code-display"><code [class]="'language-' + (content.language || 'text')">{{ content.content }}</code></pre>
+                  </div>
+                </div>
+
+                <!-- Image Content -->
+                <div *ngIf="content.type === 'image'" class="image-section">
+                  <div class="image-block">
+                    <img [src]="content.content" [alt]="content.caption || 'Tutorial image'" class="tutorial-image">
+                    <div *ngIf="content.caption" class="image-caption">
+                      <i class="fas fa-image"></i>
+                      {{ content.caption }}
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Video Content -->
+                <div *ngIf="content.type === 'video'" class="video-section">
+                  <div class="video-block">
+                    <div class="video-header" *ngIf="content.title">
+                      <h5>
+                        <i class="fas fa-play-circle"></i>
+                        {{ content.title }}
+                      </h5>
+                    </div>
+                    <div class="video-container">
+                      <div [innerHTML]="renderVideo(content.content)" class="video-embed"></div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Callout Content -->
+                <div *ngIf="content.type === 'callout'" class="callout-section">
+                  <div class="callout-block" [class]="'callout-' + (content.metadata?.type || 'info')">
+                    <div class="callout-icon">
+                      <i [class]="getCalloutIcon(content.metadata?.type)"></i>
+                    </div>
+                    <div class="callout-content">
+                      <div [innerHTML]="renderEnhancedMarkdown(content.content)"></div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Table Content -->
+                <div *ngIf="content.type === 'table'" class="table-section">
+                  <div class="table-block">
+                    <div class="table-container">
+                      <div [innerHTML]="renderTable(content.content)"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Tutorial Footer -->
+            <footer class="article-footer">
+              <div class="completion-section">
+                <h4>Congratulations! 🎉</h4>
+                <p>You've completed this tutorial. Ready to continue your learning journey?</p>
+                
+                <div class="completion-actions">
+                  <button
+                    *ngIf="hasNextTopic()"
+                    class="btn btn-primary"
+                    (click)="navigateToNextTopic()"
+                  >
+                    Continue to Next Topic
+                  </button>
+                  <button
+                    *ngIf="!hasNextTopic() && getNextRoadmapStep()"
+                    class="btn btn-success"
+                    (click)="navigateToRoadmapStep(getNextRoadmapStep()!.id)"
+                  >
+                    Next Step: {{ getNextRoadmapStep()!.title }}
+                  </button>
+                  <a [routerLink]="['/tutorials']" class="btn btn-outline-primary">
+                    Browse More Tutorials
+                  </a>
+                </div>
+              </div>
+
+              <div class="feedback-section">
+                <h5>Was this tutorial helpful?</h5>
+                <div class="feedback-buttons">
+                  <button class="btn btn-outline-success" (click)="likeTutorial()">
+                    <i class="fas fa-thumbs-up"></i> Yes
+                  </button>
+                  <button class="btn btn-outline-secondary">
+                    <i class="fas fa-comment"></i> Leave Feedback
+                  </button>
+                </div>
+              </div>
+            </footer>
+          </article>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+          <aside class="tutorial-sidebar">
+            <!-- Table of Contents -->
+            <div class="sidebar-card toc-card">
+              <div class="card-header">
+                <i class="fas fa-list-ol"></i>
+                <h5>Table of Contents</h5>
+              </div>
+              <div class="card-body">
+                <nav class="toc-nav">
+                  <ul>
+                    <li
+                      *ngFor="let item of getTableOfContents()"
+                      class="toc-item"
+                      [class.active]="activeSectionId === item.id"
+                      [class]="'toc-level-' + item.level"
+                    >
+                      <a
+                        [href]="'#' + item.id"
+                        (click)="scrollToSection(item.id, $event)"
+                        class="toc-link"
+                      >
+                        <span class="toc-bullet"></span>
+                        <span class="toc-text">{{ item.title }}</span>
+                      </a>
                     </li>
                   </ul>
+                </nav>
+              </div>
+            </div>
+
+            <!-- Tutorial Info -->
+            <div class="sidebar-card info-card">
+              <div class="card-header">
+                <i class="fas fa-info-circle"></i>
+                <h5>Tutorial Information</h5>
+              </div>
+              <div class="card-body">
+                <div class="info-grid">
+                  <div class="info-item">
+                    <i class="fas fa-chart-line"></i>
+                    <div class="info-content">
+                      <div class="info-label">Difficulty</div>
+                      <div class="info-value">{{ tutorial.difficulty | titlecase }}</div>
+                    </div>
+                  </div>
+                  <div class="info-item">
+                    <i class="fas fa-tag"></i>
+                    <div class="info-content">
+                      <div class="info-label">Category</div>
+                      <div class="info-value">{{ tutorial.category | titlecase }}</div>
+                    </div>
+                  </div>
+                  <div class="info-item">
+                    <i class="fas fa-clock"></i>
+                    <div class="info-content">
+                      <div class="info-label">Reading Time</div>
+                      <div class="info-value">{{ tutorial.readingTime }} minutes</div>
+                    </div>
+                  </div>
+                  <div class="info-item">
+                    <i class="fas fa-calendar"></i>
+                    <div class="info-content">
+                      <div class="info-label">Published</div>
+                      <div class="info-value">{{ tutorial.createdAt | date:'mediumDate' }}</div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
 
-          <!-- Tutorial Info -->
-          <div class="card sidebar-card mb-4">
-            <div class="card-header">
-              <h6 class="card-title mb-0">Tutorial Info</h6>
-            </div>
-            <div class="card-body">
-              <div class="info-grid">
-                <div class="info-item">
-                  <div class="info-content">
-                    <div class="info-label">Difficulty</div>
-                    <div class="info-value">
-                      <span
-                        class="badge"
-                        [ngClass]="getDifficultyBadgeClass(tutorial.difficulty)"
-                      >
-                        {{ tutorial.difficulty | titlecase }}
+            <!-- Related Tutorials -->
+            <div class="sidebar-card related-card" *ngIf="relatedTutorials.length > 0">
+              <div class="card-header">
+                <i class="fas fa-book-open"></i>
+                <h5>Related Tutorials</h5>
+              </div>
+              <div class="card-body">
+                <div class="related-list">
+                  <a
+                    *ngFor="let related of relatedTutorials"
+                    [routerLink]="['/tutorials', related.id]"
+                    class="related-item"
+                  >
+                    <h6>{{ related.title }}</h6>
+                    <p class="related-description">{{ related.description }}</p>
+                    <div class="related-meta">
+                      <span class="badge" [class]="related.difficulty">
+                        {{ related.difficulty | titlecase }}
                       </span>
+                      <span class="reading-time">{{ related.readingTime }} min</span>
                     </div>
-                  </div>
-                </div>
-
-                <div class="info-item">
-                  <div class="info-content">
-                    <div class="info-label">Category</div>
-                    <div class="info-value">
-                      {{ tutorial.category | titlecase }}
-                    </div>
-                  </div>
-                </div>
-
-                <div class="info-item">
-                  <div class="info-content">
-                    <div class="info-label">Reading Time</div>
-                    <div class="info-value">
-                      {{ tutorial.readingTime }} minutes
-                    </div>
-                  </div>
-                </div>
-
-                <div class="info-item">
-                  <div class="info-content">
-                    <div class="info-label">Published</div>
-                    <div class="info-value">
-                      {{ tutorial.createdAt | date : "mediumDate" }}
-                    </div>
-                  </div>
-                </div>
-
-                <div class="info-item">
-                  <div class="info-content">
-                    <div class="info-label">Last Updated</div>
-                    <div class="info-value">
-                      {{ tutorial.updatedAt | date : "mediumDate" }}
-                    </div>
-                  </div>
+                  </a>
                 </div>
               </div>
             </div>
-          </div>
-        </aside>
+          </aside>
+        </div>
       </div>
     </div>
   </div>
 
   <!-- Not Found State -->
-  <div *ngIf="!isLoading && !tutorial" class="text-center py-5">
-    <div class="not-found-container">
-      <h4 class="mb-3">Tutorial Not Found</h4>
-      <p class="text-muted mb-4">
-        The tutorial you're looking for doesn't exist or has been removed.
-      </p>
+  <div *ngIf="!isLoading && !tutorial" class="not-found-container">
+    <div class="not-found-content">
+      <i class="fas fa-book-open"></i>
+      <h3>Tutorial Not Found</h3>
+      <p>The tutorial you're looking for doesn't exist or has been removed.</p>
       <a [routerLink]="['/tutorials']" class="btn btn-primary">
         Browse All Tutorials
       </a>
@@ -574,7 +397,12 @@
   </div>
 
   <!-- Back to Top Button -->
-  <button class="btn back-to-top" (click)="scrollToTop()" *ngIf="showBackToTop">
-    ↑
+  <button
+    class="back-to-top-btn"
+    (click)="scrollToTop()"
+    [class.show]="showBackToTop"
+    title="Back to top"
+  >
+    <i class="fas fa-arrow-up"></i>
   </button>
 </div>
