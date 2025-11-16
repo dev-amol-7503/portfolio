@@ -145,40 +145,6 @@
         }
       }
     }
-    
-    .social-links {
-      display: flex;
-      gap: 0.75rem;
-      margin-top: 2rem;
-      
-      .social-link {
-        width: 44px;
-        height: 44px;
-        border-radius: 50%;
-        background: rgba(var(--bs-primary-rgb, 37, 99, 235), 0.1);
-        color: var(--bs-primary, #2563eb);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 1.1rem;
-        transition: all 0.3s ease;
-        border: 1px solid rgba(var(--bs-primary-rgb, 37, 99, 235), 0.2);
-        
-        .dark-theme & {
-          background: rgba(var(--bs-primary-rgb, 59, 130, 246), 0.15);
-          border-color: rgba(var(--bs-primary-rgb, 59, 130, 246), 0.3);
-          color: var(--bs-primary-light, #3b82f6);
-        }
-        
-        &:hover {
-          background: var(--theme-gradient, linear-gradient(135deg, #2563eb 0%, #7c3aed 100%));
-          color: white;
-          transform: translateY(-3px);
-          box-shadow: var(--theme-shadow, 0 6px 20px rgba(0, 0, 0, 0.15));
-          border-color: transparent;
-        }
-      }
-    }
   }
   
   .contact-form {
@@ -375,16 +341,6 @@
           margin-right: 0.875rem;
         }
       }
-      
-      .social-links {
-        gap: 0.5rem;
-        
-        .social-link {
-          width: 40px;
-          height: 40px;
-          font-size: 1rem;
-        }
-      }
     }
     
     .contact-form {
@@ -406,30 +362,34 @@
   .contact-section {
     .contact-info {
       .contact-item {
-        flex-direction: column;
-        text-align: center;
+        display: grid;
+        grid-template-columns: 40px 1fr;   // Icon column + text column
+        align-items: start;                // Align items at top
+        column-gap: 1rem;                  // Space between icon & text
         padding: 1rem;
-        
+        text-align: left;
+
         .contact-icon {
-          margin-right: 0;
-          margin-bottom: 0.75rem;
-          align-self: center;
+          grid-column: 1;                  // Icon stays in first column
+          justify-self: center;            // Centers icon in its column
+          margin: 0;
+        }
+
+        .contact-text {
+          grid-column: 2;                  // Text stays in second column
+          display: grid;
+          row-gap: 0.25rem;                // Space between title + value
         }
       }
-      
-      .social-links {
-        justify-content: center;
-      }
     }
-    
     .contact-form {
       padding: 1rem;
-      
+
       .form-control {
         padding: 0.5rem 0.75rem;
         font-size: 0.85rem;
       }
-      
+
       textarea.form-control {
         min-height: 100px;
       }

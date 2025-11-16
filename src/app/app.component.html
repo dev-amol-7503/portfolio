@@ -1,101 +1,158 @@
 <div class="portfolio-container" [class.dark-theme]="isDarkTheme">
-  <!-- Header -->
-  <header class="portfolio-header">
-    <nav class="navbar navbar-expand-lg">
-      <div class="container-fluid px-3 px-lg-4">
-        <!-- Brand section -->
-        <a class="navbar-brand d-flex align-items-center" routerLink="/">
-          <div class="brand-logo me-2">A</div>
-          <span class="brand-name">Amol Works</span>
-          <span *ngIf="isAdmin" class="badge bg-success ms-2">Admin</span>
-        </a>
-  
-        <!-- Desktop navigation -->
-        <div class="desktop-nav d-none d-lg-flex align-items-center">
-          <ul class="navbar-nav me-3">
-            <li class="nav-item" *ngFor="let item of navItems">
-              <a class="nav-link" [routerLink]="item.link" routerLinkActive="active"
-                [routerLinkActiveOptions]="{ exact: true }">
-                <i [class]="item.icon + ' me-1'"></i>{{ item.label }}
-              </a>
-            </li>
-          </ul>
-          <div class="desktop-actions d-flex align-items-center">
-            <a href="/assets/docs/resume.pdf" download="Amol_Nagare_JavaAngular_Full_Stack_Developer.pdf"
-              class="btn btn-primary btn-sm me-2">
-              <fa-icon [icon]="faDownload" class="me-1"></fa-icon>Download CV
+<!-- Header -->
+<header class="portfolio-header">
+  <nav class="navbar navbar-expand-lg">
+    <div class="container-fluid px-3 px-lg-4">
+      <!-- Brand section -->
+      <a class="navbar-brand d-flex align-items-center" routerLink="/">
+        <div class="brand-logo me-2">A</div>
+        <span class="brand-name">Amol Works</span>
+        <span *ngIf="isAdmin" class="badge bg-success ms-2">Admin</span>
+      </a>
+
+      <!-- Desktop navigation -->
+      <div class="desktop-nav d-none d-lg-flex align-items-center">
+        <ul class="navbar-nav me-3">
+          <li class="nav-item" *ngFor="let item of navItems">
+            <a class="nav-link" [routerLink]="item.link" routerLinkActive="active"
+              [routerLinkActiveOptions]="{ exact: true }">
+              <i [class]="item.icon + ' me-1'"></i>{{ item.label }}
             </a>
-            <a *ngIf="!isAdmin" routerLink="/admin/login" class="btn btn-outline-secondary btn-sm">
-              <fa-icon [icon]="faSignInAlt" class="me-1"></fa-icon>Admin
-            </a>
-          </div>
+          </li>
+        </ul>
+        <div class="desktop-actions d-flex align-items-center">
+          <a href="/assets/docs/resume.pdf" download="Amol_Nagare_JavaAngular_Full_Stack_Developer.pdf"
+            class="btn btn-primary btn-sm me-2">
+            <fa-icon [icon]="faDownload" class="me-1"></fa-icon>Download CV
+          </a>
         </div>
-  
-        <!-- Right side controls -->
-        <div class="header-controls d-flex align-items-center">
-          <button class="btn theme-toggle me-2" (click)="toggleTheme()">
+      </div>
+
+      <!-- Right side controls -->
+      <div class="header-controls d-flex align-items-center">
+        <!-- Mobile Download Button (Visible only on mobile) -->
+        <a href="/assets/docs/resume.pdf" download="Amol_Nagare_JavaAngular_Full_Stack_Developer.pdf"
+           class="btn mobile-download-btn d-lg-none me-2">
+          <fa-icon [icon]="faDownload"></fa-icon>
+        </a>
+
+        <!-- Theme Selector Dropdown -->
+        <div class="dropdown theme-selector-dropdown me-2" [class.show]="showThemeDropdown">
+          <button class="btn theme-toggle" (click)="toggleThemeDropdown()" type="button">
             <fa-icon [icon]="isDarkTheme ? faMoon : faSun"></fa-icon>
           </button>
-          <!-- Hide toggler on desktop, show only on mobile -->
-          <button class="navbar-toggler compact-toggler d-lg-none" type="button" (click)="toggleMenu()">
-            <span class="navbar-toggler-icon"></span>
-          </button>
-        </div>
-  
-        <!-- Mobile navigation menu -->
-        <div class="mobile-nav d-lg-none" [class.show]="!isMenuCollapsed" [ngbCollapse]="isMenuCollapsed">
-          <div class="mobile-nav-content">
-            <ul class="navbar-nav mb-3">
-              <li class="nav-item" *ngFor="let item of navItems">
-                <a class="nav-link" [routerLink]="item.link" routerLinkActive="active"
-                  [routerLinkActiveOptions]="{ exact: true }" (click)="isMenuCollapsed = true">
-                  <i [class]="item.icon + ' me-2'"></i>{{ item.label }}
-                </a>
-              </li>
-            </ul>
-            <!-- Updated: Buttons in one row for mobile -->
-            <div class="mobile-actions d-flex flex-row gap-2 align-items-stretch">
-              <a href="/assets/docs/resume.pdf" download="Amol_Nagare_JavaAngular_Full_Stack_Developer.pdf"
-                class="btn btn-primary btn-sm flex-fill">
-                <fa-icon [icon]="faDownload" class="me-1"></fa-icon>Download CV
-              </a>
-              <a *ngIf="!isAdmin" routerLink="/admin/login" class="btn btn-outline-secondary btn-sm flex-fill"
-                (click)="isMenuCollapsed = true">
-                <fa-icon [icon]="faSignInAlt" class="me-1"></fa-icon>Admin
-              </a>
+          <div class="dropdown-menu theme-dropdown-menu" [class.show]="showThemeDropdown">
+            <div class="dropdown-section">
+              <h6 class="dropdown-title">
+                <fa-icon [icon]="faSun" class="me-2"></fa-icon>
+                Light Themes
+              </h6>
+              <div class="theme-options">
+                <button *ngFor="let theme of lightThemes" 
+                        class="theme-option" 
+                        (click)="setTheme(theme.name)"
+                        [class.active]="currentThemeName === theme.name">
+                  <div class="theme-preview" [style.background]="getThemeGradient(theme.name)"></div>
+                  <span class="theme-name">{{ theme.label }}</span>
+                  <i class="fas fa-check" *ngIf="currentThemeName === theme.name"></i>
+                </button>
+              </div>
+            </div>
+            
+            <div class="dropdown-divider"></div>
+            
+            <div class="dropdown-section">
+              <h6 class="dropdown-title">
+                <fa-icon [icon]="faMoon" class="me-2"></fa-icon>
+                Dark Themes
+              </h6>
+              <div class="theme-options">
+                <button *ngFor="let theme of darkThemes" 
+                        class="theme-option" 
+                        (click)="setTheme(theme.name)"
+                        [class.active]="currentThemeName === theme.name">
+                  <div class="theme-preview" [style.background]="getThemeGradient(theme.name)"></div>
+                  <span class="theme-name">{{ theme.label }}</span>
+                  <i class="fas fa-check" *ngIf="currentThemeName === theme.name"></i>
+                </button>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    </nav>
-  </header>
 
-  <!-- Admin Controls -->
-  <div *ngIf="isAdmin" class="admin-controls-bar">
-    <div class="container d-flex justify-content-between align-items-center">
-      <div class="d-flex align-items-center">
-        <i class="fas fa-shield-alt me-2 text-success"></i>
-        <span class="text-success fw-bold">Admin Mode</span>
-        <button
-          class="btn btn-sm ms-3"
-          [class.btn-warning]="!isEditMode"
-          [class.btn-success]="isEditMode"
-          (click)="toggleEditMode()"
-        >
-          <fa-icon [icon]="isEditMode ? faEdit : faEdit" class="me-1"></fa-icon>
-          {{ isEditMode ? "Editing" : "Edit Mode" }}
+        <!-- Admin Dropdown -->
+        <div class="dropdown admin-dropdown" [class.show]="showAdminDropdown">
+          <button class="btn admin-toggle" (click)="toggleAdminDropdown()" type="button">
+            <div class="admin-avatar">
+              <fa-icon [icon]="isAdmin ? faCog : faSignInAlt"></fa-icon>
+            </div>
+          </button>
+          <div class="dropdown-menu admin-dropdown-menu" [class.show]="showAdminDropdown">
+            <div class="dropdown-header">
+              <h6 class="mb-0">Admin Panel</h6>
+              <small *ngIf="isAdmin" class="text-success">Logged in</small>
+              <small *ngIf="!isAdmin" class="text-muted">Access controls</small>
+            </div>
+            <div class="dropdown-divider"></div>
+            
+            <!-- Edit Mode Toggle -->
+            <button *ngIf="isAdmin" class="dropdown-item edit-mode-toggle" (click)="toggleEditMode()">
+              <fa-icon [icon]="faEdit" class="me-2"></fa-icon>
+              {{ isEditMode ? 'Exit Edit Mode' : 'Enter Edit Mode' }}
+              <div class="edit-indicator" [class.active]="isEditMode"></div>
+            </button>
+            
+            <!-- Dashboard Link -->
+            <a *ngIf="isAdmin" class="dropdown-item" routerLink="/admin" (click)="closeAdminDropdown()">
+              <fa-icon [icon]="faCog" class="me-2"></fa-icon>
+              Dashboard
+            </a>
+            
+            <!-- Login/Logout -->
+            <ng-container *ngIf="!isAdmin; else logoutSection">
+              <a class="dropdown-item" routerLink="/admin/login" (click)="closeAdminDropdown()">
+                <fa-icon [icon]="faSignInAlt" class="me-2"></fa-icon>
+                Admin Login
+              </a>
+            </ng-container>
+            <ng-template #logoutSection>
+              <button class="dropdown-item text-danger" (click)="logout()">
+                <fa-icon [icon]="faSignOutAlt" class="me-2"></fa-icon>
+                Logout
+              </button>
+            </ng-template>
+          </div>
+        </div>
+
+        <!-- Mobile menu toggler -->
+        <button class="navbar-toggler compact-toggler d-lg-none" type="button" (click)="toggleMenu()">
+          <span class="navbar-toggler-icon"></span>
         </button>
       </div>
-      <div>
-        <a routerLink="/admin" class="btn btn-sm btn-outline-light me-2">
-          <fa-icon [icon]="faCog" class="me-1"></fa-icon>Dashboard
-        </a>
-        <button class="btn btn-sm btn-outline-light" (click)="logout()">
-          <fa-icon [icon]="faSignOutAlt" class="me-1"></fa-icon>Logout
-        </button>
+
+      <!-- Mobile navigation menu - Side drawer style -->
+      <div class="mobile-nav d-lg-none" [class.show]="!isMenuCollapsed">
+        <div class="mobile-nav-overlay" (click)="isMenuCollapsed = true"></div>
+        <div class="mobile-nav-content">
+          <div class="mobile-nav-header">
+            <h5 class="mobile-nav-title">Navigation</h5>
+            <button class="mobile-nav-close" (click)="isMenuCollapsed = true">
+              <span>&times;</span>
+            </button>
+          </div>
+          <ul class="navbar-nav">
+            <li class="nav-item" *ngFor="let item of navItems">
+              <a class="nav-link" [routerLink]="item.link" routerLinkActive="active"
+                [routerLinkActiveOptions]="{ exact: true }" (click)="isMenuCollapsed = true">
+                <i [class]="item.icon + ' me-3'"></i>{{ item.label }}
+              </a>
+            </li>
+          </ul>
+        </div>
       </div>
     </div>
-  </div>
+  </nav>
+</header>
 
   <!-- Main Content -->
   <main class="portfolio-main">
@@ -126,7 +183,7 @@
       </div>
 
       <div class="footer-copyright">
-        <p>&copy; 2023 Amol Nagare. All rights reserved.</p>
+        <p>&copy;2025 Amol Nagare. All rights reserved.</p>
       </div>
     </div>
   </footer>

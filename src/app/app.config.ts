@@ -10,6 +10,7 @@ import { environment } from '../environments/environment';
 
 import { provideLottieOptions } from 'ngx-lottie';
 import player from 'lottie-web';
+import { DatePipe } from '@angular/common';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -23,6 +24,7 @@ export const appConfig: ApplicationConfig = {
       closeButton: true,
       progressBar: true
     }),
+    DatePipe,
     provideFirebaseApp(() => initializeApp(environment.firebase)),
     provideFirestore(() => getFirestore()),
     provideLottieOptions({

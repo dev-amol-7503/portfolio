@@ -80,7 +80,7 @@ export class TutorialsListComponent implements OnInit, OnDestroy {
     this.initializeRoadmap();
     this.startRoadmapAnimation();
     // App mein kahin bhi call karo
-    this.matrixNotesService.debugRoadmapStepMappings();
+   // this.matrixNotesService.debugRoadmapStepMappings();
   }
 
   ngOnDestroy() {

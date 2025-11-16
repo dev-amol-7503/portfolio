@@ -1,3 +1,5 @@
+
+
 export interface TutorialContent {
   id: string;
   type: 'text' | 'code' | 'image' | 'video' | 'table' | 'diagram' | 'callout';

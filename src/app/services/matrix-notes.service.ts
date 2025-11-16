@@ -12,6 +12,7 @@ import {
   orderBy,
   Timestamp,
   where,
+  limit,
 } from '@angular/fire/firestore';
 import { ToastrService } from 'ngx-toastr';
 import { Tutorial, TutorialContent } from '../interfaces/tutorial.model';
@@ -68,6 +69,7 @@ export class MatrixNotesService {
 
     return data;
   }
+
   // Convert Firestore Timestamp to Date
   private convertToDate(timestamp: any): Date {
     if (timestamp instanceof Timestamp) {
@@ -81,61 +83,40 @@ export class MatrixNotesService {
     }
   }
 
-  // Test Firebase connection
-  async testFirebaseConnection(): Promise<boolean> {
+  // FIXED: Enhanced getAllTutorials with proper roadmap field handling
+  async getAllTutorials(): Promise<Tutorial[]> {
     try {
-      const testDocRef = doc(
-        collection(this.firestore, 'test_connection'),
-        'test_doc'
-      );
-      await setDoc(testDocRef, {
-        test: true,
-        message: 'Testing Firebase connection',
-        timestamp: Timestamp.now(),
+      console.log('🔄 Fetching all tutorials from Firebase...');
+
+      const tutorialsCollection = collection(this.firestore, 'tutorials');
+      const q = query(tutorialsCollection, orderBy('createdAt', 'desc'));
+      const querySnapshot = await getDocs(q);
+
+      const tutorials: Tutorial[] = [];
+
+      querySnapshot.forEach((doc) => {
+        try {
+          const data = doc.data();
+          const tutorial = this.firestoreToTutorial(doc.id, data);
+          
+          // Ensure roadmapStep is properly converted from Firestore
+          if (data['roadmapStep'] !== undefined) {
+            tutorial.roadmapStep = Number(data['roadmapStep']);
+          }
+          
+          tutorials.push(tutorial);
+        } catch (error) {
+          console.error(`❌ Error processing tutorial ${doc.id}:`, error);
+        }
       });
-      await deleteDoc(testDocRef);
-      console.log('✅ Firebase connection test successful');
-      return true;
-    } catch (error) {
-      console.error('❌ Firebase connection test failed:', error);
-      return false;
+
+      console.log(`✅ Fetched ${tutorials.length} tutorials from Firebase`);
+      return tutorials;
+    } catch (error: any) {
+      console.error('❌ Error fetching tutorials:', error);
+      throw error;
     }
   }
-
-// FIXED: Enhanced getAllTutorials with proper roadmap field handling
-async getAllTutorials(): Promise<Tutorial[]> {
-  try {
-    console.log('🔄 Fetching all tutorials from Firebase...');
-
-    const tutorialsCollection = collection(this.firestore, 'tutorials');
-    const q = query(tutorialsCollection, orderBy('createdAt', 'desc'));
-    const querySnapshot = await getDocs(q);
-
-    const tutorials: Tutorial[] = [];
-
-    querySnapshot.forEach((doc) => {
-      try {
-        const data = doc.data();
-        const tutorial = this.firestoreToTutorial(doc.id, data);
-        
-        // Ensure roadmapStep is properly converted from Firestore
-        if (data['roadmapStep'] !== undefined) {
-          tutorial.roadmapStep = Number(data['roadmapStep']);
-        }
-        
-        tutorials.push(tutorial);
-      } catch (error) {
-        console.error(`❌ Error processing tutorial ${doc.id}:`, error);
-      }
-    });
-
-    console.log(`✅ Fetched ${tutorials.length} tutorials from Firebase`);
-    return tutorials;
-  } catch (error: any) {
-    console.error('❌ Error fetching tutorials:', error);
-    throw error;
-  }
-}
 
   async getPublishedTutorials(): Promise<Tutorial[]> {
     try {
@@ -212,6 +193,14 @@ async getAllTutorials(): Promise<Tutorial[]> {
         firebaseUpdateData.views = updateData.views;
       if (updateData.likes !== undefined)
         firebaseUpdateData.likes = updateData.likes;
+      if (updateData.roadmapStep !== undefined)
+        firebaseUpdateData.roadmapStep = updateData.roadmapStep;
+      if (updateData.technologies !== undefined)
+        firebaseUpdateData.technologies = updateData.technologies;
+      if (updateData.prerequisites !== undefined)
+        firebaseUpdateData.prerequisites = updateData.prerequisites;
+      if (updateData.learningObjectives !== undefined)
+        firebaseUpdateData.learningObjectives = updateData.learningObjectives;
 
       // Clean the data before saving
       const cleanedData = this.cleanData(firebaseUpdateData);
@@ -313,93 +302,162 @@ async getAllTutorials(): Promise<Tutorial[]> {
     }
   }
 
-// matrix-notes.service.ts mai yeh method update karen
-
-// FIXED: Get tutorials by roadmap step with topic ordering
-async getTutorialsByRoadmapStep(stepId: number): Promise<Tutorial[]> {
-  try {
-    console.log(`🔄 Fetching tutorials for step ${stepId}`);
-    
-    const allTutorials = await this.getAllTutorials();
-    
-    // Filter tutorials by roadmap step
-    const filteredTutorials = allTutorials.filter(tutorial => {
-      const matchesStep = tutorial.roadmapStep === stepId;
-      const isPublished = tutorial.published === true;
-      return matchesStep && isPublished;
-    });
-    
-    // Sort by topicOrder if available, otherwise by creation date
-    filteredTutorials.sort((a, b) => {
-      if (a.topicOrder && b.topicOrder) {
-        return a.topicOrder - b.topicOrder;
-      }
-      return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
-    });
-    
-    console.log(`✅ Found ${filteredTutorials.length} tutorials for step ${stepId}`);
-    return filteredTutorials;
-
-  } catch (error: any) {
-    console.error(`❌ Error fetching tutorials for roadmap step ${stepId}:`, error);
-    throw error;
-  }
-}
-
-// FIXED: Get single tutorial by roadmap step
-async getTutorialByRoadmapStep(stepId: number): Promise<Tutorial | null> {
-  try {
-    const tutorials = await this.getTutorialsByRoadmapStep(stepId);
-    return tutorials.length > 0 ? tutorials[0] : null;
-  } catch (error: any) {
-    console.error(`❌ Error getting tutorial for roadmap step ${stepId}:`, error);
-    return null;
-  }
-}
-
-// matrix-notes.service.ts - ADD DEBUGGING METHOD
-
-// Debug method to check roadmap step mappings
-async debugRoadmapStepMappings(): Promise<void> {
-  try {
-    console.log('🔍 DEBUG: Checking roadmap step mappings...');
-    
-    const allTutorials = await this.getAllTutorials();
-    const publishedTutorials = allTutorials.filter(t => t.published);
-    
-    console.log(`📊 Total tutorials: ${allTutorials.length}`);
-    console.log(`📊 Published tutorials: ${publishedTutorials.length}`);
-    
-    // Check tutorials with roadmap steps
-    const tutorialsWithRoadmap = publishedTutorials.filter(t => t.roadmapStep);
-    console.log(`📍 Tutorials with roadmap steps: ${tutorialsWithRoadmap.length}`);
-    
-    // Group by roadmap step
-    const stepMap: {[key: number]: Tutorial[]} = {};
-    tutorialsWithRoadmap.forEach(tutorial => {
-      if (tutorial.roadmapStep) {
-        if (!stepMap[tutorial.roadmapStep]) {
-          stepMap[tutorial.roadmapStep] = [];
-        }
-        stepMap[tutorial.roadmapStep].push(tutorial);
-      }
-    });
-    
-    console.log('📋 Roadmap Step Mapping Summary:');
-    Object.keys(stepMap).forEach(stepId => {
-      console.log(`  Step ${stepId}: ${stepMap[parseInt(stepId)].length} tutorials`);
-      stepMap[parseInt(stepId)].forEach(t => {
-        console.log(`    - ${t.title} (ID: ${t.id})`);
+  // FIXED: Get tutorials by roadmap step with topic ordering
+  async getTutorialsByRoadmapStep(stepId: number): Promise<Tutorial[]> {
+    try {
+      console.log(`🔄 Fetching tutorials for step ${stepId}`);
+      
+      const allTutorials = await this.getAllTutorials();
+      
+      // Filter tutorials by roadmap step
+      const filteredTutorials = allTutorials.filter(tutorial => {
+        const matchesStep = tutorial.roadmapStep === stepId;
+        const isPublished = tutorial.published === true;
+        return matchesStep && isPublished;
       });
-    });
-    
-  } catch (error) {
-    console.error('❌ Debug error:', error);
-  }
-}
+      
+      // Sort by topicOrder if available, otherwise by creation date
+      filteredTutorials.sort((a, b) => {
+        if (a.topicOrder && b.topicOrder) {
+          return a.topicOrder - b.topicOrder;
+        }
+        return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+      });
+      
+      console.log(`✅ Found ${filteredTutorials.length} tutorials for step ${stepId}`);
+      return filteredTutorials;
 
-// FIXED: Check if tutorial exists for step
-async hasTutorialForStep(stepId: number): Promise<boolean> {
+    } catch (error: any) {
+      console.error(`❌ Error fetching tutorials for roadmap step ${stepId}:`, error);
+      throw error;
+    }
+  }
+
+  // FIXED: Get single tutorial by roadmap step
+  async getTutorialByRoadmapStep(stepId: number): Promise<Tutorial | null> {
+    try {
+      const tutorials = await this.getTutorialsByRoadmapStep(stepId);
+      return tutorials.length > 0 ? tutorials[0] : null;
+    } catch (error: any) {
+      console.error(`❌ Error getting tutorial for roadmap step ${stepId}:`, error);
+      return null;
+    }
+  }
+
+  // FIXED: Convert Firestore data to Tutorial object - ADD ROADMAP FIELDS
+  private firestoreToTutorial(docId: string, data: any): Tutorial {
+    return {
+      id: docId,
+      title: data['title'] || 'Untitled Tutorial',
+      description: data['description'] || '',
+      content: data['content'] || [],
+      tags: data['tags'] || [],
+      category: data['category'] || 'general',
+      author: data['author'] || this.getCurrentUserId(),
+      published: data['published'] || false,
+      featured: data['featured'] || false,
+      createdAt: this.convertToDate(data['createdAt']),
+      updatedAt: this.convertToDate(data['updatedAt']),
+      readingTime: data['readingTime'] || 5,
+      difficulty: data['difficulty'] || 'beginner',
+      bookmarks: data['bookmarks'] || [],
+      views: data['views'] || 0,
+      likes: data['likes'] || 0,
+      // ADD ROADMAP FIELDS
+      roadmapStep: data['roadmapStep'] || undefined,
+      roadmapType: data['roadmapType'] || undefined,
+      stepTitle: data['stepTitle'] || undefined,
+      technologies: data['technologies'] || [],
+      prerequisites: data['prerequisites'] || [],
+      learningObjectives: data['learningObjectives'] || [],
+    };
+  }
+
+  // FIXED: Enhanced createTutorial to ensure data consistency
+  async createTutorial(tutorialData: Partial<Tutorial>): Promise<string> {
+    try {
+      const tutorialId = this.generateId();
+
+      // Convert roadmapStep to number to ensure type consistency
+      const roadmapStep = tutorialData.roadmapStep ? Number(tutorialData.roadmapStep) : undefined;
+
+      const tutorial: Tutorial = {
+        id: tutorialId,
+        title: tutorialData.title || 'Untitled Tutorial',
+        description: tutorialData.description || '',
+        content: tutorialData.content || [],
+        tags: tutorialData.tags || [],
+        category: tutorialData.category || 'general',
+        author: tutorialData.author || this.getCurrentUserId(),
+        published: tutorialData.published || false,
+        featured: tutorialData.featured || false,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        readingTime: tutorialData.readingTime || 5,
+        difficulty: tutorialData.difficulty || 'beginner',
+        bookmarks: tutorialData.bookmarks || [],
+        views: tutorialData.views || 0,
+        likes: tutorialData.likes || 0,
+        // ENSURE PROPER DATA TYPES
+        roadmapStep: roadmapStep,
+        roadmapType: tutorialData.roadmapType,
+        stepTitle: tutorialData.stepTitle,
+        technologies: tutorialData.technologies || [],
+        prerequisites: tutorialData.prerequisites || [],
+        learningObjectives: tutorialData.learningObjectives || [],
+      };
+
+      // Prepare Firebase data with proper Timestamps
+      const firebaseData = {
+        title: tutorial.title,
+        description: tutorial.description,
+        content: tutorial.content.map((item) => ({
+          id: item.id || this.generateId(),
+          type: item.type || 'text',
+          content: item.content || '',
+          order: item.order || 0,
+          language: item.language || '',
+          fileName: item.fileName || '',
+          caption: item.caption || '',
+          title: item.title || '',
+          metadata: item.metadata || {},
+          showPreview: item.showPreview || false,
+        })),
+        tags: tutorial.tags,
+        category: tutorial.category,
+        author: tutorial.author,
+        published: tutorial.published,
+        featured: tutorial.featured,
+        createdAt: Timestamp.fromDate(tutorial.createdAt),
+        updatedAt: Timestamp.fromDate(tutorial.updatedAt),
+        readingTime: tutorial.readingTime,
+        difficulty: tutorial.difficulty,
+        bookmarks: tutorial.bookmarks,
+        views: tutorial.views,
+        likes: tutorial.likes,
+        roadmapStep: roadmapStep,
+        roadmapType: tutorial.roadmapType,
+        stepTitle: tutorial.stepTitle,
+        technologies: tutorial.technologies,
+        prerequisites: tutorial.prerequisites,
+        learningObjectives: tutorial.learningObjectives,
+      };
+
+      const cleanedData = this.cleanData(firebaseData);
+      const docRef = doc(this.firestore, 'tutorials', tutorialId);
+      await setDoc(docRef, cleanedData);
+
+      console.log('✅ Tutorial created with roadmap step:', roadmapStep);
+      this.toastr.success('Tutorial created successfully');
+      return tutorialId;
+    } catch (error: any) {
+      console.error('❌ Error creating tutorial:', error);
+      this.toastr.error(`Failed to create tutorial: ${error.message}`);
+      throw error;
+    }
+  }
+
+  async hasTutorialForStep(stepId: number): Promise<boolean> {
   try {
     const tutorials = await this.getTutorialsByRoadmapStep(stepId);
     return tutorials.length > 0;
@@ -409,7 +467,6 @@ async hasTutorialForStep(stepId: number): Promise<boolean> {
   }
 }
 
-// FIXED: Remove roadmapType parameter from getRoadmapStepsWithTutorials
 async getRoadmapStepsWithTutorials(): Promise<{stepId: number, hasTutorial: boolean, tutorial?: Tutorial}[]> {
   try {
     // Define your roadmap steps (adjust according to your roadmap structure)
@@ -434,218 +491,38 @@ async getRoadmapStepsWithTutorials(): Promise<{stepId: number, hasTutorial: bool
     throw error;
   }
 }
-  // Create tutorial with roadmap step information
-  async createTutorialForRoadmapStep(
-    tutorialData: Partial<Tutorial>,
-    stepId: number,
-    roadmapType: 'frontend' | 'backend',
-    stepTitle: string
-  ): Promise<string> {
-    try {
-      const tutorialWithRoadmap = {
-        ...tutorialData,
-        roadmapStep: stepId,
-        roadmapType: roadmapType,
-        stepTitle: stepTitle,
-        published: true, // Auto-publish roadmap tutorials
-      };
 
-      return await this.createTutorial(tutorialWithRoadmap);
-    } catch (error: any) {
-      console.error(
-        `❌ Error creating tutorial for roadmap step ${stepId}:`,
-        error
-      );
-      throw error;
-    }
-  }
+// Add this method to your MatrixNotesService class
 
-  // Get roadmap progress data
-  async getRoadmapProgress(): Promise<any> {
-    try {
-      const tutorials = await this.getAllTutorials();
-      const publishedTutorials = tutorials.filter((t) => t.published);
-
-      // Calculate progress for each roadmap step
-      const progressData = {
-        totalTutorials: tutorials.length,
-        publishedTutorials: publishedTutorials.length,
-        totalViews: tutorials.reduce((sum, t) => sum + (t.views || 0), 0),
-        totalLikes: tutorials.reduce((sum, t) => sum + (t.likes || 0), 0),
-        byCategory: this.groupTutorialsByCategory(tutorials),
-        byDifficulty: this.groupTutorialsByDifficulty(tutorials),
-      };
-
-      return progressData;
-    } catch (error: any) {
-      console.error('Error getting roadmap progress:', error);
-      throw error;
-    }
-  }
-
-  // Helper methods
-  private groupTutorialsByCategory(tutorials: Tutorial[]): any {
-    const categories: any = {};
-    tutorials.forEach((tutorial) => {
-      if (!categories[tutorial.category]) {
-        categories[tutorial.category] = 0;
-      }
-      categories[tutorial.category]++;
-    });
-    return categories;
-  }
-
-  private groupTutorialsByDifficulty(tutorials: Tutorial[]): any {
-    const difficulties: any = {};
-    tutorials.forEach((tutorial) => {
-      if (!difficulties[tutorial.difficulty]) {
-        difficulties[tutorial.difficulty] = 0;
-      }
-      difficulties[tutorial.difficulty]++;
-    });
-    return difficulties;
-  }
-
-  // ========== UTILITY METHODS ==========
-
-  async getTutorialsCount(): Promise<number> {
-    try {
-      const tutorials = await this.getAllTutorials();
-      return tutorials.length;
-    } catch (error) {
-      console.error('Error getting tutorials count:', error);
-      return 0;
-    }
-  }
-
-  async getDatabaseInfo(): Promise<any> {
-    try {
-      const tutorials = await this.getAllTutorials();
-      const published = tutorials.filter((t) => t.published);
-      const drafts = tutorials.filter((t) => !t.published);
-
-      return {
-        totalTutorials: tutorials.length,
-        publishedTutorials: published.length,
-        draftTutorials: drafts.length,
-        totalViews: tutorials.reduce((sum, t) => sum + (t.views || 0), 0),
-        totalLikes: tutorials.reduce((sum, t) => sum + (t.likes || 0), 0),
-      };
-    } catch (error) {
-      console.error('Error getting database info:', error);
-      return null;
-    }
-  }
-
-  // matrix-notes.service.ts - UPDATE FIREBASE SCHEMA
-
-// FIXED: Convert Firestore data to Tutorial object - ADD ROADMAP FIELDS
-private firestoreToTutorial(docId: string, data: any): Tutorial {
-  return {
-    id: docId,
-    title: data['title'] || 'Untitled Tutorial',
-    description: data['description'] || '',
-    content: data['content'] || [],
-    tags: data['tags'] || [],
-    category: data['category'] || 'general',
-    author: data['author'] || this.getCurrentUserId(),
-    published: data['published'] || false,
-    featured: data['featured'] || false,
-    createdAt: this.convertToDate(data['createdAt']),
-    updatedAt: this.convertToDate(data['updatedAt']),
-    readingTime: data['readingTime'] || 5,
-    difficulty: data['difficulty'] || 'beginner',
-    bookmarks: data['bookmarks'] || [],
-    views: data['views'] || 0,
-    likes: data['likes'] || 0,
-    // ADD ROADMAP FIELDS
-    roadmapStep: data['roadmapStep'] || undefined,
-    roadmapType: data['roadmapType'] || undefined,
-    stepTitle: data['stepTitle'] || undefined,
-    technologies: data['technologies'] || [],
-    prerequisites: data['prerequisites'] || [],
-    learningObjectives: data['learningObjectives'] || [],
-  };
-}
-
-// FIXED: Enhanced createTutorial to ensure data consistency
-async createTutorial(tutorialData: Partial<Tutorial>): Promise<string> {
+// Test Firebase connection
+async testFirebaseConnection(): Promise<boolean> {
   try {
-    const tutorialId = this.generateId();
-
-    // Convert roadmapStep to number to ensure type consistency
-    const roadmapStep = tutorialData.roadmapStep ? Number(tutorialData.roadmapStep) : undefined;
-
-    const tutorial: Tutorial = {
-      id: tutorialId,
-      title: tutorialData.title || 'Untitled Tutorial',
-      description: tutorialData.description || '',
-      content: tutorialData.content || [],
-      tags: tutorialData.tags || [],
-      category: tutorialData.category || 'general',
-      author: tutorialData.author || this.getCurrentUserId(),
-      published: tutorialData.published || false,
-      featured: tutorialData.featured || false,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      readingTime: tutorialData.readingTime || 5,
-      difficulty: tutorialData.difficulty || 'beginner',
-      bookmarks: tutorialData.bookmarks || [],
-      views: tutorialData.views || 0,
-      likes: tutorialData.likes || 0,
-      // ENSURE PROPER DATA TYPES
-      roadmapStep: roadmapStep,
-      roadmapType: tutorialData.roadmapType,
-      stepTitle: tutorialData.stepTitle,
-      technologies: tutorialData.technologies || [],
-      prerequisites: tutorialData.prerequisites || [],
-      learningObjectives: tutorialData.learningObjectives || [],
-    };
-
-    // Prepare Firebase data with proper Timestamps
-    const firebaseData = {
-      title: tutorial.title,
-      description: tutorial.description,
-      content: tutorial.content.map((item) => ({
-        id: item.id || this.generateId(),
-        type: item.type || 'text',
-        content: item.content || '',
-        order: item.order || 0,
-        language: item.language || '',
-        fileName: item.fileName || '',
-        caption: item.caption || '',
-        title: item.title || '',
-        metadata: item.metadata || {},
-        showPreview: item.showPreview || false,
-      })),
-      tags: tutorial.tags,
-      category: tutorial.category,
-      author: tutorial.author,
-      published: tutorial.published,
-      featured: tutorial.featured,
-      createdAt: Timestamp.fromDate(tutorial.createdAt),
-      updatedAt: Timestamp.fromDate(tutorial.updatedAt),
-      readingTime: tutorial.readingTime,
-      difficulty: tutorial.difficulty,
-      bookmarks: tutorial.bookmarks,
-      views: tutorial.views,
-      likes: tutorial.likes,
-      roadmapStep: roadmapStep,
-      roadmapType: tutorial.roadmapType,
-      stepTitle: tutorial.stepTitle,
-      technologies: tutorial.technologies,
-      prerequisites: tutorial.prerequisites,
-      learningObjectives: tutorial.learningObjectives,
-    };
-const cleanedData = this.cleanData(firebaseData);
-    const docRef = doc(this.firestore, 'tutorials', tutorialId);
-    await setDoc(docRef, cleanedData);
-
-    console.log('✅ Tutorial creat Fed with roadmap step:', roadmapStep);
-    return tutorialId;
+    console.log('🔄 Testing Firebase connection...');
+    
+    // Try to access a simple document to test connection
+    const tutorialsCollection = collection(this.firestore, 'tutorials');
+    const querySnapshot = await getDocs(query(tutorialsCollection, limit(1)));
+    
+    console.log('✅ Firebase connection test successful');
+    return true;
   } catch (error: any) {
-    console.error('❌ Error creating tutorial:', error);
-    throw error;
+    console.error('❌ Firebase connection test failed:', error);
+    
+    // Try alternative connection test
+    try {
+      // Create a test document
+      const testDocRef = doc(collection(this.firestore, 'connection_test'));
+      await setDoc(testDocRef, {
+        test: true,
+        timestamp: Timestamp.now()
+      });
+      await deleteDoc(testDocRef);
+      console.log('✅ Firebase connection test successful (fallback method)');
+      return true;
+    } catch (fallbackError) {
+      console.error('❌ Firebase connection test failed (fallback method):', fallbackError);
+      return false;
+    }
   }
 }
 }

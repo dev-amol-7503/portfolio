@@ -15,7 +15,7 @@ import {
   faSignOutAlt 
 } from '@fortawesome/free-solid-svg-icons';
 import { faLinkedinIn, faGithub, faTwitter } from '@fortawesome/free-brands-svg-icons';
-import { ThemeService } from './services/theme.service';
+import { ThemeService, ThemeName } from './services/theme.service';
 import { AdminService } from './services/admin.service';
 import { NavItem } from './interfaces/social-post.model';
 
@@ -36,6 +36,14 @@ export class AppComponent implements OnInit {
   showDesktopRecommendation = false;
   isAdmin = false;
   isEditMode = false;
+  showThemeDropdown = false;
+  showAdminDropdown = false;
+
+  // Theme related properties
+  currentThemeName: ThemeName = 'professional-light';
+  availableThemes: { name: ThemeName; label: string; isDark: boolean }[] = [];
+  lightThemes: { name: ThemeName; label: string; isDark: boolean }[] = [];
+  darkThemes: { name: ThemeName; label: string; isDark: boolean }[] = [];
 
   // Font Awesome Icons
   faDownload = faDownload;
@@ -68,10 +76,21 @@ export class AppComponent implements OnInit {
   ngOnInit() {
     this.checkScrollPosition();
 
+    // Theme subscriptions
     this.themeService.isDarkTheme$.subscribe((isDark) => {
       this.isDarkTheme = isDark;
     });
 
+    this.themeService.currentThemeName$.subscribe((themeName) => {
+      this.currentThemeName = themeName;
+    });
+
+    // Get available themes
+    this.availableThemes = this.themeService.getAvailableThemes();
+    this.lightThemes = this.availableThemes.filter(theme => !theme.isDark);
+    this.darkThemes = this.availableThemes.filter(theme => theme.isDark);
+
+    // Admin subscriptions
     this.adminService.isAdmin$.subscribe((isAdmin) => {
       this.isAdmin = isAdmin;
     });
@@ -110,6 +129,27 @@ export class AppComponent implements OnInit {
     this.showScrollButton = window.scrollY > 300;
   }
 
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent) {
+    const target = event.target as HTMLElement;
+    
+    // Close theme dropdown when clicking outside
+    if (!target.closest('.theme-selector-dropdown')) {
+      this.showThemeDropdown = false;
+    }
+    
+    // Close admin dropdown when clicking outside
+    if (!target.closest('.admin-dropdown')) {
+      this.showAdminDropdown = false;
+    }
+  }
+
+  @HostListener('document:keydown.escape')
+  onEscapePress() {
+    this.showThemeDropdown = false;
+    this.showAdminDropdown = false;
+  }
+
   scrollToTop() {
     window.scrollTo({
       top: 0,
@@ -117,21 +157,57 @@ export class AppComponent implements OnInit {
     });
   }
 
+  // Theme methods
   toggleTheme() {
     this.themeService.toggleTheme();
   }
 
+  toggleThemeDropdown() {
+    this.showThemeDropdown = !this.showThemeDropdown;
+    // Close other dropdown
+    if (this.showThemeDropdown) {
+      this.showAdminDropdown = false;
+    }
+  }
+
+  setTheme(themeName: ThemeName) {
+    this.themeService.setThemeByName(themeName);
+    this.showThemeDropdown = false;
+  }
+
+  getThemeGradient(themeName: ThemeName): string {
+    const theme = this.themeService.getThemeByName(themeName);
+    return theme?.gradient || 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+  }
+
+  // Admin methods
+  toggleAdminDropdown() {
+    this.showAdminDropdown = !this.showAdminDropdown;
+    // Close other dropdown
+    if (this.showAdminDropdown) {
+      this.showThemeDropdown = false;
+    }
+  }
+
+  closeAdminDropdown() {
+    this.showAdminDropdown = false;
+    this.isMenuCollapsed = true;
+  }
+
   toggleEditMode() {
     this.adminService.toggleEditMode();
+    this.showAdminDropdown = false;
   }
 
   logout() {
     this.adminService.logout();
+    this.showAdminDropdown = false;
   }
 
   closeRecommendation() {
     this.showDesktopRecommendation = false;
   }
+
   closeMobileMenu() {
     if (window.innerWidth < 992) {
       this.isMenuCollapsed = true;
@@ -139,15 +215,28 @@ export class AppComponent implements OnInit {
   }
 
   toggleMenu() {
-    this.isMenuCollapsed = !this.isMenuCollapsed;
-    // Force a reflow to ensure smooth animation
-    if (!this.isMenuCollapsed) {
-      setTimeout(() => {
-        const mobileNav = document.querySelector('.mobile-nav');
-        if (mobileNav) {
-          mobileNav.classList.add('show');
-        }
-      }, 10);
-    }
+  this.isMenuCollapsed = !this.isMenuCollapsed;
+  
+  // Close dropdowns when opening mobile menu
+  if (!this.isMenuCollapsed) {
+    this.showThemeDropdown = false;
+    this.showAdminDropdown = false;
+    
+    // Add class to body to prevent scrolling
+    document.body.classList.add('mobile-nav-open');
+  } else {
+    // Remove class from body when closing menu
+    document.body.classList.remove('mobile-nav-open');
   }
+  
+  // Force a reflow to ensure smooth animation
+  if (!this.isMenuCollapsed) {
+    setTimeout(() => {
+      const mobileNav = document.querySelector('.mobile-nav');
+      if (mobileNav) {
+        mobileNav.classList.add('show');
+      }
+    }, 10);
+  }
+}
 }

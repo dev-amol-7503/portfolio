@@ -1,172 +1,133 @@
 <div class="admin-dashboard-container">
   <div class="dashboard-header">
-    <div class="container">
-      <div class="row align-items-center">
-        <div class="col">
-          <h1><i class="fas fa-tachometer-alt me-2"></i>Admin Dashboard</h1>
-          <p class="text-muted mb-0">Manage your portfolio content</p>
-        </div>
-        <div class="col-auto">
-          <div class="d-flex gap-2">
-            <button class="btn btn-outline-primary" (click)="toggleEditMode()">
-              <i class="fas" [class.fa-edit]="!isEditMode" [class.fa-check]="isEditMode"></i>
-              {{ isEditMode ? 'Editing' : 'Edit Mode' }}
-            </button>
-            <button class="btn btn-outline-danger" (click)="logout()">
-              <i class="fas fa-sign-out-alt me-1"></i>Logout
-            </button>
+  <div class="header-container">
+    <!-- Brand Section -->
+    <div class="brand-section">
+      <div class="logo">
+        <i class="fas fa-tachometer-alt"></i>
+      </div>
+      <div class="brand-content">
+        <h1 class="brand-title">Matrix Dashboard</h1>
+        <p class="brand-subtitle">Admin panel for portfolio content</p>
+      </div>
+    </div>
+
+    <!-- Controls Section -->
+    <div class="controls-section">
+      <!-- Theme Selector -->
+      <div class="control-group">
+        <div class="dropdown" [class.active]="showThemeDropdown">
+          <button class="control-btn dropdown-trigger" 
+                  (click)="toggleThemeDropdown()"
+                  type="button">
+            <i class="fas fa-palette"></i>
+            <span class="btn-text">{{ currentThemeName.replace('-', ' ') | titlecase }}</span>
+            <i class="fas fa-chevron-down dropdown-arrow"></i>
+          </button>
+          <div class="dropdown-menu" [class.show]="showThemeDropdown">
+            <div class="dropdown-section">
+              <h6 class="dropdown-title">
+                <i class="fas fa-sun"></i>
+                Light Themes
+              </h6>
+              <div class="theme-options">
+                <button *ngFor="let theme of lightThemes" 
+                        class="theme-option" 
+                        (click)="setTheme(theme.name)"
+                        [class.active]="currentThemeName === theme.name">
+                  <div class="theme-preview" [style.background]="getThemeGradient(theme.name)"></div>
+                  <span class="theme-name">{{ theme.label }}</span>
+                  <i class="fas fa-check" *ngIf="currentThemeName === theme.name"></i>
+                </button>
+              </div>
+            </div>
+            
+            <div class="dropdown-divider"></div>
+            
+            <div class="dropdown-section">
+              <h6 class="dropdown-title">
+                <i class="fas fa-moon"></i>
+                Dark Themes
+              </h6>
+              <div class="theme-options">
+                <button *ngFor="let theme of darkThemes" 
+                        class="theme-option" 
+                        (click)="setTheme(theme.name)"
+                        [class.active]="currentThemeName === theme.name">
+                  <div class="theme-preview" [style.background]="getThemeGradient(theme.name)"></div>
+                  <span class="theme-name">{{ theme.label }}</span>
+                  <i class="fas fa-check" *ngIf="currentThemeName === theme.name"></i>
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
+
+      <!-- Quick Theme Toggle -->
+      <button class="control-btn quick-toggle" 
+              (click)="toggleTheme()" 
+              [title]="isDarkTheme ? 'Switch to Light Mode' : 'Switch to Dark Mode'"
+              [class.active]="isDarkTheme">
+        <i class="fas" [class.fa-sun]="!isDarkTheme" [class.fa-moon]="isDarkTheme"></i>
+      </button>
+
+      <!-- Edit Mode Toggle -->
+      <button class="control-btn edit-toggle" 
+              (click)="toggleEditMode()"
+              [class.active]="isEditMode">
+        <i class="fas" [class.fa-edit]="!isEditMode" [class.fa-check]="isEditMode"></i>
+        <span class="btn-text">{{ isEditMode ? 'Editing' : 'Edit Mode' }}</span>
+        <div class="edit-indicator" [class.active]="isEditMode"></div>
+      </button>
+
+      <!-- User Actions -->
+      <div class="user-actions">
+        <button class="control-btn logout-btn" (click)="logout()">
+          <i class="fas fa-sign-out-alt"></i>
+          <span class="btn-text">Logout</span>
+        </button>
+      </div>
     </div>
   </div>
+</div>
 
   <div class="dashboard-content">
     <div class="container">
       <!-- Navigation Tabs -->
-      <!-- In your admin dashboard tabs -->
-<ul class="nav nav-tabs mb-4">
-  <li class="nav-item">
-    <button class="nav-link" [class.active]="activeTab === 'overview'" 
-            (click)="switchTab('overview')">
-      <i class="fas fa-chart-bar me-2"></i>Overview
-    </button>
-  </li>
-  <li class="nav-item">
-    <button class="nav-link" [class.active]="activeTab === 'projects'" 
-            (click)="switchTab('projects')">
-      <i class="fas fa-project-diagram me-2"></i>Projects
-    </button>
-  </li>
-  <li class="nav-item">
-    <button class="nav-link" [class.active]="activeTab === 'skills'" 
-            (click)="switchTab('skills')">
-      <i class="fas fa-code me-2"></i>Skills
-    </button>
-  </li>
-  <!-- Add Matrix Notes Tab -->
-  <li class="nav-item">
-    <a class="nav-link" routerLink="/admin/matrix-notes">
-      <i class="fas fa-book me-2"></i>Matrix Notes
-    </a>
-  </li>
-</ul>
+      <ul class="nav nav-tabs mb-4">
+        <li class="nav-item">
+          <a class="nav-link" 
+             [class.active]="currentRoute === '/admin/projects'" 
+             routerLink="/admin/projects">
+            <i class="fas fa-project-diagram me-2"></i>Projects
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" 
+             [class.active]="currentRoute === '/admin/skills'" 
+             routerLink="/admin/skills">
+            <i class="fas fa-code me-2"></i>Skills
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" 
+             [class.active]="currentRoute.includes('/admin/matrix-notes')" 
+             routerLink="/admin/matrix-notes">
+            <i class="fas fa-book me-2"></i>Matrix Notes
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" 
+             [class.active]="currentRoute.includes('/admin/developer-solutions')" 
+             routerLink="/admin/developer-solutions">
+            <i class="fas fa-tools me-2"></i>Developer Solutions
+          </a>
+        </li>
+      </ul>
 
-      <!-- Overview Tab -->
-      <div *ngIf="activeTab === 'overview'" class="tab-content">
-        <div class="row">
-          <div class="col-md-3 mb-4">
-            <div class="stat-card">
-              <div class="stat-icon bg-primary">
-                <i class="fas fa-project-diagram"></i>
-              </div>
-              <div class="stat-info">
-                <h3>{{ portfolioData.projects?.length || 0 }}</h3>
-                <p>Projects</p>
-              </div>
-            </div>
-          </div>
-          <div class="col-md-3 mb-4">
-            <div class="stat-card">
-              <div class="stat-icon bg-warning">
-                <i class="fas fa-code"></i>
-              </div>
-              <div class="stat-info">
-                <h3>{{ portfolioData.skills?.length || 0 }}</h3>
-                <p>Skills</p>
-              </div>
-            </div>
-          </div>
-          <div class="col-md-3 mb-4">
-            <div class="stat-card">
-              <div class="stat-icon bg-info">
-                <i class="fas fa-briefcase"></i>
-              </div>
-              <div class="stat-info">
-                <h3>{{ portfolioData.experiences?.length || 0 }}</h3>
-                <p>Experiences</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Projects Tab -->
-      <div *ngIf="activeTab === 'projects'" class="tab-content">
-        <div class="card">
-          <div class="card-header">
-            <h5 class="card-title mb-0">Manage Projects</h5>
-          </div>
-          <div class="card-body">
-            <!-- Add Project Form -->
-            <div class="add-form mb-4">
-              <h6>Add New Project</h6>
-              <div class="row g-3">
-                <div class="col-md-6">
-                  <input type="text" class="form-control" placeholder="Project Title" 
-                         [(ngModel)]="newProject.title">
-                </div>
-                <div class="col-md-6">
-                  <input type="text" class="form-control" placeholder="Technologies (comma separated)" 
-                         [(ngModel)]="newProject.technologies">
-                </div>
-                <div class="col-12">
-                  <textarea class="form-control" placeholder="Project Description" 
-                            [(ngModel)]="newProject.description" rows="3"></textarea>
-                </div>
-                <div class="col-md-6">
-                  <input type="text" class="form-control" placeholder="Project Link" 
-                         [(ngModel)]="newProject.link">
-                </div>
-                <div class="col-md-6">
-                  <input type="text" class="form-control" placeholder="GitHub Link" 
-                         [(ngModel)]="newProject.githubLink">
-                </div>
-                <div class="col-12">
-                  <button class="btn btn-primary" (click)="addProject()">
-                    <i class="fas fa-plus me-2"></i>Add Project
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            <!-- Projects List -->
-            <div class="projects-list">
-              <h6>Existing Projects</h6>
-              <div class="list-group">
-                <div *ngFor="let project of portfolioData.projects" class="list-group-item">
-                  <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                      <h6 class="mb-1">{{ project.title }}</h6>
-                      <p class="mb-1 text-muted">{{ project.description | slice:0:100 }}...</p>
-                      <small class="text-muted">Technologies: {{ project.technologies.join(', ') }}</small>
-                    </div>
-                    <div class="btn-group">
-                      <button class="btn btn-sm btn-outline-primary">
-                        <i class="fas fa-edit"></i>
-                      </button>
-                      <button class="btn btn-sm btn-outline-danger" (click)="deleteProject(project.id)">
-                        <i class="fas fa-trash"></i>
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <!-- Skills Tab -->
-      <div *ngIf="activeTab === 'skills'" class="tab-content">
-        <div class="card">
-          <div class="card-header">
-            <h5 class="card-title mb-0">Manage Skills</h5>
-          </div>
-          <div class="card-body">
-            <p class="text-muted">Skills management coming soon...</p>
-          </div>
-        </div>
-      </div>
+      <!-- Router Outlet for Tab Content -->
+      <router-outlet></router-outlet>
     </div>
   </div>
 </div>

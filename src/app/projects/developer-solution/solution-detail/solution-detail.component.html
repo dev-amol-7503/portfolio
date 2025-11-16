@@ -1,0 +1,220 @@
+<!-- components/solution-detail/solution-detail.component.html -->
+<div class="solution-detail-container">
+  <div class="container">
+    <!-- Back Button -->
+    <div class="row mb-4">
+      <div class="col-12">
+        <button class="btn btn-outline-primary btn-sm" (click)="goBack()">
+          <i class="fas fa-arrow-left me-2"></i>Back to Solutions
+        </button>
+      </div>
+    </div>
+
+    <!-- Loading State -->
+    <div *ngIf="isLoading" class="loading-state text-center py-5">
+      <div class="spinner-border text-primary mb-3" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+      <p>Loading solution...</p>
+    </div>
+
+    <!-- Solution Content -->
+    <div *ngIf="!isLoading && solution" class="solution-content">
+      <div class="row">
+        <!-- Main Content -->
+        <div class="col-lg-8">
+          <div class="solution-card">
+            <!-- Header -->
+            <div class="solution-header">
+              <div class="d-flex justify-content-between align-items-start mb-3">
+                <div class="flex-grow-1">
+                  <h1 class="solution-title">{{ solution.title }}</h1>
+                  <p class="solution-description">{{ solution.description }}</p>
+                </div>
+                <div class="solution-actions">
+                  <button class="btn btn-outline-danger btn-sm" (click)="likeSolution()">
+                    <i class="fas fa-heart me-1"></i>{{ solution.likes || 0 }}
+                  </button>
+                </div>
+              </div>
+
+              <!-- Meta Information -->
+              <div class="solution-meta">
+                <span class="badge me-2" [ngClass]="getDifficultyBadgeClass(solution.difficulty)">
+                  {{ solution.difficulty | titlecase }}
+                </span>
+                <span class="badge bg-primary me-2">
+                  <i [class]="getCategoryIcon(solution.category) + ' me-1'"></i>
+                  {{ getCategoryLabel(solution.category) }}
+                </span>
+                <span class="text-muted me-3">
+                  <i class="fas fa-clock me-1"></i>{{ solution.readTime }} min read
+                </span>
+                <span class="text-muted me-3">
+                  <i class="fas fa-eye me-1"></i>{{ solution.views || 0 }} views
+                </span>
+                <span class="text-muted">
+                  <i class="fas fa-calendar me-1"></i>
+                  {{ solution.createdAt?.toDate() | date:'mediumDate' }}
+                </span>
+              </div>
+
+              <!-- Tags -->
+              <div class="solution-tags mt-3" *ngIf="solution.tags && solution.tags.length > 0">
+                <span
+                  *ngFor="let tag of solution.tags"
+                  class="badge bg-light text-dark me-2 mb-2"
+                >
+                  #{{ tag }}
+                </span>
+              </div>
+            </div>
+
+            <!-- Content -->
+            <div class="solution-body mt-4">
+              <div class="content-section">
+                <div class="content-html" [innerHTML]="solution.content"></div>
+              </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="solution-footer mt-4 pt-4 border-top">
+              <div class="d-flex justify-content-between align-items-center">
+                <div class="d-flex gap-2">
+                  <button class="btn btn-outline-primary btn-sm" (click)="likeSolution()">
+                    <i class="fas fa-heart me-1"></i>
+                    {{ solution.likes || 0 }} Likes
+                  </button>
+                  <button class="btn btn-outline-secondary btn-sm" (click)="shareSolution()">
+                    <i class="fas fa-share me-1"></i> Share
+                  </button>
+                  <button class="btn btn-outline-info btn-sm" (click)="copyLink()">
+                    <i class="fas fa-link me-1"></i> Copy Link
+                  </button>
+                </div>
+                <div class="text-muted small">
+                  Last updated: {{ solution.updatedAt?.toDate() | date:'mediumDate' }}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+          <!-- Author Info -->
+          <div class="sidebar-card">
+            <h6 class="sidebar-title">
+              <i class="fas fa-user me-2"></i>About the Author
+            </h6>
+            <div class="author-info">
+              <div class="author-avatar">
+                <i class="fas fa-user-circle fa-2x"></i>
+              </div>
+              <div class="author-details">
+                <h6 class="author-name">Amol Nagare</h6>
+                <p class="author-bio text-muted small">
+                  Full Stack Developer with expertise in Angular, Spring Boot, and cloud technologies.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Table of Contents -->
+          <div class="sidebar-card mt-4" *ngIf="tableOfContents.length > 0">
+            <h6 class="sidebar-title">
+              <i class="fas fa-list me-2"></i>Table of Contents
+            </h6>
+            <div class="toc-container">
+              <div
+                *ngFor="let item of tableOfContents"
+                class="toc-item"
+                [class.toc-item-h2]="item.level === 2"
+                [class.toc-item-h3]="item.level === 3"
+                (click)="scrollToHeading(item.id)"
+              >
+                {{ item.text }}
+              </div>
+            </div>
+          </div>
+
+          <!-- Related Solutions -->
+          <div class="sidebar-card mt-4" *ngIf="relatedSolutions.length > 0">
+            <h6 class="sidebar-title">
+              <i class="fas fa-link me-2"></i>Related Solutions
+            </h6>
+            <div class="related-solutions">
+              <div
+                *ngFor="let related of relatedSolutions"
+                class="related-item"
+                [routerLink]="['/solutions', related.id]"
+              >
+                <h6 class="related-title">{{ related.title }}</h6>
+                <div class="related-meta">
+                  <span class="badge me-2" [ngClass]="getDifficultyBadgeClass(related.difficulty)">
+                    {{ related.difficulty | titlecase }}
+                  </span>
+                  <span class="text-muted small">
+                    {{ related.readTime }} min
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Quick Stats -->
+          <div class="sidebar-card mt-4">
+            <h6 class="sidebar-title">
+              <i class="fas fa-chart-bar me-2"></i>Solution Stats
+            </h6>
+            <div class="stats-grid">
+              <div class="stat-item">
+                <i class="fas fa-eye text-primary"></i>
+                <span>{{ solution.views || 0 }} views</span>
+              </div>
+              <div class="stat-item">
+                <i class="fas fa-heart text-danger"></i>
+                <span>{{ solution.likes || 0 }} likes</span>
+              </div>
+              <div class="stat-item">
+                <i class="fas fa-clock text-warning"></i>
+                <span>{{ solution.readTime }} min read</span>
+              </div>
+              <div class="stat-item">
+                <i class="fas fa-calendar text-info"></i>
+                <span>{{ solution.createdAt?.toDate() | date:'MMM yyyy' }}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Quick Actions -->
+          <div class="sidebar-card mt-4">
+            <h6 class="sidebar-title">
+              <i class="fas fa-rocket me-2"></i>Quick Actions
+            </h6>
+            <div class="quick-actions">
+              <button class="btn btn-outline-primary btn-sm w-100 mb-2" (click)="scrollToTop()">
+                <i class="fas fa-arrow-up me-1"></i> Back to Top
+              </button>
+              <button class="btn btn-outline-success btn-sm w-100" (click)="printSolution()">
+                <i class="fas fa-print me-1"></i> Print Solution
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Not Found State -->
+    <div *ngIf="!isLoading && !solution" class="not-found-state text-center py-5">
+      <div class="not-found-icon mb-3">
+        <i class="fas fa-file-code fa-3x text-muted"></i>
+      </div>
+      <h4>Solution Not Found</h4>
+      <p class="text-muted mb-4">The solution you're looking for doesn't exist or has been removed.</p>
+      <button class="btn btn-primary" (click)="goBack()">
+        <i class="fas fa-arrow-left me-1"></i>Back to Solutions
+      </button>
+    </div>
+  </div>
+</div>

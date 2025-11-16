@@ -1,18 +1,24 @@
+<!-- projects.component.html -->
 <section class="projects-section py-5">
   <div class="container">
     <!-- Section Header -->
     <div class="section-header">
-      <h2 class="section-title">Projects & Content</h2>
+      <h2 class="section-title">My Work & Contributions</h2>
       <p class="section-subtitle">
-        Explore my technical projects and professional content across different platforms
+        Explore my technical projects, coding profiles, and developer solutions
       </p>
     </div>
 
     <!-- Add Project Form (Edit Mode) -->
-    <div *ngIf="isEditMode && activeTab === 'projects'" class="add-project-form mb-5">
+    <div
+      *ngIf="isEditMode && activeTab === 'projects'"
+      class="add-project-form mb-5"
+    >
       <div class="card">
         <div class="card-body p-4">
-          <h6 class="card-title mb-3">Add New Project</h6>
+          <h6 class="card-title">
+            <i class="fas fa-plus me-2"></i>Add New Project
+          </h6>
           <div class="row g-3">
             <div class="col-md-6">
               <input
@@ -34,11 +40,11 @@
               <textarea
                 class="form-control form-control-sm"
                 placeholder="Project Description"
+                rows="3"
                 [(ngModel)]="newProject.description"
-                rows="2"
               ></textarea>
             </div>
-            <div class="col-md-4">
+            <div class="col-md-6">
               <input
                 type="text"
                 class="form-control form-control-sm"
@@ -46,7 +52,7 @@
                 [(ngModel)]="newProject.link"
               />
             </div>
-            <div class="col-md-4">
+            <div class="col-md-6">
               <input
                 type="text"
                 class="form-control form-control-sm"
@@ -54,17 +60,99 @@
                 [(ngModel)]="newProject.githubLink"
               />
             </div>
-            <div class="col-md-4">
+            <div class="col-12">
+              <div class="d-flex justify-content-between align-items-center">
+                <div class="form-check">
+                  <input
+                    class="form-check-input"
+                    type="checkbox"
+                    id="featuredProject"
+                    [(ngModel)]="newProject.featured"
+                  />
+                  <label class="form-check-label small" for="featuredProject">
+                    Featured Project
+                  </label>
+                </div>
+                <button
+                  class="btn btn-primary btn-sm"
+                  (click)="addNewProject()"
+                  [disabled]="!newProject.title || !newProject.description"
+                >
+                  <i class="fas fa-plus me-1"></i>Add Project
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Add Coding Profile Form (Edit Mode) -->
+    <div
+      *ngIf="isEditMode && activeTab === 'coding'"
+      class="add-coding-profile-form mb-5"
+    >
+      <div class="card">
+        <div class="card-body p-4">
+          <h6 class="card-title">
+            <i class="fas fa-plus me-2"></i>Add New Coding Profile
+          </h6>
+          <div class="row g-3">
+            <div class="col-md-6">
               <input
                 type="text"
                 class="form-control form-control-sm"
-                placeholder="Animation URL"
-                [(ngModel)]="newProject.animationUrl"
+                placeholder="Profile Title"
+                [(ngModel)]="newCodingProfile.title"
               />
             </div>
-            <div class="col-12 mt-2">
-              <button class="btn btn-primary btn-sm" (click)="addNewProject()">
-                <i class="fas fa-plus me-1"></i>Add Project
+            <div class="col-md-6">
+              <input
+                type="text"
+                class="form-control form-control-sm"
+                placeholder="Platform"
+                [(ngModel)]="newCodingProfile.platform"
+              />
+            </div>
+            <div class="col-12">
+              <textarea
+                class="form-control form-control-sm"
+                placeholder="Profile Description"
+                rows="2"
+                [(ngModel)]="newCodingProfile.description"
+              ></textarea>
+            </div>
+            <div class="col-md-6">
+              <input
+                type="url"
+                class="form-control form-control-sm"
+                placeholder="Profile URL"
+                [(ngModel)]="newCodingProfile.profileUrl"
+              />
+            </div>
+            <div class="col-md-3">
+              <input
+                type="number"
+                class="form-control form-control-sm"
+                placeholder="Challenges"
+                [(ngModel)]="newCodingProfile.challenges"
+              />
+            </div>
+            <div class="col-md-3">
+              <input
+                type="number"
+                class="form-control form-control-sm"
+                placeholder="Badges"
+                [(ngModel)]="newCodingProfile.badges"
+              />
+            </div>
+            <div class="col-12">
+              <button
+                class="btn btn-success btn-sm"
+                (click)="addNewCodingProfile()"
+                [disabled]="!newCodingProfile.title || !newCodingProfile.platform"
+              >
+                <i class="fas fa-plus me-1"></i>Add Profile
               </button>
             </div>
           </div>
@@ -75,17 +163,28 @@
     <div class="tabs-wrapper">
       <div class="tabs-container">
         <div class="btn-group btn-group-sm" role="group">
-          <button class="btn btn-tab" [class.active]="activeTab === 'projects'" (click)="onTabChange('projects')">
+          <button
+            class="btn btn-tab"
+            [class.active]="activeTab === 'projects'"
+            (click)="onTabChange('projects')"
+          >
             <i class="fas fa-code me-1"></i> Projects
           </button>
-          <button class="btn btn-tab" [class.active]="activeTab === 'medium'" (click)="onTabChange('medium')">
-            <i class="fab fa-medium me-1"></i> Medium
+
+          <button
+            class="btn btn-tab"
+            [class.active]="activeTab === 'coding'"
+            (click)="onTabChange('coding')"
+          >
+            <i class="fas fa-laptop-code me-1"></i> Coding Profiles
           </button>
-          <button class="btn btn-tab" [class.active]="activeTab === 'quora'" (click)="onTabChange('quora')">
-            <i class="fab fa-quora me-1"></i> Quora
-          </button>
-          <button class="btn btn-tab" [class.active]="activeTab === 'linkedin'" (click)="onTabChange('linkedin')">
-            <i class="fab fa-linkedin me-1"></i> LinkedIn
+
+          <button
+            class="btn btn-tab"
+            [class.active]="activeTab === 'articles'"
+            (click)="onTabChange('articles')"
+          >
+            <i class="fas fa-tools me-1"></i> Developer Solutions
           </button>
         </div>
       </div>
@@ -103,67 +202,36 @@
             >
               <div class="project-card">
                 <div class="project-image">
-                  <!-- Lottie Animation Container -->
+                  <!-- Project Animation/Image -->
                   <div
                     #lottieContainer
                     class="lottie-animation"
-                    *ngIf="project.animationUrl"
+                    *ngIf="project.animationUrl; else fallbackImage"
                   ></div>
-
-                  <!-- Fallback Image -->
-                  <img
-                    [src]="project.imageUrl"
-                    [alt]="project.title"
-                    class="img-fluid fallback-image"
-                    *ngIf="!project.animationUrl"
-                  />
+                  <ng-template #fallbackImage>
+                    <img
+                      [src]="project.imageUrl"
+                      [alt]="project.title"
+                      class="fallback-image"
+                    />
+                  </ng-template>
 
                   <div class="project-overlay d-flex flex-column">
                     <h6 class="text-white mb-2">{{ project.title }}</h6>
                     <div class="mt-auto">
-                      <!-- Matrix Notes - Goes to tutorials page -->
                       <a
-                        *ngIf="project.title === 'Matrix Notes - Tutorial Management System'"
-                        [routerLink]="['/tutorials']"
-                        class="btn btn-light btn-xs me-1"
-                      >
-                        <i class="fas fa-external-link-alt me-1"></i>View Live
-                      </a>
-                      
-                      <!-- Online Clipboard - Internal route -->
-                      <a
-                        *ngIf="project.title.includes('MatrixShare') || project.title.includes('Online Clipboard')"
-                        [routerLink]="['/online-clipboard']"
-                        class="btn btn-light btn-xs me-1"
-                      >
-                        <i class="fas fa-external-link-alt me-1"></i>View Live
-                      </a>
-                      
-                      <!-- External links -->
-                      <a
-                        *ngIf="project.link && !project.link.startsWith('/') && project.title !== 'Matrix Notes - Tutorial Management System' && !project.title.includes('MatrixShare')"
                         [href]="project.link"
                         target="_blank"
                         class="btn btn-light btn-xs me-1"
+                        *ngIf="project.link"
                       >
-                        <i class="fas fa-external-link-alt me-1"></i>View Live
+                        <i class="fas fa-external-link-alt me-1"></i>Live Demo
                       </a>
-                      
-                      <!-- Other internal routes -->
-                      <a
-                        *ngIf="project.link && project.link.startsWith('/') && project.title !== 'Matrix Notes - Tutorial Management System' && !project.title.includes('MatrixShare')"
-                        [routerLink]="project.link"
-                        class="btn btn-light btn-xs me-1"
-                      >
-                        <i class="fas fa-external-link-alt me-1"></i>View Live
-                      </a>
-                      
-                      <!-- GitHub Link -->
                       <a
                         [href]="project.githubLink"
                         target="_blank"
                         class="btn btn-dark btn-xs"
-                        *ngIf="project.githubLink && project.githubLink !== '#'"
+                        *ngIf="project.githubLink"
                       >
                         <i class="fab fa-github me-1"></i>Code
                       </a>
@@ -182,21 +250,35 @@
                       <i class="fas fa-trash"></i>
                     </button>
                   </div>
+
+                  <!-- Featured Badge -->
+                  <div class="featured-badge" *ngIf="project.featured">
+                    <i class="fas fa-star me-1"></i>Featured
+                  </div>
                 </div>
                 <div class="project-body">
-                  <div class="d-flex justify-content-between align-items-start mb-3">
+                  <div
+                    class="d-flex justify-content-between align-items-start mb-3"
+                  >
                     <h6 class="project-title">{{ project.title }}</h6>
-                    <span class="badge" *ngIf="project.featured">
-                      Web App
+                    <span class="badge bg-primary">
+                      {{ project.category || 'Web App' }}
                     </span>
                   </div>
                   <p class="project-description">{{ project.description }}</p>
                   <div class="project-tech">
                     <span
                       class="tech-badge"
-                      *ngFor="let tech of project.technologies"
+                      *ngFor="let tech of project.technologies?.slice(0, 3)"
                     >
-                      <i [class]="getTechIcon(tech)"></i> {{ tech }}
+                      <i [class]="getTechIcon(tech)"></i>
+                      {{ tech }}
+                    </span>
+                    <span
+                      class="tech-badge text-muted"
+                      *ngIf="(project.technologies?.length || 0) > 3"
+                    >
+                      +{{ (project.technologies?.length || 0) - 3 }} more
                     </span>
                   </div>
                 </div>
@@ -205,85 +287,83 @@
           </div>
         </div>
 
-        <!-- No Data State Template -->
         <ng-template #noProjects>
           <div class="no-data-state">
             <div class="no-data-content text-center">
               <div class="no-data-animation">
                 <div class="animation-placeholder projects-animation">
-                  <i class="fas fa-folder-open"></i>
+                  <i class="fas fa-code"></i>
                 </div>
               </div>
               <div class="no-data-text-content">
                 <h5 class="no-data-title">No Projects Yet</h5>
                 <p class="no-data-description">
-                  Start showcasing your amazing work by adding your first project!
+                  Showcase your amazing projects and technical work here!
                 </p>
                 <div class="no-data-actions" *ngIf="isEditMode">
                   <button
                     class="btn btn-primary btn-sm"
                     (click)="addNewProject()"
                   >
-                    <i class="fas fa-plus me-1"></i>Add Your First Project
+                    <i class="fas fa-plus me-1"></i>Add First Project
                   </button>
                 </div>
-                <div class="no-data-actions" *ngIf="!isEditMode">
-                  <p class="text-muted small">
-                    Check back later for amazing projects!
-                  </p>
-                </div>
               </div>
             </div>
           </div>
         </ng-template>
       </div>
 
-      <!-- Medium Tab -->
-      <div *ngIf="activeTab === 'medium'" class="tab-pane active">
-        <div *ngIf="mediumPosts.length > 0; else noMedium" class="projects-grid-container">
-          <div class="row g-4">
-            <div
-              class="col-xl-4 col-lg-6 col-md-6"
-              *ngFor="let post of mediumPosts"
-            >
-              <div class="project-card">
-                <div class="project-image">
-                  <!-- Platform-specific background -->
-                  <div class="platform-background medium-bg">
-                    <i class="fab fa-medium platform-logo"></i>
-                  </div>
-
-                  <div class="project-overlay d-flex flex-column">
-                    <h6 class="text-white mb-2">{{ post.title }}</h6>
-                    <div class="mt-auto">
-                      <a
-                        [href]="post.link"
-                        target="_blank"
-                        class="btn btn-light btn-xs"
-                      >
-                        <i class="fas fa-external-link-alt me-1"></i>Read Article
-                      </a>
+      <!-- Coding Profiles Tab - NEW DESIGN -->
+      <div *ngIf="activeTab === 'coding'" class="tab-pane active">
+        <div *ngIf="codingProfiles.length > 0; else noCodingProfiles" class="coding-profiles-container">
+          <!-- Platform Stats Overview -->
+          <div class="platform-stats-grid mb-5">
+            <div class="row g-4">
+              <div class="col-md-6 col-lg-3" *ngFor="let profile of codingProfiles">
+                <div class="platform-stat-card" [style.border-color]="profile.color">
+                  <div class="platform-header">
+                    <div class="platform-icon" [style.background-color]="profile.color">
+                      <i [class]="profile.icon"></i>
+                    </div>
+                    <div class="platform-info">
+                      <h6 class="platform-name">{{ profile.platform }}</h6>
+                      <span class="platform-handle">{{ profile.title }}</span>
                     </div>
                   </div>
-                </div>
-                <div class="project-body">
-                  <div class="d-flex justify-content-between align-items-start mb-3">
-                    <h6 class="project-title">{{ post.title }}</h6>
-                    <span class="badge bg-dark">
-                      <i class="fab fa-medium me-1"></i> Medium
-                    </span>
+                  <div class="platform-stats">
+                    <div class="stat-item">
+                      <span class="stat-value">{{ profile.challenges || 0 }}</span>
+                      <span class="stat-label">Challenges</span>
+                    </div>
+                    <div class="stat-item">
+                      <span class="stat-value">{{ profile.badges || 0 }}</span>
+                      <span class="stat-label">Badges</span>
+                    </div>
+                    <div class="stat-item" *ngIf="profile.rating">
+                      <span class="stat-value">{{ profile.rating }}/5</span>
+                      <span class="stat-label">Rating</span>
+                    </div>
                   </div>
-                  <p class="project-description">{{ post.description }}</p>
-                  <div class="project-tech">
-                    <span class="tech-badge">
-                      <i class="fas fa-clock"></i> {{ post.readTime }}
-                    </span>
-                    <span class="tech-badge">
-                      <i class="fas fa-heart"></i> {{ post.likes }}
-                    </span>
-                    <span class="tech-badge">
-                      <i class="fas fa-calendar"></i> {{ post.date }}
-                    </span>
+                  <div class="platform-actions">
+                    <a
+                      [href]="profile.profileUrl"
+                      target="_blank"
+                      class="btn btn-outline-primary btn-sm"
+                    >
+                      <i class="fas fa-external-link-alt me-1"></i>Visit Profile
+                    </a>
+                    <div class="edit-controls" *ngIf="isEditMode">
+                      <button class="btn btn-warning btn-xs me-1">
+                        <i class="fas fa-edit"></i>
+                      </button>
+                      <button
+                        class="btn btn-danger btn-xs"
+                        (click)="deleteCodingProfile(profile, $event)"
+                      >
+                        <i class="fas fa-trash"></i>
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -291,28 +371,26 @@
           </div>
         </div>
 
-        <!-- No Data State Template -->
-        <ng-template #noMedium>
+        <ng-template #noCodingProfiles>
           <div class="no-data-state">
             <div class="no-data-content text-center">
               <div class="no-data-animation">
-                <div class="animation-placeholder medium-animation">
-                  <i class="fab fa-medium"></i>
+                <div class="animation-placeholder coding-animation">
+                  <i class="fas fa-laptop-code"></i>
                 </div>
               </div>
               <div class="no-data-text-content">
-                <h5 class="no-data-title">No Medium Articles</h5>
+                <h5 class="no-data-title">No Coding Profiles</h5>
                 <p class="no-data-description">
-                  Share your knowledge and experiences with the community!
+                  Showcase your coding challenge profiles and competitive programming achievements!
                 </p>
-                <div class="no-data-actions">
-                  <a
-                    href="https://medium.com/"
-                    target="_blank"
-                    class="btn btn-dark btn-sm"
+                <div class="no-data-actions" *ngIf="isEditMode">
+                  <button
+                    class="btn btn-primary btn-sm"
+                    (click)="addCodingProfile()"
                   >
-                    <i class="fab fa-medium me-1"></i>Start Writing
-                  </a>
+                    <i class="fas fa-plus me-1"></i>Add Coding Profile
+                  </button>
                 </div>
               </div>
             </div>
@@ -320,52 +398,87 @@
         </ng-template>
       </div>
 
-      <!-- Quora Tab -->
-      <div *ngIf="activeTab === 'quora'" class="tab-pane active">
-        <div *ngIf="quoraPosts.length > 0; else noQuora" class="projects-grid-container">
-          <div class="row g-4">
-            <div
-              class="col-xl-4 col-lg-6 col-md-6"
-              *ngFor="let post of quoraPosts"
-            >
-              <div class="project-card">
-                <div class="project-image">
-                  <div class="platform-background quora-bg">
-                    <i class="fab fa-quora platform-logo"></i>
-                  </div>
-
-                  <div class="project-overlay d-flex flex-column">
-                    <h6 class="text-white mb-2">{{ post.title }}</h6>
-                    <div class="mt-auto">
-                      <a
-                        [href]="post.link"
-                        target="_blank"
-                        class="btn btn-light btn-xs"
-                      >
-                        <i class="fas fa-external-link-alt me-1"></i>View Answer
-                      </a>
+      <!-- Developer Solutions Tab - NEW MODERN DESIGN -->
+      <div *ngIf="activeTab === 'articles'" class="tab-pane active">
+        <div *ngIf="developerSolutions.length > 0; else noSolutions" class="solutions-modern-container">
+          <!-- Featured Solutions -->
+          <div class="featured-solutions mb-5" *ngIf="featuredSolutions.length > 0">
+            <h5 class="section-subtitle mb-4">Featured Solutions</h5>
+            <div class="row g-4">
+              <div class="col-12" *ngFor="let solution of featuredSolutions">
+                <div class="featured-solution-card">
+                  <div class="solution-content">
+                    <div class="solution-badge" [ngClass]="'badge-' + solution.difficulty">
+                      {{ solution.difficulty | titlecase }}
+                    </div>
+                    <h4 class="solution-title">{{ solution.title }}</h4>
+                    <p class="solution-description">{{ solution.description }}</p>
+                    <div class="solution-meta">
+                      <span class="meta-item">
+                        <i class="fas fa-clock"></i>
+                        {{ solution.readTime }} min read
+                      </span>
+                      <span class="meta-item">
+                        <i class="fas fa-eye"></i>
+                        {{ solution.views || 0 }} views
+                      </span>
+                      <span class="meta-item" (click)="likeSolution(solution, $event)">
+                        <i class="fas fa-heart"></i>
+                        {{ solution.likes || 0 }} likes
+                      </span>
+                      <span class="meta-item">
+                        <i class="fas fa-tag"></i>
+                        {{ solution.category }}
+                      </span>
+                    </div>
+                    <div class="solution-tags">
+                      <span class="tag" *ngFor="let tag of solution.tags?.slice(0, 4)">
+                        #{{ tag }}
+                      </span>
                     </div>
                   </div>
-                </div>
-                <div class="project-body">
-                  <div class="d-flex justify-content-between align-items-start mb-3">
-                    <h6 class="project-title">{{ post.title }}</h6>
-                    <span class="badge bg-danger">
-                      <i class="fab fa-quora me-1"></i> Quora
-                    </span>
+                  <div class="solution-actions">
+                    <button class="btn btn-primary" (click)="viewSolution(solution)">
+                      <i class="fas fa-book-open me-2"></i>Read Solution
+                    </button>
                   </div>
-                  <p class="project-description">{{ post.description }}</p>
-                  <div class="project-tech">
-                    <span class="tech-badge">
-                      <i class="fas fa-eye"></i> {{ post.views || '0' }}
-                    </span>
-                    <span class="tech-badge">
-                      <i class="fas fa-thumbs-up"></i>
-                      {{ post.upvotes || '0' }}
-                    </span>
-                    <span class="tech-badge">
-                      <i class="fas fa-calendar"></i> {{ post.date }}
-                    </span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- All Solutions Grid -->
+          <div class="solutions-grid">
+            <h5 class="section-subtitle mb-4">All Solutions</h5>
+            <div class="row g-4">
+              <div class="col-lg-6" *ngFor="let solution of regularSolutions">
+                <div class="solution-modern-card">
+                  <div class="solution-header">
+                    <div class="solution-category">
+                      <i [class]="getCategoryIcon(solution.category)"></i>
+                      {{ solution.category | titlecase }}
+                    </div>
+                    <div class="solution-difficulty" [ngClass]="'difficulty-' + solution.difficulty">
+                      {{ solution.difficulty | titlecase }}
+                    </div>
+                  </div>
+                  <h5 class="solution-title">{{ solution.title }}</h5>
+                  <p class="solution-excerpt">{{ solution.description | slice:0:120 }}...</p>
+                  <div class="solution-footer">
+                    <div class="solution-stats">
+                      <span class="stat">
+                        <i class="fas fa-clock"></i> {{ solution.readTime }}min
+                      </span>
+                      <span class="stat">
+                        <i class="fas fa-eye"></i> {{ solution.views || 0 }}
+                      </span>
+                      <span class="stat" (click)="likeSolution(solution, $event)">
+                        <i class="fas fa-heart"></i> {{ solution.likes || 0 }}
+                      </span>
+                    </div>
+                    <button class="btn btn-outline-primary btn-sm" (click)="viewSolution(solution)">
+                      Read
+                    </button>
                   </div>
                 </div>
               </div>
@@ -373,110 +486,25 @@
           </div>
         </div>
 
-        <!-- No Data State Template -->
-        <ng-template #noQuora>
+        <ng-template #noSolutions>
           <div class="no-data-state">
             <div class="no-data-content text-center">
               <div class="no-data-animation">
-                <div class="animation-placeholder quora-animation">
-                  <i class="fab fa-quora"></i>
+                <div class="animation-placeholder solutions-animation">
+                  <i class="fas fa-lightbulb"></i>
                 </div>
               </div>
               <div class="no-data-text-content">
-                <h5 class="no-data-title">No Quora Answers</h5>
+                <h5 class="no-data-title">No Developer Solutions</h5>
                 <p class="no-data-description">
-                  Share your expertise and help others by answering questions!
+                  Share your coding knowledge and solutions to common development challenges!
                 </p>
-                <div class="no-data-actions">
+                <div class="no-data-actions" *ngIf="isEditMode">
                   <a
-                    href="https://www.quora.com/"
-                    target="_blank"
-                    class="btn btn-danger btn-sm"
-                  >
-                    <i class="fab fa-quora me-1"></i>Answer Questions
-                  </a>
-                </div>
-              </div>
-            </div>
-          </div>
-        </ng-template>
-      </div>
-
-      <!-- LinkedIn Tab -->
-      <div *ngIf="activeTab === 'linkedin'" class="tab-pane active">
-        <div *ngIf="linkedinPosts.length > 0; else noLinkedIn" class="projects-grid-container">
-          <div class="row g-4">
-            <div
-              class="col-xl-4 col-lg-6 col-md-6"
-              *ngFor="let post of linkedinPosts"
-            >
-              <div class="project-card">
-                <div class="project-image">
-                  <div class="platform-background linkedin-bg">
-                    <i class="fab fa-linkedin platform-logo"></i>
-                  </div>
-
-                  <div class="project-overlay d-flex flex-column">
-                    <h6 class="text-white mb-2">{{ post.title }}</h6>
-                    <div class="mt-auto">
-                      <a
-                        [href]="post.link"
-                        target="_blank"
-                        class="btn btn-light btn-xs"
-                      >
-                        <i class="fas fa-external-link-alt me-1"></i>View Post
-                      </a>
-                    </div>
-                  </div>
-                </div>
-                <div class="project-body">
-                  <div class="d-flex justify-content-between align-items-start mb-3">
-                    <h6 class="project-title">{{ post.title }}</h6>
-                    <span class="badge bg-primary">
-                      <i class="fab fa-linkedin me-1"></i> LinkedIn
-                    </span>
-                  </div>
-                  <p class="project-description">{{ post.description }}</p>
-                  <div class="project-tech">
-                    <span class="tech-badge">
-                      <i class="fas fa-comment"></i>
-                      {{ post.comments || '0' }}
-                    </span>
-                    <span class="tech-badge">
-                      <i class="fas fa-chart-line"></i>
-                      {{ post.engagement || '0' }}
-                    </span>
-                    <span class="tech-badge">
-                      <i class="fas fa-calendar"></i> {{ post.date }}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- No Data State Template -->
-        <ng-template #noLinkedIn>
-          <div class="no-data-state">
-            <div class="no-data-content text-center">
-              <div class="no-data-animation">
-                <div class="animation-placeholder linkedin-animation">
-                  <i class="fab fa-linkedin"></i>
-                </div>
-              </div>
-              <div class="no-data-text-content">
-                <h5 class="no-data-title">No LinkedIn Posts</h5>
-                <p class="no-data-description">
-                  Connect with professionals and share your insights!
-                </p>
-                <div class="no-data-actions">
-                  <a
-                    href="https://www.linkedin.com/"
-                    target="_blank"
+                    [routerLink]="['/admin/developer-solutions/editor']"
                     class="btn btn-primary btn-sm"
                   >
-                    <i class="fab fa-linkedin me-1"></i>Share on LinkedIn
+                    <i class="fas fa-plus me-1"></i>Create First Solution
                   </a>
                 </div>
               </div>
@@ -486,26 +514,59 @@
       </div>
     </div>
 
-    <!-- Admin Matrix Notes Access Button -->
+    <!-- Admin Access Buttons -->
     <div *ngIf="isEditMode" class="text-center mt-5">
-      <div class="card">
-        <div class="card-body p-4">
-          <h6 class="card-title">
-            <i class="fas fa-book me-1"></i>Matrix Notes Admin
-          </h6>
-          <p class="card-text text-muted small mb-3">
-            Manage tutorials and educational content in the Matrix Notes system.
-          </p>
-          <div class="btn-group btn-group-sm">
-            <a [routerLink]="['/admin/matrix-notes']" class="btn btn-primary">
-              <i class="fas fa-tachometer-alt me-1"></i>Dashboard
-            </a>
-            <a [routerLink]="['/admin/matrix-notes/editor']" class="btn btn-success">
-              <i class="fas fa-plus me-1"></i>New Tutorial
-            </a>
-            <a [routerLink]="['/tutorials']" class="btn btn-outline-info">
-              <i class="fas fa-eye me-1"></i>View Tutorials
-            </a>
+      <div class="row g-3">
+        <div class="col-md-6">
+          <div class="card">
+            <div class="card-body p-4">
+              <h6 class="card-title">
+                <i class="fas fa-book me-1"></i>Matrix Notes Admin
+              </h6>
+              <p class="card-text text-muted small mb-3">
+                Manage tutorials and educational content in the Matrix Notes system.
+              </p>
+              <div class="btn-group btn-group-sm">
+                <a
+                  [routerLink]="['/admin/matrix-notes']"
+                  class="btn btn-primary"
+                >
+                  <i class="fas fa-tachometer-alt me-1"></i>Dashboard
+                </a>
+                <a
+                  [routerLink]="['/admin/matrix-notes/editor']"
+                  class="btn btn-success"
+                >
+                  <i class="fas fa-plus me-1"></i>New Tutorial
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="card">
+            <div class="card-body p-4">
+              <h6 class="card-title">
+                <i class="fas fa-tools me-1"></i>Developer Solutions Admin
+              </h6>
+              <p class="card-text text-muted small mb-3">
+                Create and manage developer solutions and coding guides.
+              </p>
+              <div class="btn-group btn-group-sm">
+                <a
+                  [routerLink]="['/admin/developer-solutions']"
+                  class="btn btn-primary"
+                >
+                  <i class="fas fa-tachometer-alt me-1"></i>Dashboard
+                </a>
+                <a
+                  [routerLink]="['/admin/developer-solutions/editor']"
+                  class="btn btn-success"
+                >
+                  <i class="fas fa-plus me-1"></i>New Solution
+                </a>
+              </div>
+            </div>
           </div>
         </div>
       </div>

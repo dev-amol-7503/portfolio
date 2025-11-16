@@ -1,37 +1,35 @@
 <div class="matrix-dashboard-container" *ngIf="adminService.isAdmin$ | async">
-  <!-- Animated Background -->
-  <div class="dashboard-background">
-    <div class="floating-shapes">
-      <div class="shape shape-1"></div>
-      <div class="shape shape-2"></div>
-      <div class="shape shape-3"></div>
-      <div class="shape shape-4"></div>
-    </div>
-  </div>
-
   <!-- Header Section -->
   <div class="dashboard-header">
     <div class="container-fluid">
-      <div class="header-content">
-        <div class="header-text">
-          <div class="welcome-badge">
-            <i class="fas fa-sparkle me-2"></i>
-            Welcome to Matrix Notes
+      <div class="row align-items-center">
+        <div class="col">
+          <div class="header-content">
+            <div class="header-icon">
+              <i class="fas fa-book-open"></i>
+            </div>
+            <div>
+              <h1 class="header-title">Matrix Notes</h1>
+              <p class="header-subtitle">Manage educational tutorials and learning content</p>
+            </div>
           </div>
-          <h1 class="display-4 fw-bold gradient-text">
-            Tutorial Dashboard
-          </h1>
-          <p class="lead text-muted">Create, manage, and publish amazing educational content</p>
         </div>
-        <div class="header-actions">
-          <button class="btn btn-glow-primary" (click)="createNewTutorial()">
-            <i class="fas fa-plus me-2"></i>
-            Create New Tutorial
-          </button>
-          <div class="connection-status" [class.connected]="isConnected">
-            <i class="fas fa-database me-2"></i>
-            {{ isConnected ? 'Connected' : 'Offline' }}
+        <div class="col-auto">
+          <!-- Database Connection Status -->
+          <div class="connection-status" [class]="getConnectionStatusClass()">
+            <i [class]="getConnectionIcon()"></i>
+            <span class="status-text">{{ getConnectionStatusText() }}</span>
+            <button *ngIf="connectionStatus === 'disconnected'" 
+                    class="btn-retry" 
+                    (click)="retryConnection()"
+                    title="Retry Connection">
+              <i class="fas fa-redo"></i>
+            </button>
           </div>
+          
+          <button class="btn btn-primary btn-create" (click)="createNewTutorial()">
+            <i class="fas fa-plus me-2"></i>New Tutorial
+          </button>
         </div>
       </div>
     </div>
@@ -40,181 +38,253 @@
   <!-- Main Content -->
   <div class="dashboard-content">
     <div class="container-fluid">
-      <!-- Quick Stats -->
-      <div class="quick-stats-row">
-        <div class="stat-card stat-primary">
-          <div class="stat-content">
-            <div class="stat-icon">
-              <i class="fas fa-book-open"></i>
-            </div>
-            <div class="stat-data">
-              <h3 class="stat-number">{{ tutorials.length }}</h3>
-              <p class="stat-label">Total Tutorials</p>
-            </div>
-            <div class="stat-trend">
-              <i class="fas fa-chart-line"></i>
-            </div>
-          </div>
-        </div>
-
-        <div class="stat-card stat-success">
-          <div class="stat-content">
-            <div class="stat-icon">
-              <i class="fas fa-rocket"></i>
-            </div>
-            <div class="stat-data">
-              <h3 class="stat-number">{{ publishedTutorials.length }}</h3>
-              <p class="stat-label">Published</p>
-            </div>
-            <div class="stat-trend">
-              <i class="fas fa-eye"></i>
+      
+      <!-- Statistics Overview -->
+      <div class="stats-section">
+        <div class="row g-4">
+          <div class="col-xl-3 col-md-6">
+            <div class="stat-card total">
+              <div class="stat-content">
+                <div class="stat-icon">
+                  <i class="fas fa-book"></i>
+                </div>
+                <div class="stat-info">
+                  <h3 class="stat-value">{{ stats.total }}</h3>
+                  <p class="stat-label">Total Tutorials</p>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
-
-        <div class="stat-card stat-warning">
-          <div class="stat-content">
-            <div class="stat-icon">
-              <i class="fas fa-edit"></i>
-            </div>
-            <div class="stat-data">
-              <h3 class="stat-number">{{ draftTutorials.length }}</h3>
-              <p class="stat-label">Drafts</p>
-            </div>
-            <div class="stat-trend">
-              <i class="fas fa-pencil-alt"></i>
+          <div class="col-xl-3 col-md-6">
+            <div class="stat-card published">
+              <div class="stat-content">
+                <div class="stat-icon">
+                  <i class="fas fa-eye"></i>
+                </div>
+                <div class="stat-info">
+                  <h3 class="stat-value">{{ stats.published }}</h3>
+                  <p class="stat-label">Published</p>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
-
-        <div class="stat-card stat-info">
-          <div class="stat-content">
-            <div class="stat-icon">
-              <i class="fas fa-chart-bar"></i>
+          <div class="col-xl-3 col-md-6">
+            <div class="stat-card draft">
+              <div class="stat-content">
+                <div class="stat-icon">
+                  <i class="fas fa-edit"></i>
+                </div>
+                <div class="stat-info">
+                  <h3 class="stat-value">{{ stats.draft }}</h3>
+                  <p class="stat-label">Drafts</p>
+                </div>
+              </div>
             </div>
-            <div class="stat-data">
-              <h3 class="stat-number">{{ getTotalViews() }}</h3>
-              <p class="stat-label">Total Views</p>
-            </div>
-            <div class="stat-trend">
-              <i class="fas fa-trending-up"></i>
+          </div>
+          <div class="col-xl-3 col-md-6">
+            <div class="stat-card featured">
+              <div class="stat-content">
+                <div class="stat-icon">
+                  <i class="fas fa-star"></i>
+                </div>
+                <div class="stat-info">
+                  <h3 class="stat-value">{{ getTotalViews() }}</h3>
+                  <p class="stat-label">Total Views</p>
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- Tutorials Section -->
-      <div class="tutorials-section">
-        <div class="section-header">
-          <div class="section-title">
-            <h2>
-              <i class="fas fa-book me-3"></i>
-              Your Tutorials
-            </h2>
-            <p class="section-subtitle">Manage and organize your educational content</p>
+      <!-- Connection Error Banner -->
+      <div *ngIf="connectionStatus === 'disconnected'" class="connection-error-banner">
+        <div class="error-content">
+          <i class="fas fa-exclamation-triangle"></i>
+          <div class="error-text">
+            <strong>Database Connection Lost</strong>
+            <span>Unable to connect to the database. Some features may not work properly.</span>
           </div>
-          <div class="section-actions">
-            <div class="search-box">
-              <i class="fas fa-search"></i>
-              <input type="text" placeholder="Search tutorials..." class="search-input">
-            </div>
-            <button class="btn btn-outline-primary" (click)="loadTutorials()">
-              <i class="fas fa-sync-alt"></i>
-            </button>
-          </div>
+          <button class="btn btn-sm btn-outline-light" (click)="retryConnection()">
+            <i class="fas fa-redo me-1"></i>Retry Connection
+          </button>
         </div>
+      </div>
 
-        <!-- Loading State -->
-        <div *ngIf="isLoading" class="loading-state">
-          <div class="loading-spinner">
-            <div class="spinner-ring"></div>
-            <div class="spinner-dot"></div>
+      <!-- Filters Section -->
+      <div class="filters-section" *ngIf="connectionStatus === 'connected'">
+        <div class="filter-card">
+          <div class="filter-header">
+            <h5 class="filter-title">
+              <i class="fas fa-filter me-2"></i>
+              Filter Tutorials
+            </h5>
           </div>
-          <h3>Loading Tutorials</h3>
-          <p>Fetching your amazing content...</p>
-        </div>
-
-        <!-- Tutorials Grid -->
-        <div *ngIf="!isLoading" class="tutorials-grid">
-          <div *ngFor="let tutorial of tutorials" class="tutorial-card" [class.published]="tutorial.published">
-            <div class="card-header">
-              <div class="status-indicator" [class.published]="tutorial.published"></div>
-              <div class="card-actions">
-                <button class="btn-action btn-edit" (click)="editTutorial(tutorial.id)" title="Edit">
-                  <i class="fas fa-edit"></i>
-                </button>
-                <button class="btn-action btn-toggle" 
-                        (click)="togglePublish(tutorial)" 
-                        [title]="tutorial.published ? 'Unpublish' : 'Publish'">
-                  <i class="fas" [class.fa-eye]="!tutorial.published" [class.fa-eye-slash]="tutorial.published"></i>
-                </button>
-                <button class="btn-action btn-delete" (click)="deleteTutorial(tutorial.id)" title="Delete">
-                  <i class="fas fa-trash"></i>
-                </button>
-              </div>
-            </div>
-
-            <div class="card-body">
-              <div class="tutorial-category">
-                <span class="category-badge">{{ tutorial.category }}</span>
-              </div>
-              
-              <h3 class="tutorial-title">{{ tutorial.title || 'Untitled Tutorial' }}</h3>
-              
-              <p class="tutorial-description">
-                {{ tutorial.description || 'No description provided' }}
-              </p>
-
-              <div class="tutorial-meta">
-                <div class="meta-item">
-                  <i class="fas fa-signal"></i>
-                  <span class="difficulty-badge" [class]="tutorial.difficulty">
-                    {{ tutorial.difficulty | titlecase }}
+          <div class="filter-body">
+            <div class="row g-3 align-items-end">
+              <div class="col-md-4">
+                <label class="form-label">Search Tutorials</label>
+                <div class="search-input-group">
+                  <span class="search-icon">
+                    <i class="fas fa-search"></i>
                   </span>
+                  <input
+                    type="text"
+                    class="form-control search-input"
+                    placeholder="Search by title, description, or tags..."
+                    [(ngModel)]="searchTerm"
+                    (input)="onSearchChange(searchTerm)"
+                  >
                 </div>
-                <div class="meta-item">
-                  <i class="fas fa-clock"></i>
-                  <span>{{ tutorial.readingTime }} min</span>
+              </div>
+              <div class="col-md-3">
+                <label class="form-label">Category</label>
+                <select class="form-select" [(ngModel)]="selectedCategory" (change)="onCategoryChange(selectedCategory)">
+                  <option *ngFor="let cat of categories" [value]="cat.value">
+                    {{ cat.label }}
+                  </option>
+                </select>
+              </div>
+              <div class="col-md-3">
+                <label class="form-label">Status</label>
+                <select class="form-select" [(ngModel)]="selectedStatus" (change)="onStatusChange(selectedStatus)">
+                  <option *ngFor="let status of statuses" [value]="status.value">
+                    {{ status.label }}
+                  </option>
+                </select>
+              </div>
+              <div class="col-md-2">
+                <button class="btn btn-clear-filters" (click)="clearFilters()">
+                  <i class="fas fa-times me-1"></i>Clear
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tutorials List -->
+      <div class="tutorials-section" *ngIf="connectionStatus === 'connected'">
+        <div class="tutorials-card">
+          <div class="tutorials-header">
+            <div class="tutorials-title-section">
+              <h5 class="tutorials-title">
+                <i class="fas fa-list me-2"></i>
+                Tutorials
+              </h5>
+              <span class="tutorials-count">{{ filteredTutorials.length }} items</span>
+            </div>
+          </div>
+          
+          <div class="tutorials-body">
+            <!-- Loading State -->
+            <div *ngIf="isLoading" class="loading-state">
+              <div class="spinner-container">
+                <div class="spinner-border text-primary" role="status">
+                  <span class="visually-hidden">Loading...</span>
                 </div>
-                <div class="meta-item">
-                  <i class="fas fa-calendar"></i>
-                  <span>{{ tutorial.createdAt | date:'MMM dd' }}</span>
-                </div>
+                <p class="loading-text">Loading tutorials...</p>
               </div>
             </div>
 
-            <div class="card-footer">
-              <div class="engagement-stats">
-                <div class="stat">
-                  <i class="fas fa-eye"></i>
-                  <span>{{ tutorial.views || 0 }}</span>
-                </div>
-                <div class="stat">
-                  <i class="fas fa-heart"></i>
-                  <span>{{ tutorial.likes || 0 }}</span>
-                </div>
-                <div class="stat">
-                  <i class="fas fa-bookmark"></i>
-                  <span>{{ tutorial.bookmarks?.length || 0 }}</span>
-                </div>
+            <!-- Empty State -->
+            <div *ngIf="!isLoading && filteredTutorials.length === 0" class="empty-state">
+              <div class="empty-icon">
+                <i class="fas fa-book-open"></i>
               </div>
-              <button class="btn-view" (click)="previewTutorial(tutorial.id)">
-                <i class="fas fa-external-link-alt"></i>
+              <h5 class="empty-title">No tutorials found</h5>
+              <p class="empty-description">No tutorials match your current filters.</p>
+              <button class="btn btn-primary" (click)="createNewTutorial()">
+                <i class="fas fa-plus me-1"></i>Create First Tutorial
               </button>
             </div>
+
+            <!-- Tutorials Grid -->
+            <div *ngIf="!isLoading && filteredTutorials.length > 0" class="tutorials-grid">
+              <div *ngFor="let tutorial of filteredTutorials" class="tutorial-card" [class.published]="tutorial.published">
+                <div class="card-header">
+                  <div class="status-indicator" [class.published]="tutorial.published"></div>
+                  <div class="card-actions">
+                    <button class="btn-action btn-edit" (click)="editTutorial(tutorial.id)" title="Edit">
+                      <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="btn-action btn-toggle" 
+                            (click)="togglePublish(tutorial)" 
+                            [title]="tutorial.published ? 'Unpublish' : 'Publish'">
+                      <i class="fas" [class.fa-eye]="!tutorial.published" [class.fa-eye-slash]="tutorial.published"></i>
+                    </button>
+                    <button class="btn-action btn-delete" (click)="deleteTutorial(tutorial)" title="Delete">
+                      <i class="fas fa-trash"></i>
+                    </button>
+                  </div>
+                </div>
+
+                <div class="card-body">
+                  <div class="tutorial-category">
+                    <span class="category-badge">{{ tutorial.category }}</span>
+                  </div>
+                  
+                  <h3 class="tutorial-title">{{ tutorial.title || 'Untitled Tutorial' }}</h3>
+                  
+                  <p class="tutorial-description">
+                    {{ tutorial.description || 'No description provided' }}
+                  </p>
+
+                  <div class="tutorial-meta">
+                    <div class="meta-item">
+                      <i class="fas fa-signal"></i>
+                      <span class="difficulty-badge" [class]="tutorial.difficulty">
+                        {{ tutorial.difficulty | titlecase }}
+                      </span>
+                    </div>
+                    <div class="meta-item">
+                      <i class="fas fa-clock"></i>
+                      <span>{{ tutorial.readingTime }} min</span>
+                    </div>
+                    <div class="meta-item">
+                      <i class="fas fa-calendar"></i>
+                      <span>{{ tutorial.createdAt | date:'MMM dd' }}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="card-footer">
+                  <div class="engagement-stats">
+                    <div class="stat">
+                      <i class="fas fa-eye"></i>
+                      <span>{{ tutorial.views || 0 }}</span>
+                    </div>
+                    <div class="stat">
+                      <i class="fas fa-heart"></i>
+                      <span>{{ tutorial.likes || 0 }}</span>
+                    </div>
+                    <div class="stat">
+                      <i class="fas fa-bookmark"></i>
+                      <span>{{ tutorial.bookmarks?.length || 0 }}</span>
+                    </div>
+                  </div>
+                  <button class="btn-view" (click)="previewTutorial(tutorial.id)">
+                    <i class="fas fa-external-link-alt"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
+      </div>
 
-        <!-- Empty State -->
-        <div *ngIf="!isLoading && tutorials.length === 0" class="empty-state">
-          <div class="empty-illustration">
-            <i class="fas fa-book-open fa-4x"></i>
+      <!-- Disconnected State -->
+      <div *ngIf="connectionStatus === 'disconnected' && !isLoading" class="disconnected-state">
+        <div class="disconnected-content">
+          <div class="disconnected-icon">
+            <i class="fas fa-database"></i>
           </div>
-          <h3>No Tutorials Yet</h3>
-          <p class="text-muted">Start creating amazing educational content for your audience</p>
-          <button class="btn btn-glow-primary" (click)="createNewTutorial()">
-            <i class="fas fa-plus me-2"></i>
-            Create Your First Tutorial
+          <h5 class="disconnected-title">Database Connection Required</h5>
+          <p class="disconnected-description">
+            Unable to connect to the database. Please check your internet connection and try again.
+          </p>
+          <button class="btn btn-primary" (click)="retryConnection()">
+            <i class="fas fa-redo me-1"></i>Retry Connection
           </button>
         </div>
       </div>

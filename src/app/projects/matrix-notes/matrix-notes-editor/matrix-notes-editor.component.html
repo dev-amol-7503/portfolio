@@ -1,648 +1,328 @@
-<div class="matrix-editor-container" *ngIf="adminService.isAdmin$ | async">
-  <!-- Enhanced Editor Header -->
+<div class="container editor-container" *ngIf="adminService.isAdmin$ | async">
+  <!-- Editor Header - Matches Developer Solution -->
   <div class="editor-header">
-    <div class="container-fluid">
-      <div class="row align-items-center">
-        <div class="col">
-          <div class="header-content">
-            <i class="fas fa-edit header-icon"></i>
-            <div class="header-text">
-              <h2>{{ isEditMode ? "Edit Tutorial" : "Create New Tutorial" }}</h2>
-              <p class="header-subtitle">
-                {{ isEditMode ? "Update your tutorial content" : "Create a comprehensive learning resource" }}
-              </p>
-            </div>
-          </div>
-        </div>
-        <div class="col-auto">
-          <div class="action-buttons">
-            <button class="btn btn-outline-secondary" (click)="togglePreview()">
-              <i [class]="previewMode ? 'fas fa-edit' : 'fas fa-eye'"></i>
-              {{ previewMode ? "Edit Mode" : "Preview" }}
-            </button>
-            <button class="btn btn-outline-primary" (click)="saveDraft()" [disabled]="isSaving">
-              <i class="fas fa-save"></i>
-              {{ isSaving ? "Saving..." : "Save Draft" }}
-            </button>
-            <button class="btn btn-success" (click)="publishTutorial()" [disabled]="isSaving">
-              <i class="fas fa-paper-plane"></i>
-              {{ isSaving ? "Publishing..." : "Publish Tutorial" }}
-            </button>
-          </div>
-        </div>
+    <div class="d-flex justify-content-between align-items-center">
+      <div>
+        <h2>
+          <i class="fas fa-edit me-2"></i>
+          {{ isEditMode ? "Edit Tutorial" : "Create New Tutorial" }}
+        </h2>
+        <p class="text-muted mb-0">{{ isEditMode ? "Update your tutorial content" : "Create a comprehensive learning resource" }}</p>
+      </div>
+      <div class="d-flex gap-2">
+        <button class="btn btn-outline-secondary" (click)="cancel()" [disabled]="isSaving">
+          <i class="fas fa-times me-1"></i> Cancel
+        </button>
+        <button class="btn btn-outline-primary" (click)="saveDraft()" [disabled]="isSaving">
+          <i class="fas fa-save me-1"></i>
+          {{ isSaving ? "Saving..." : "Save Draft" }}
+        </button>
+        <button class="btn btn-primary" (click)="publishTutorial()" [disabled]="isSaving">
+          <i class="fas fa-paper-plane me-1"></i>
+          {{ isSaving ? "Publishing..." : "Publish Tutorial" }}
+        </button>
       </div>
     </div>
   </div>
 
-  <div class="editor-content">
-    <div class="container-fluid">
-      <!-- Basic Information Card -->
-      <div class="row">
-        <div class="col-12">
-          <div class="editor-card">
-            <div class="card-header">
-              <i class="fas fa-info-circle me-2"></i>
-              <h5 class="card-title">Basic Information</h5>
-            </div>
-            <div class="card-body">
-              <div class="form-grid">
-                <!-- Title & Difficulty -->
-                <div class="form-row">
-                  <div class="form-group col-md-8">
-                    <label class="form-label required">Tutorial Title</label>
-                    <input type="text" class="form-control form-control-lg" [(ngModel)]="tutorial.title"
-                      placeholder="Enter a clear, descriptive title" maxlength="100" />
-                    <div class="form-text">
-                      Be specific about what readers will learn
-                    </div>
-                  </div>
-                  <div class="form-group col-md-4">
-                    <label class="form-label required">Difficulty Level</label>
-                    <select class="form-select" [(ngModel)]="tutorial.difficulty">
-                      <option value="beginner">Beginner</option>
-                      <option value="intermediate">Intermediate</option>
-                      <option value="advanced">Advanced</option>
-                    </select>
-                  </div>
+  <div class="editor-content" *ngIf="!isLoading">
+    <div class="row g-4">
+      <!-- Left Column - Content -->
+      <div class="col-lg-8">
+        <!-- Basic Information Card -->
+        <div class="card">
+          <div class="card-header">
+            <h6 class="card-title mb-0">
+              <i class="fas fa-heading me-2"></i>Basic Information
+            </h6>
+          </div>
+          <div class="card-body">
+            <div class="row g-3">
+              <!-- Title -->
+              <div class="col-12">
+                <label class="form-label required">Tutorial Title</label>
+                <input type="text" class="form-control" [(ngModel)]="tutorial.title"
+                  placeholder="Enter a clear, descriptive title" maxlength="100" />
+                <div class="form-text">Be specific about what readers will learn</div>
+              </div>
+
+              <!-- Description -->
+              <div class="col-12">
+                <label class="form-label required">Description</label>
+                <textarea class="form-control" rows="3" [(ngModel)]="tutorial.description"
+                  placeholder="Provide a brief overview of what this tutorial covers..." maxlength="300"></textarea>
+                <div class="form-text">
+                  {{ tutorial.description?.length || 0 }}/300 characters
                 </div>
+              </div>
 
-                <!-- Roadmap Step & Category -->
-                <div class="form-row">
-                  <div class="form-group col-md-6">
-                    <label class="form-label">Learning Path</label>
-                    <select class="form-select" [(ngModel)]="tutorial.roadmapStep"
-                      (change)="onRoadmapStepChange(tutorial.roadmapStep)">
-                      <option value="">Select a learning path step...</option>
-                      <optgroup label="🚀 Backend Development">
-                        <option *ngFor="let step of backendSteps" [value]="step.id">
-                          Step {{ step.order }}: {{ step.title }}
-                        </option>
-                      </optgroup>
-                      <optgroup label="🎨 Frontend Development">
-                        <option *ngFor="let step of frontendSteps" [value]="step.id">
-                          Step {{ step.order }}: {{ step.title }}
-                        </option>
-                      </optgroup>
-                    </select>
-                    <div class="form-text">
-                      Connect to a specific step in the learning roadmap
-                    </div>
-                  </div>
+              <!-- Roadmap Step & Category -->
+              <div class="col-md-6">
+                <label class="form-label">Learning Path</label>
+                <select class="form-select" [(ngModel)]="tutorial.roadmapStep"
+                  (change)="onRoadmapStepChange(tutorial.roadmapStep)">
+                  <option value="">Select a learning path step...</option>
+                  <optgroup label="🚀 Backend Development">
+                    <option *ngFor="let step of backendSteps" [value]="step.id">
+                      Step {{ step.order }}: {{ step.title }}
+                    </option>
+                  </optgroup>
+                  <optgroup label="🎨 Frontend Development">
+                    <option *ngFor="let step of frontendSteps" [value]="step.id">
+                      Step {{ step.order }}: {{ step.title }}
+                    </option>
+                  </optgroup>
+                </select>
+              </div>
 
-                  <div class="form-group col-md-6">
-                    <label class="form-label required">Category</label>
-                    <select class="form-select" [(ngModel)]="tutorial.category">
-                      <option value="java">Java</option>
-                      <option value="spring">Spring Framework</option>
-                      <option value="spring-boot">Spring Boot</option>
-                      <option value="database">Database</option>
-                      <option value="rest-api">REST API</option>
-                      <option value="security">Security</option>
-                      <option value="testing">Testing</option>
-                      <option value="angular">Angular</option>
-                      <option value="typescript">TypeScript</option>
-                      <option value="html-css">HTML & CSS</option>
-                      <option value="javascript">JavaScript</option>
-                      <option value="devops">DevOps</option>
-                    </select>
-                  </div>
+              <div class="col-md-6">
+                <label class="form-label required">Category</label>
+                <select class="form-select" [(ngModel)]="tutorial.category">
+                  <option *ngFor="let cat of categories" [value]="cat.value">
+                    <i [class]="cat.icon + ' me-2'"></i> {{ cat.label }}
+                  </option>
+                </select>
+              </div>
+
+              <!-- Prerequisites -->
+              <div class="col-12" *ngIf="tutorial.prerequisites && tutorial.prerequisites.length > 0">
+                <label class="form-label">Prerequisites</label>
+                <div class="tags-container">
+                  <span *ngFor="let prereq of tutorial.prerequisites; let i = index" class="badge bg-info me-2 mb-2">
+                    {{ prereq }}
+                    <i class="fas fa-times ms-1" (click)="removePrerequisite(i)"></i>
+                  </span>
                 </div>
+              </div>
 
-                <!-- Description -->
-                <div class="form-group">
-                  <label class="form-label required">Description</label>
-                  <textarea class="form-control" rows="3" [(ngModel)]="tutorial.description"
-                    placeholder="Provide a brief overview of what this tutorial covers..." maxlength="300"></textarea>
-                  <div class="form-text">
-                    {{ tutorial.description?.length || 0 }}/300 characters
-                  </div>
-                </div>
-
-                <!-- Dynamic Learning Objectives -->
-                <div class="form-group" *ngIf="tutorial.roadmapStep">
-                  <label class="form-label">Learning Objectives</label>
-                  <div class="objectives-container">
-                    <div *ngFor="let objective of getLearningObjectives(); let i = index" class="objective-item">
-                      <div class="objective-input-group">
-                        <span class="objective-number">{{ i + 1 }}</span>
-                        <input type="text" class="form-control" [ngModel]="objective"
-                          (ngModelChange)="updateLearningObjective(i, $event)"
-                          placeholder="What specific skill will students gain?" maxlength="150" />
-                        <button class="btn btn-outline-danger btn-sm" type="button" (click)="removeLearningObjective(i)"
-                          [disabled]="getLearningObjectives().length <= 1">
-                          <i class="fas fa-times"></i>
-                        </button>
-                      </div>
-                    </div>
-                    <button type="button" class="btn btn-outline-primary btn-sm" (click)="addLearningObjective()">
-                      <i class="fas fa-plus me-1"></i> Add Learning Objective
+              <div class="col-6 mb-2 mt-3">
+                  <label class="form-label">Add Prerequisites</label>
+                  <div class="input-group">
+                    <input type="text" class="form-control" #prereqInput placeholder="Enter prerequisite knowledge"
+                      (keyup.enter)="addPrerequisite(prereqInput.value); prereqInput.value = ''" />
+                    <button class="btn btn-outline-primary" type="button"
+                      (click)="addPrerequisite(prereqInput.value); prereqInput.value = ''">
+                      <i class="fas fa-plus"></i>
                     </button>
                   </div>
+              </div>
+
+              <!-- Technologies -->
+              <div class="col-12" *ngIf="tutorial.technologies && tutorial.technologies.length > 0">
+                <label class="form-label">Technologies</label>
+                <div class="tags-container">
+                  <span *ngFor="let tech of tutorial.technologies; let i = index" class="badge bg-primary me-2 mb-2">
+                    {{ tech }}
+                    <i class="fas fa-times ms-1" (click)="removeTechnology(i)"></i>
+                  </span>
                 </div>
+              </div>
 
-                <!-- Technologies & Tags -->
-                <div class="form-row">
-                  <div class="form-group col-md-6">
-                    <label class="form-label">Technologies Used</label>
-                    <div class="tags-input-container">
-                      <div class="tags-display">
-                        <span class="tag tech-tag" *ngFor="let tech of tutorial.technologies; let i = index">
-                          <i class="fas fa-cog me-1"></i>
-                          {{ tech }}
-                          <i class="fas fa-times remove-tag" (click)="removeTechnology(i)"></i>
-                        </span>
-                      </div>
-                      <div class="tag-input-group">
-                        <input type="text" class="form-control" #techInput placeholder="Add technology (press Enter)"
-                          (keyup.enter)="addTechnology(techInput.value); techInput.value = ''"
-                          (keyup.escape)="techInput.value = ''" />
-                        <button class="btn btn-outline-secondary"
-                          (click)="addTechnology(techInput.value); techInput.value = ''">
-                          <i class="fas fa-plus"></i>
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div class="form-group col-md-6">
-                    <label class="form-label">Tags</label>
-                    <div class="tags-input-container">
-                      <div class="tags-display">
-                        <span class="tag keyword-tag" *ngFor="let tag of tutorial.tags; let i = index">
-                          <i class="fas fa-tag me-1"></i>
-                          {{ tag }}
-                          <i class="fas fa-times remove-tag" (click)="removeTag(i)"></i>
-                        </span>
-                      </div>
-                      <div class="tag-input-group">
-                        <input type="text" class="form-control" #tagInput placeholder="Add tag (press Enter)"
-                          (keyup.enter)="addTag(tagInput.value); tagInput.value = ''"
-                          (keyup.escape)="tagInput.value = ''" />
-                        <button class="btn btn-outline-secondary" (click)="addTag(tagInput.value); tagInput.value = ''">
-                          <i class="fas fa-plus"></i>
-                        </button>
-                      </div>
-                    </div>
-                  </div>
+              <div class="col-6 mb-2 mt-3">
+                <label class="form-label">Add Technologies</label>
+                <div class="input-group">
+                  <input type="text" class="form-control" #techInput placeholder="Enter a technology"
+                    (keyup.enter)="addTechnology(techInput.value); techInput.value = ''" />
+                  <button class="btn btn-outline-primary" type="button"
+                    (click)="addTechnology(techInput.value); techInput.value = ''">
+                    <i class="fas fa-plus"></i>
+                  </button>
                 </div>
+              </div>
 
-                <!-- Prerequisites -->
-                <div class="form-group">
-                  <label class="form-label">Prerequisites</label>
-                  <div class="tags-input-container">
-                    <div class="tags-display">
-                      <span class="tag prerequisite-tag" *ngFor="let prereq of tutorial.prerequisites; let i = index">
-                        <i class="fas fa-check-circle me-1"></i>
-                        {{ prereq }}
-                        <i class="fas fa-times remove-tag" (click)="removePrerequisite(i)"></i>
-                      </span>
-                    </div>
-                    <div class="tag-input-group">
-                      <input type="text" class="form-control" #prereqInput
-                        placeholder="Add prerequisite knowledge (press Enter)"
-                        (keyup.enter)="addPrerequisite(prereqInput.value); prereqInput.value = ''"
-                        (keyup.escape)="prereqInput.value = ''" />
-                      <button class="btn btn-outline-secondary"
-                        (click)="addPrerequisite(prereqInput.value); prereqInput.value = ''">
-                        <i class="fas fa-plus"></i>
-                      </button>
-                    </div>
+              <!-- Tags -->
+              <div class="col-12" *ngIf="tutorial.tags && tutorial.tags.length > 0">
+                <label class="form-label">Tags</label>
+                <div class="tags-container">
+                  <span *ngFor="let tag of tutorial.tags; let i = index" class="badge bg-secondary me-2 mb-2">
+                    {{ tag }}
+                    <i class="fas fa-times ms-1" (click)="removeTag(i)"></i>
+                  </span>
+                </div>
+              </div>
+
+              <div class="col-6 mb-2 mt-3">
+                <label class="form-label">Add Tags</label>
+                <div class="input-group">
+                  <input type="text" class="form-control" #tagInput placeholder="Enter a tag"
+                    (keyup.enter)="addTag(tagInput.value); tagInput.value = ''" />
+                  <button class="btn btn-outline-primary" type="button"
+                    (click)="addTag(tagInput.value); tagInput.value = ''">
+                    <i class="fas fa-plus"></i>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Learning Objectives -->
+              <div class="col-12">
+                <label class="form-label">Learning Objectives</label>
+                <div class="objectives-container">
+                  <div *ngFor="let objective of getLearningObjectives(); let i = index" 
+                       class="objective-input-group mb-2 d-flex align-items-center">
+                    <span class="objective-number bg-primary text-white rounded-circle me-2">
+                      {{ i + 1 }}
+                    </span>
+                    <input type="text" class="form-control" [value]="objective"
+                           (input)="updateLearningObjective(i, $any($event.target).value)"
+                           placeholder="What will readers learn from this tutorial?" />
+                    <button class="btn btn-outline-danger ms-2" (click)="removeLearningObjective(i)">
+                      <i class="fas fa-trash"></i>
+                    </button>
                   </div>
+                  <button class="btn btn-outline-primary btn-sm" (click)="addLearningObjective()">
+                    <i class="fas fa-plus me-1"></i> Add Objective
+                  </button>
                 </div>
               </div>
             </div>
           </div>
         </div>
+
+        <!-- Content Editor -->
+        <div class="card mt-4">
+          <div class="card-header">
+            <h6 class="card-title mb-0">
+              <i class="fas fa-edit me-2"></i>Solution Content
+            </h6>
+          </div>
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <label class="form-label mb-0">Content *</label>
+              <div class="text-muted small">
+                Estimated read time: <strong>{{ getSolutionReadTime() }}</strong> minute{{ getSolutionReadTime() !== 1 ? 's' : '' }}
+              </div>
+            </div>
+
+            <!-- Rich Text Editor -->
+            <div class="rich-text-editor-container">
+              <quill-editor [(ngModel)]="mainContent" [modules]="quillConfig" (onContentChanged)="onContentChange()"
+                placeholder="Write your solution here. Use the toolbar to format text, add code blocks, lists, and more. You can create step-by-step instructions directly in the editor using headings and lists."
+                class="rich-text-editor col-md-12"></quill-editor>
+            </div>
+          </div>
+        </div>
       </div>
 
-      <!-- Content Editor Section -->
-      <div class="row" *ngIf="!previewMode">
-        <div class="col-12">
-          <div class="editor-card">
-            <div class="card-header">
-              <div class="header-content">
-                <i class="fas fa-edit me-2"></i>
-                <h5 class="card-title">Content Editor</h5>
-                <div class="content-stats">
-                  <span class="stat">
-                    <i class="fas fa-paragraph"></i>
-                    {{ getContentBlocksCount('text') }} Text
-                  </span>
-                  <span class="stat">
-                    <i class="fas fa-code"></i>
-                    {{ getContentBlocksCount('code') }} Code
-                  </span>
-                  <span class="stat">
-                    <i class="fas fa-image"></i>
-                    {{ getContentBlocksCount('image') }} Images
-                  </span>
-                </div>
+      <!-- Right Column - Settings -->
+      <div class="col-lg-4">
+        <!-- Classification Card -->
+        <div class="card">
+          <div class="card-header">
+            <h6 class="card-title mb-0">
+              <i class="fas fa-tags me-2"></i>Classification
+            </h6>
+          </div>
+          <div class="card-body">
+            <div class="mb-3">
+              <label class="form-label required">Difficulty Level</label>
+              <select class="form-select" [(ngModel)]="tutorial.difficulty">
+                <option value="beginner">Beginner</option>
+                <option value="intermediate">Intermediate</option>
+                <option value="advanced">Advanced</option>
+              </select>
+              <div class="form-text text-{{getDifficultyColor(tutorial.difficulty)}}">
+                <i class="fas fa-info-circle me-1"></i>
+                {{ getDifficultyDescription(tutorial.difficulty) }}
               </div>
-              <div class="content-controls">
-                <div class="content-type-selector">
-                  <label class="selector-label">Add Content:</label>
-                  <div class="type-buttons">
-                    <button *ngFor="let type of contentTypes" class="btn type-btn"
-                      [class.active]="activeContentType === type.value" (click)="activeContentType = type.value"
-                      [title]="type.label">
-                      <i [class]="type.icon"></i>
-                      <span class="btn-label">{{ type.label }}</span>
-                    </button>
-                  </div>
-                </div>
-                <button class="btn btn-primary" (click)="addContentBlock()" [disabled]="!activeContentType">
-                  <i class="fas fa-plus me-1"></i>
-                  Add {{ getActiveContentTypeLabel() }} Block
+            </div>
+          </div>
+        </div>
+
+        <!-- Publication Settings -->
+        <div class="card mt-4">
+          <div class="card-header">
+            <h6 class="card-title mb-0">
+              <i class="fas fa-cog me-2"></i>Publication Settings
+            </h6>
+          </div>
+          <div class="card-body">
+            <div class="form-check form-switch mb-3">
+              <input class="form-check-input" type="checkbox" id="publishedSwitch" [(ngModel)]="tutorial.published">
+              <label class="form-check-label" for="publishedSwitch">
+                <strong>Published</strong>
+                <div class="form-text">Make this tutorial visible to everyone</div>
+              </label>
+            </div>
+
+            <div class="form-check form-switch mb-3">
+              <input class="form-check-input" type="checkbox" id="featuredSwitch" [(ngModel)]="tutorial.featured">
+              <label class="form-check-label" for="featuredSwitch">
+                <strong>Featured Tutorial</strong>
+                <div class="form-text">Highlight this tutorial on the main page</div>
+              </label>
+            </div>
+
+            <div class="solution-stats">
+              <div class="stat-item">
+                <i class="fas fa-clock text-muted"></i>
+                <span>{{ getSolutionReadTime() }} min read</span>
+              </div>
+              <div class="stat-item" *ngIf="tutorial.tags?.length">
+                <i class="fas fa-tags text-muted"></i>
+                <span>{{ tutorial.tags.length }} tags</span>
+              </div>
+              <div class="stat-item">
+                <i class="fas fa-file-alt text-muted"></i>
+                <span>{{ getContentWordCount() }} words</span>
+              </div>
+              <div class="stat-item" *ngIf="tutorial.technologies?.length">
+                <i class="fas fa-code text-muted"></i>
+                <span>{{ tutorial.technologies.length }} technologies</span>
+              </div>
+              <div class="stat-item" *ngIf="tutorial.prerequisites?.length">
+                <i class="fas fa-list-check text-muted"></i>
+                <span>{{ tutorial.prerequisites.length }} prerequisites</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Theme Settings -->
+        <div class="card mt-4">
+          <div class="card-header">
+            <h6 class="card-title mb-0">
+              <i class="fas fa-palette me-2"></i>Theme Settings
+            </h6>
+          </div>
+          <div class="card-body">
+            <div class="mb-3">
+              <label class="form-label">Current Theme</label>
+              <div class="d-flex align-items-center gap-2">
+                <span class="badge" [class]="themeService.isDarkTheme() ? 'bg-dark' : 'bg-light text-dark'">
+                  {{ themeService.getCurrentThemeName() }}
+                </span>
+                <button class="btn btn-outline-primary btn-sm ms-auto" (click)="themeService.toggleTheme()">
+                  <i class="fas" [class.fa-moon]="!themeService.isDarkTheme()" [class.fa-sun]="themeService.isDarkTheme()"></i>
+                  {{ themeService.isDarkTheme() ? 'Light' : 'Dark' }} Mode
                 </button>
               </div>
             </div>
-
-            <div class="card-body">
-              <!-- Content Blocks List -->
-              <div class="content-blocks-list" [class.empty]="tutorial.content.length === 0">
-                <!-- Empty State -->
-                <div *ngIf="tutorial.content.length === 0" class="empty-state">
-                  <i class="fas fa-file-alt empty-icon"></i>
-                  <h4>Start Building Your Tutorial</h4>
-                  <p class="empty-text">
-                    Add your first content block to begin creating an engaging learning experience.
-                  </p>
-                  <div class="empty-actions">
-                    <button *ngFor="let type of popularContentTypes" class="btn btn-outline-primary"
-                      (click)="activeContentType = type.value; addContentBlock()">
-                      <i [class]="type.icon"></i>
-                      Add {{ type.label }}
-                    </button>
-                  </div>
-                </div>
-
-                <!-- Content Blocks -->
-                <div *ngFor="let content of tutorial.content; let i = index" class="content-block"
-                  [class]="'content-type-' + content.type">
-                  <div class="block-header">
-                    <div class="block-type">
-                      <i [class]="getContentIcon(content.type)"></i>
-                      <span class="type-label">{{ content.type | titlecase }}</span>
-                      <span class="block-order">#{{ i + 1 }}</span>
-                    </div>
-                    <div class="block-actions">
-                      <button class="btn btn-sm btn-outline-secondary" (click)="moveBlockUp(i)" [disabled]="i === 0"
-                        title="Move up">
-                        <i class="fas fa-arrow-up"></i>
-                      </button>
-                      <button class="btn btn-sm btn-outline-secondary" (click)="moveBlockDown(i)"
-                        [disabled]="i === tutorial.content.length - 1" title="Move down">
-                        <i class="fas fa-arrow-down"></i>
-                      </button>
-                      <button class="btn btn-sm btn-outline-danger" (click)="removeContentBlock(i)"
-                        title="Delete block">
-                        <i class="fas fa-trash"></i>
-                      </button>
-                    </div>
-                  </div>
-
-                  <div class="block-content">
-                    <!-- Enhanced Text Editor -->
-<div *ngIf="content.type === 'text'" class="text-editor-wrapper">
-  <!-- Formatting Toolbar -->
-  <div class="editor-toolbar">
-    <!-- Font Formatting -->
-    <div class="toolbar-section">
-      <div class="btn-group">
-        <button class="btn btn-sm" (click)="execCommand('bold', '', i)" title="Bold">
-          <i class="fas fa-bold"></i>
-        </button>
-        <button class="btn btn-sm" (click)="execCommand('italic', '', i)" title="Italic">
-          <i class="fas fa-italic"></i>
-        </button>
-        <button class="btn btn-sm" (click)="execCommand('underline', '', i)" title="Underline">
-          <i class="fas fa-underline"></i>
-        </button>
-      </div>
-      <div class="btn-group">
-        <button class="btn btn-sm" (click)="execCommand('strikeThrough', '', i)" title="Strikethrough">
-          <i class="fas fa-strikethrough"></i>
-        </button>
-        <button class="btn btn-sm" (click)="execCommand('removeFormat', '', i)" title="Clear Formatting">
-          <i class="fas fa-eraser"></i>
-        </button>
-      </div>
-    </div>
-
-    <!-- Alignment -->
-    <div class="toolbar-section">
-      <div class="btn-group">
-        <button class="btn btn-sm" (click)="execCommand('justifyLeft', '', i)" title="Align Left">
-          <i class="fas fa-align-left"></i>
-        </button>
-        <button class="btn btn-sm" (click)="execCommand('justifyCenter', '', i)" title="Align Center">
-          <i class="fas fa-align-center"></i>
-        </button>
-        <button class="btn btn-sm" (click)="execCommand('justifyRight', '', i)" title="Align Right">
-          <i class="fas fa-align-right"></i>
-        </button>
-        <button class="btn btn-sm" (click)="execCommand('justifyFull', '', i)" title="Justify">
-          <i class="fas fa-align-justify"></i>
-        </button>
-      </div>
-    </div>
-
-    <!-- Lists -->
-    <div class="toolbar-section">
-      <div class="btn-group">
-        <button class="btn btn-sm" (click)="execCommand('insertUnorderedList', '', i)" title="Bullet List">
-          <i class="fas fa-list-ul"></i>
-        </button>
-        <button class="btn btn-sm" (click)="execCommand('insertOrderedList', '', i)" title="Numbered List">
-          <i class="fas fa-list-ol"></i>
-        </button>
-        <button class="btn btn-sm" (click)="execCommand('outdent', '', i)" title="Decrease Indent">
-          <i class="fas fa-outdent"></i>
-        </button>
-        <button class="btn btn-sm" (click)="execCommand('indent', '', i)" title="Increase Indent">
-          <i class="fas fa-indent"></i>
-        </button>
-      </div>
-    </div>
-
-    <!-- Headings and Insert -->
-    <div class="toolbar-section">
-      <div class="btn-group">
-        <select class="form-select form-select-sm" (change)="handleFormatBlockChange($event, i)" title="Text Style">
-          <option value="p">Paragraph</option>
-          <option value="h1">Heading 1</option>
-          <option value="h2">Heading 2</option>
-          <option value="h3">Heading 3</option>
-          <option value="h4">Heading 4</option>
-          <option value="pre">Code</option>
-          <option value="blockquote">Quote</option>
-        </select>
-      </div>
-      <div class="btn-group">
-        <button class="btn btn-sm" (click)="showLinkPrompt(i)" title="Insert Link">
-          <i class="fas fa-link"></i>
-        </button>
-        
-        <!-- TABLE BUTTON - YEH WALA BUTTON ADD KARNA HAI -->
-        <button class="btn btn-sm" (click)="showTableCreationDialog(i)" title="Insert Table with Caption">
-          <i class="fas fa-table"></i>
-        </button>
-        
-        <button class="btn btn-sm" (click)="showVideoPrompt(i)" title="Insert Video">
-          <i class="fas fa-video"></i>
-        </button>
-      </div>
-    </div>
-
-    <!-- Image Upload -->
-    <div class="toolbar-section">
-      <div class="btn-group">
-        <label class="btn btn-sm btn-outline-secondary" title="Insert Image">
-          <i class="fas fa-image"></i>
-          <input 
-            type="file" 
-            accept="image/*" 
-            (change)="handleImageUpload($event, i)" 
-            style="display: none;"
-          >
-        </label>
-      </div>
-    </div>
-  </div>
-
-  <!-- ContentEditable Editor -->
-  <div
-    id="text-editor-{{i}}"
-    class="content-editable"
-    contenteditable="true"
-    (input)="updateContentFromEditor(i)"
-    (keydown)="onKeyDown($event, i)"
-    (paste)="handlePaste($event, i)"
-    (focus)="initEditorContent(i)"
-    placeholder="Start typing your content here... Use the toolbar above for formatting."
-  ></div>
-
-  <div class="editor-footer">
-    <div class="word-count">
-      Words: {{ getWordCountFromHtml(content.content) }}
-    </div>
-    <button
-      class="btn btn-sm btn-outline-secondary"
-      (click)="toggleTextPreview(i)"
-    >
-      <i class="fas" [class.fa-eye]="!content.showPreview" [class.fa-eye-slash]="content.showPreview"></i>
-      {{ content.showPreview ? 'Hide Preview' : 'Show Preview' }}
-    </button>
-  </div>
-
-  <!-- Live Preview -->
-  <div class="live-preview" *ngIf="content.showPreview && content.content">
-    <div class="preview-header">
-      <h6>Live Preview</h6>
-    </div>
-    <div class="preview-content">
-      <div [innerHTML]="content.content"></div>
-    </div>
-  </div>
-</div>
-
-                    <!-- CODE EDITOR -->
-                    <div *ngIf="content.type === 'code'" class="code-editor-wrapper">
-                      <div class="code-header">
-                        <div class="code-meta">
-                          <div class="form-group">
-                            <label class="form-label">Language</label>
-                            <select class="form-select" [(ngModel)]="content.language">
-                              <option value="">Select Language</option>
-                              <option *ngFor="let lang of programmingLanguages" [value]="lang">
-                                {{ getLanguageDisplayName(lang) }}
-                              </option>
-                            </select>
-                          </div>
-                          <div class="form-group">
-                            <label class="form-label">File Name</label>
-                            <input type="text" class="form-control" [(ngModel)]="content.fileName"
-                              placeholder="e.g., app.component.ts" />
-                          </div>
-                        </div>
-                        <div class="code-actions">
-                          <button class="btn btn-sm btn-outline-primary" (click)="copyCode(content.content)"
-                            title="Copy code">
-                            <i class="fas fa-copy"></i> Copy
-                          </button>
-                        </div>
-                      </div>
-
-                      <textarea class="form-control code-textarea" rows="10" [(ngModel)]="content.content"
-                        placeholder="Enter your code here..." spellcheck="false"></textarea>
-
-                      <!-- Code Preview -->
-                      <div class="code-preview" *ngIf="content.content">
-                        <div class="preview-header">
-                          <span class="language-badge">{{ content.language || 'text' | uppercase }}</span>
-                          <span class="file-name" *ngIf="content.fileName">{{ content.fileName }}</span>
-                        </div>
-                        <pre
-                          class="code-display"><code [class]="'language-' + (content.language || 'text')">{{ content.content }}</code></pre>
-                      </div>
-                    </div>
-
-                    <!-- IMAGE EDITOR -->
-                    <div *ngIf="content.type === 'image'" class="image-editor-wrapper">
-                      <div class="form-group">
-                        <label class="form-label">Upload Image</label>
-                        <input type="file" class="form-control" accept="image/*"
-                          (change)="handleImageUpload($event, i)" />
-                      </div>
-                      <div class="form-group">
-                        <label class="form-label">Caption</label>
-                        <input type="text" class="form-control" [(ngModel)]="content.caption"
-                          placeholder="Enter image caption..." />
-                      </div>
-                      <div class="form-group">
-                        <label class="form-label">Alt Text</label>
-                        <input type="text" class="form-control" [(ngModel)]="content.altText"
-                          placeholder="Enter alternative text for accessibility..." />
-                      </div>
-                      <div class="image-preview" *ngIf="content.content">
-                        <img [src]="content.content" [alt]="content.altText" class="img-preview">
-                        <div class="image-caption-preview" *ngIf="content.caption">
-                          {{ content.caption }}
-                        </div>
-                      </div>
-                    </div>
-
-                    <!-- VIDEO EDITOR -->
-                    <div *ngIf="content.type === 'video'" class="video-editor-wrapper">
-                      <div class="form-group">
-                        <label class="form-label">Video URL</label>
-                        <input type="text" class="form-control" [(ngModel)]="content.content"
-                          placeholder="Enter YouTube URL or video file URL..." />
-                      </div>
-                      <div class="form-group">
-                        <label class="form-label">Video Title</label>
-                        <input type="text" class="form-control" [(ngModel)]="content.title"
-                          placeholder="Enter video title..." />
-                      </div>
-                      <button class="btn btn-primary" (click)="embedVideo(content.content, i)"
-                        [disabled]="!content.content">
-                        Embed Video
-                      </button>
-                    </div>
-
-                    <!-- TABLE EDITOR -->
-                    <div *ngIf="content.type === 'table'" class="table-editor-wrapper">
-                      <div class="form-row">
-                        <div class="form-group col-md-3">
-                          <label class="form-label">Rows</label>
-                          <input type="number" class="form-control" [(ngModel)]="content.rows" min="1" max="20"
-                            value="3" />
-                        </div>
-                        <div class="form-group col-md-3">
-                          <label class="form-label">Columns</label>
-                          <input type="number" class="form-control" [(ngModel)]="content.columns" min="1" max="10"
-                            value="3" />
-                        </div>
-                        <div class="form-group col-md-6">
-                          <label class="form-label">&nbsp;</label>
-                          <button class="btn btn-primary w-100" (click)="showTableCreationDialog(i)">
-                            <i class="fas fa-table me-2"></i>
-                            Create Table with Caption
-                          </button>
-                        </div>
-                      </div>
-
-                      <!-- Table Preview -->
-                      <div class="table-preview mt-3" *ngIf="content.rows && content.columns">
-                        <h6>Table Preview</h6>
-                        <div class="preview-table">
-                          <table class="table table-bordered">
-                            <thead>
-                              <tr>
-                                <th *ngFor="let col of [].constructor(content.columns); let j = index">Header {{j + 1}}
-                                </th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              <tr *ngFor="let row of [].constructor(content.rows); let i = index">
-                                <td *ngFor="let col of [].constructor(content.columns); let j = index">
-                                  Content {{i + 1}}-{{j + 1}}
-                                </td>
-                              </tr>
-                            </tbody>
-                          </table>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Enhanced Preview Mode -->
-      <div class="row" *ngIf="previewMode">
-        <div class="col-12">
-          <div class="editor-card">
-            <div class="card-header">
-              <div class="header-content">
-                <i class="fas fa-eye me-2"></i>
-                <h5 class="card-title">Tutorial Preview</h5>
-                <div class="preview-stats">
-                  <span class="stat">
-                    <i class="fas fa-clock"></i>
-                    {{ calculateReadingTime() }} min read
-                  </span>
-                  <span class="stat">
-                    <i class="fas fa-cube"></i>
-                    {{ tutorial.content.length }} blocks
-                  </span>
-                </div>
-              </div>
-              <div class="preview-actions">
-                <button class="btn btn-outline-primary" (click)="togglePreview()">
-                  <i class="fas fa-edit me-1"></i>
-                  Back to Editor
-                </button>
-              </div>
-            </div>
-            <div class="card-body">
-              <div class="tutorial-preview">
-                <article class="preview-article">
-                  <header class="preview-header">
-                    <h1 class="preview-title">{{ tutorial.title || 'Untitled Tutorial' }}</h1>
-                    <p class="preview-description">{{ tutorial.description }}</p>
-
-                    <div class="preview-meta">
-                      <div class="meta-badges">
-                        <span class="badge difficulty-badge" [class]="'difficulty-' + tutorial.difficulty">
-                          {{ tutorial.difficulty | titlecase }}
-                        </span>
-                        <span class="badge category-badge">
-                          {{ tutorial.category | titlecase }}
-                        </span>
-                      </div>
-                    </div>
-                  </header>
-
-                  <div class="preview-content">
-                    <div *ngFor="let content of tutorial.content; let i = index" class="preview-block">
-                      <div [innerHTML]="renderContent(content)"></div>
-                    </div>
-                  </div>
-                </article>
-              </div>
+            
+            <div class="theme-selector">
+              <label class="form-label">Select Theme</label>
+              <select class="form-select" [value]="themeService.getCurrentThemeName()" 
+                      (change)="themeService.setThemeByName($any($event.target).value)">
+                <option *ngFor="let theme of themeService.getAvailableThemes()" [value]="theme.name">
+                  {{ theme.label }}
+                </option>
+              </select>
             </div>
           </div>
         </div>
       </div>
     </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading-container text-center py-5">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+    <p class="mt-2 text-muted">Loading tutorial...</p>
   </div>
 
   <!-- Save Status Indicator -->
-  <div class="save-status" [class.show]="showSaveStatus">
+  <div class="save-status" [class.show]="showSaveStatus" [class]="saveStatus">
     <i class="fas" [class.fa-check-circle]="saveStatus === 'saved'" [class.fa-sync-alt]="saveStatus === 'saving'"
       [class.fa-exclamation-triangle]="saveStatus === 'error'"></i>
     {{ getSaveStatusText() }}

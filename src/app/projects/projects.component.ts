@@ -11,10 +11,25 @@ import {
 import { CommonModule } from '@angular/common';
 import { ThemeService, ThemeConfig } from '../services/theme.service';
 import { AdminService } from '../services/admin.service';
+import { DeveloperSolutionsService, DeveloperSolution } from '../services/developer-solutions.service';
 import { Project, SocialPost } from '../interfaces/social-post.model';
 import { FormsModule } from '@angular/forms';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import lottie from 'lottie-web';
+
+interface CodingProfile {
+  id: number;
+  title: string;
+  platform: string;
+  description: string;
+  profileUrl: string;
+  challenges: number;
+  badges: number;
+  rating?: number;
+  icon: string;
+  color: string;
+  featured?: boolean;
+}
 
 @Component({
   selector: 'app-projects',
@@ -37,9 +52,8 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
   activeTab: string = 'projects';
 
   projects: Project[] = [];
-  mediumPosts: SocialPost[] = [];
-  quoraPosts: SocialPost[] = [];
-  linkedinPosts: SocialPost[] = [];
+  codingProfiles: CodingProfile[] = [];
+  developerSolutions: DeveloperSolution[] = [];
 
   // Updated newProject type for form handling
   newProject: {
@@ -54,11 +68,26 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     featured?: boolean;
   } = {};
 
+  // New coding profile form
+  newCodingProfile: {
+    title?: string;
+    platform?: string;
+    description?: string;
+    profileUrl?: string;
+    challenges?: number;
+    badges?: number;
+    rating?: number;
+    icon?: string;
+    color?: string;
+  } = {};
+
   private lottieAnimations: any[] = [];
 
   constructor(
     private themeService: ThemeService,
     private adminService: AdminService,
+    private solutionsService: DeveloperSolutionsService,
+    private router: Router, 
     private cdRef: ChangeDetectorRef
   ) {}
 
@@ -77,45 +106,22 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.adminService.portfolioData$.subscribe((data) => {
       console.log('🔄 Portfolio Data Received:', data);
-
-      // FIXED: Proper data filtering with debugging
       this.projects = data.projects || [];
-
-      // Debug social posts before filtering
-      console.log('🔍 All Social Posts:', data.socialPosts);
-
-      // FIXED: Case-insensitive platform filtering
-      this.mediumPosts =
-        data.socialPosts?.filter(
-          (post) => post.platform?.toLowerCase() === 'medium'
-        ) || [];
-
-      this.quoraPosts =
-        data.socialPosts?.filter(
-          (post) => post.platform?.toLowerCase() === 'quora'
-        ) || [];
-
-      this.linkedinPosts =
-        data.socialPosts?.filter(
-          (post) => post.platform?.toLowerCase() === 'linkedin'
-        ) || [];
-
-      // DEBUG: Log current state
-      this.logCurrentState();
-
-      // Force change detection
       this.cdRef.detectChanges();
+    });
 
-      // Reinitialize Lottie animations when data changes
-      setTimeout(() => {
-        this.initializeLottieAnimations();
-      }, 100);
+    // Load coding profiles
+    this.loadCodingProfiles();
+
+    // Load developer solutions
+    this.solutionsService.solutions$.subscribe(solutions => {
+      this.developerSolutions = solutions.filter(sol => sol.published);
+      this.cdRef.detectChanges();
     });
   }
 
   ngAfterViewInit() {
     this.initializeLottieAnimations();
-
     this.lottieContainers.changes.subscribe(() => {
       this.initializeLottieAnimations();
     });
@@ -135,23 +141,71 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     this.destroyLottieAnimations();
   }
 
-  private logCurrentState() {
-    console.log('📊 Current Data State:');
-    console.log('   Projects:', this.projects.length, this.projects);
-    console.log('   Medium Posts:', this.mediumPosts.length, this.mediumPosts);
-    console.log('   Quora Posts:', this.quoraPosts.length, this.quoraPosts);
-    console.log(
-      '   LinkedIn Posts:',
-      this.linkedinPosts.length,
-      this.linkedinPosts
-    );
-    console.log('   Active Tab:', this.activeTab);
+  // Get featured solutions
+  get featuredSolutions(): DeveloperSolution[] {
+    return this.developerSolutions.filter(solution => solution.featured).slice(0, 2);
+  }
 
-    // Additional debug for medium posts
-    if (this.mediumPosts.length > 0) {
-      console.log('🔍 Medium Post Details:', this.mediumPosts[0]);
-      console.log('🔍 Medium Post Platform:', this.mediumPosts[0].platform);
-    }
+  // Get regular solutions
+  get regularSolutions(): DeveloperSolution[] {
+    return this.developerSolutions.filter(solution => !solution.featured);
+  }
+
+
+  private loadCodingProfiles() {
+    this.codingProfiles = [
+      {
+        id: 1,
+        title: 'HackerRank',
+        platform: 'HackerRank',
+        description: 'Problem solving challenges and coding competitions with 5-star gold badges in Java and Python.',
+        profileUrl: 'https://www.hackerrank.com/profile/amolnagare',
+        challenges: 127,
+        badges: 15,
+        rating: 4.8,
+        icon: 'fas fa-code',
+        color: '#2EC866',
+        featured: true
+      },
+      {
+        id: 2,
+        title: 'LeetCode',
+        platform: 'LeetCode',
+        description: 'Solved 200+ algorithm and data structure problems with focus on optimization and efficiency.',
+        profileUrl: 'https://leetcode.com/amolnagare',
+        challenges: 203,
+        badges: 8,
+        rating: 4.5,
+        icon: 'fas fa-laptop-code',
+        color: '#FFA116',
+        featured: true
+      },
+      {
+        id: 3,
+        title: 'CodeChef',
+        platform: 'CodeChef',
+        description: 'Competitive programming with 3-star rating and participation in monthly coding contests.',
+        profileUrl: 'https://www.codechef.com/users/amolnagare',
+        challenges: 89,
+        badges: 6,
+        rating: 3.2,
+        icon: 'fas fa-chess-knight',
+        color: '#5C2D91',
+        featured: false
+      },
+      {
+        id: 4,
+        title: 'GitHub',
+        platform: 'GitHub',
+        description: 'Active open source contributor with 50+ repositories and 100+ commits in the last year.',
+        profileUrl: 'https://github.com/thematrixxworld',
+        challenges: 0,
+        badges: 0,
+        icon: 'fab fa-github',
+        color: '#4078c0',
+        featured: true
+      },
+    ];
   }
 
   private destroyLottieAnimations() {
@@ -173,14 +227,11 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
         case 'projects':
           items = this.projects;
           break;
-        case 'medium':
-          items = this.mediumPosts;
+        case 'coding':
+          items = this.codingProfiles;
           break;
-        case 'quora':
-          items = this.quoraPosts;
-          break;
-        case 'linkedin':
-          items = this.linkedinPosts;
+        case 'articles':
+          items = this.developerSolutions;
           break;
       }
 
@@ -212,7 +263,6 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
     setTimeout(() => {
       this.initializeLottieAnimations();
-      this.logCurrentState();
     }, 300);
   }
 
@@ -298,6 +348,108 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
+  // Coding Profiles Methods
+  addCodingProfile() {
+    // Show the add coding profile form
+    this.newCodingProfile = {};
+  }
+
+  addNewCodingProfile() {
+    if (
+      this.isEditMode &&
+      this.newCodingProfile.title &&
+      this.newCodingProfile.platform
+    ) {
+      const profile: CodingProfile = {
+        id: Date.now(),
+        title: this.newCodingProfile.title,
+        platform: this.newCodingProfile.platform,
+        description: this.newCodingProfile.description || 'Coding challenge platform profile',
+        profileUrl: this.newCodingProfile.profileUrl || '#',
+        challenges: this.newCodingProfile.challenges || 0,
+        badges: this.newCodingProfile.badges || 0,
+        rating: this.newCodingProfile.rating,
+        icon: this.getPlatformIcon(this.newCodingProfile.platform),
+        color: this.getPlatformColor(this.newCodingProfile.platform),
+        featured: false
+      };
+
+      this.codingProfiles = [profile, ...this.codingProfiles];
+      this.newCodingProfile = {};
+      this.cdRef.detectChanges();
+    }
+  }
+
+  private getPlatformIcon(platform: string): string {
+    const icons: { [key: string]: string } = {
+      'HackerRank': 'fas fa-code',
+      'LeetCode': 'fas fa-laptop-code',
+      'CodeChef': 'fas fa-chess-knight',
+      'GitHub': 'fab fa-github',
+      'Stack Overflow': 'fab fa-stack-overflow',
+      'Codewars': 'fas fa-fist-raised',
+      'GeeksforGeeks': 'fas fa-laptop-code',
+      'AtCoder': 'fas fa-robot'
+    };
+    return icons[platform] || 'fas fa-code';
+  }
+
+  private getPlatformColor(platform: string): string {
+    const colors: { [key: string]: string } = {
+      'HackerRank': '#2EC866',
+      'LeetCode': '#FFA116',
+      'CodeChef': '#5C2D91',
+      'GitHub': '#4078c0',
+      'Stack Overflow': '#f48024',
+      'Codewars': '#b1361e',
+      'GeeksforGeeks': '#2F8D46',
+      'AtCoder': '#283F5D'
+    };
+    return colors[platform] || '#2563eb';
+  }
+
+  deleteCodingProfile(profile: CodingProfile, event: Event) {
+    if (this.isEditMode) {
+      event.preventDefault();
+      event.stopPropagation();
+
+      if (confirm(`Are you sure you want to delete "${profile.title}"?`)) {
+        this.codingProfiles = this.codingProfiles.filter(p => p.id !== profile.id);
+        this.cdRef.detectChanges();
+      }
+    }
+  }
+
+  likeSolution(solution: DeveloperSolution, event: Event) {
+    event.preventDefault();
+    event.stopPropagation();
+    this.solutionsService.toggleLike(solution.id!);
+  }
+
+  getDifficultyBadgeClass(difficulty: string): string {
+    switch (difficulty) {
+      case 'beginner': return 'bg-success';
+      case 'intermediate': return 'bg-warning';
+      case 'advanced': return 'bg-danger';
+      default: return 'bg-secondary';
+    }
+  }
+
+  getCategoryIcon(category: string): string {
+    const icons: { [key: string]: string } = {
+      'git': 'fab fa-git-alt',
+      'angular': 'fab fa-angular',
+      'typescript': 'fas fa-code',
+      'javascript': 'fab fa-js-square',
+      'spring-boot': 'fas fa-leaf',
+      'java': 'fab fa-java',
+      'database': 'fas fa-database',
+      'devops': 'fas fa-cloud',
+      'general': 'fas fa-cogs'
+    };
+    return icons[category] || 'fas fa-code';
+  }
+
   // TEST METHOD: Clear specific tab data for testing
   clearTabDataForTesting(tabName: string) {
     console.log('🧪 Clearing data for:', tabName);
@@ -306,20 +458,16 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
       case 'projects':
         this.projects = [];
         break;
-      case 'medium':
-        this.mediumPosts = [];
+      case 'coding':
+        this.codingProfiles = [];
         break;
-      case 'quora':
-        this.quoraPosts = [];
-        break;
-      case 'linkedin':
-        this.linkedinPosts = [];
+      case 'articles':
+        this.developerSolutions = [];
         break;
     }
 
     this.cdRef.detectChanges();
     console.log('✅ Data cleared for:', tabName);
-    this.logCurrentState();
   }
 
   onTabsScroll(event: Event) {
@@ -351,5 +499,11 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
         }
       }
     }
+  }
+
+  // In projects.component.ts - Update the viewSolution method
+  viewSolution(solution: DeveloperSolution) {
+    // Navigate to solution detail page
+    this.router.navigate(['/solutions', solution.id]);
   }
 }

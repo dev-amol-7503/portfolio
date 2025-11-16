@@ -1,8 +1,8 @@
+// components/developer-solutions-editor/developer-solutions-editor.component.scss
 @import "quill/dist/quill.snow.css";
 @import "quill/dist/quill.bubble.css";
 @import "highlight.js/styles/github.css";
 
-// Use Developer Solution styling as base
 .editor-container {
   min-height: 100vh;
   background: var(--theme-bg, #f8fafc);
@@ -77,11 +77,6 @@
           color: var(--theme-text, #0f172a);
           margin-bottom: 0.5rem;
 
-          &.required::after {
-            content: " *";
-            color: #dc3545;
-          }
-
           .dark-theme & {
             color: var(--theme-text, #f8fafc);
           }
@@ -103,61 +98,6 @@
           &:focus {
             border-color: var(--bs-primary, #2563eb);
             box-shadow: 0 0 0 2px rgba(var(--bs-primary-rgb, 37, 99, 235), 0.1);
-          }
-        }
-
-        .form-text {
-          font-size: 0.875rem;
-          color: var(--theme-text-muted, #64748b);
-
-          .dark-theme & {
-            color: var(--theme-text-muted, #94a3b8);
-          }
-        }
-
-        // Learning Objectives Styles
-        .objectives-container {
-          .objective-input-group {
-            .objective-number {
-              width: 32px;
-              height: 32px;
-              display: flex;
-              align-items: center;
-              justify-content: center;
-              border-radius: 50%;
-              font-size: 0.875rem;
-              font-weight: 600;
-              flex-shrink: 0;
-            }
-          }
-        }
-
-        // Tags Container Styles
-        .tags-container {
-          .badge {
-            display: inline-flex;
-            align-items: center;
-            padding: 0.5rem 0.75rem;
-            font-size: 0.8rem;
-            font-weight: 500;
-            border-radius: 20px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-
-            &:hover {
-              transform: translateY(-1px);
-              box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-            }
-
-            i {
-              margin-left: 0.25rem;
-              font-size: 0.7rem;
-              opacity: 0.8;
-
-              &:hover {
-                opacity: 1;
-              }
-            }
           }
         }
 
@@ -695,6 +635,37 @@
       }
     }
 
+    // Tags Container
+    .tags-container {
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.5rem 0.75rem;
+        font-size: 0.8rem;
+        font-weight: 500;
+        border-radius: 20px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        background: var(--bs-primary, #2563eb);
+        color: white;
+
+        &:hover {
+          transform: translateY(-1px);
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        i {
+          margin-left: 0.25rem;
+          font-size: 0.7rem;
+          opacity: 0.8;
+
+          &:hover {
+            opacity: 1;
+          }
+        }
+      }
+    }
+
     // Solution Stats
     .solution-stats {
       .stat-item {
@@ -716,56 +687,12 @@
     }
   }
 
-  // Save Status Indicator
-  .save-status {
-    position: fixed;
-    bottom: 2rem;
-    right: 2rem;
-    background: var(--theme-surface);
-    border: 2px solid var(--theme-border);
-    border-radius: 12px;
-    padding: 1rem 1.5rem;
-    box-shadow: 0 4px 25px rgba(0, 0, 0, 0.15);
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    font-weight: 600;
-    transform: translateY(100px);
-    opacity: 0;
-    transition: all 0.3s ease;
-    z-index: 1000;
+  .loading-state {
+    color: var(--theme-text-secondary, #64748b);
 
-    &.show {
-      transform: translateY(0);
-      opacity: 1;
+    .dark-theme & {
+      color: var(--theme-text-secondary, #94a3b8);
     }
-
-    &.saved {
-      border-color: #10b981;
-      color: #10b981;
-    }
-
-    &.saving {
-      border-color: #f59e0b;
-      color: #f59e0b;
-    }
-
-    &.error {
-      border-color: #ef4444;
-      color: #ef4444;
-    }
-  }
-}
-
-// Dropdown animation
-@keyframes dropdownFadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(-8px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
   }
 }
 

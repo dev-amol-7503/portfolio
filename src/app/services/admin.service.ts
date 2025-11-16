@@ -18,6 +18,8 @@ export interface PortfolioData {
     title: string;
     email: string;
     phone: string;
+    education: string;
+    language: string;
     location: string;
     about: string;
   };
@@ -38,8 +40,8 @@ export class AdminService {
   portfolioData$ = this.portfolioData.asObservable();
 
   private readonly adminCredentials = {
-    username: 'admin',
-    password: 'admin123',
+    username: 'Matrix',
+    password: 'Matrix@7503',
   };
 
   constructor() {
@@ -169,9 +171,11 @@ export class AdminService {
         title: 'Full Stack Developer',
         email: 'amolnagare279@gmail.com',
         phone: '+91 9975607503',
+        education: "B.E. Computer Engineering",
+        language: "English, Hindi, Marathi",
         location: 'Pune, India',
         about:
-          "I'm a passionate Full Stack Developer with 4+ years of experience crafting scalable web and mobile applications. I specialize in Angular and Spring Boot, blending elegant UI design with powerful backend logic. With a strong grasp of Microservices, DevOps, and modern development tools, I turn complex ideas into smooth, high-performing digital experiences.",
+        "I am a Full Stack Developer with 4+ years of experience. I build strong and scalable full stack application. My main skills are in Angular (for the frontend) and Spring Boot (for the backend). I also have good knowledge of Microservices, DevOps, and other modern tools. I love taking complex ideas and turning them into smooth, working applications."
       },
     };
   }

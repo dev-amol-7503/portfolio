@@ -1,0 +1,307 @@
+<!-- components/developer-solutions-dashboard/developer-solutions-dashboard.component.html -->
+<div class="dashboard-container">
+  <!-- Header Section -->
+  <div class="dashboard-header">
+    <div class="container-fluid">
+      <div class="row align-items-center">
+        <div class="col">
+          <div class="header-content">
+            <div class="header-icon">
+              <i class="fas fa-code"></i>
+            </div>
+            <div>
+              <h1 class="header-title">Developer Solutions</h1>
+              <p class="header-subtitle">Manage social-linkscoding solutions and developer guides</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-auto">
+                    <!-- Database Connection Status -->
+          <div class="connection-status" [class]="getConnectionStatusClass()">
+            <i [class]="getConnectionIcon()"></i>
+            <span class="status-text">{{ getConnectionStatusText() }}</span>
+            <button *ngIf="connectionStatus === 'disconnected'" 
+                    class="btn-retry" 
+                    (click)="retryConnection()"
+                    title="Retry Connection">
+              <i class="fas fa-redo"></i>
+            </button>
+          </div>
+          <button class="btn btn-primary btn-create" (click)="createNewSolution()">
+            <i class="fas fa-plus me-2"></i>New Solution
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="dashboard-content">
+    <div class="container-fluid">
+      
+      <!-- Statistics Overview -->
+      <div class="stats-section">
+        <div class="row g-4">
+          <div class="col-xl-3 col-md-6">
+            <div class="stat-card total">
+              <div class="stat-content">
+                <div class="stat-icon">
+                  <i class="fas fa-file-code"></i>
+                </div>
+                <div class="stat-info">
+                  <h3 class="stat-value">{{ stats.total }}</h3>
+                  <p class="stat-label">Total Solutions</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-xl-3 col-md-6">
+            <div class="stat-card published">
+              <div class="stat-content">
+                <div class="stat-icon">
+                  <i class="fas fa-eye"></i>
+                </div>
+                <div class="stat-info">
+                  <h3 class="stat-value">{{ stats.published }}</h3>
+                  <p class="stat-label">Published</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-xl-3 col-md-6">
+            <div class="stat-card draft">
+              <div class="stat-content">
+                <div class="stat-icon">
+                  <i class="fas fa-edit"></i>
+                </div>
+                <div class="stat-info">
+                  <h3 class="stat-value">{{ stats.draft }}</h3>
+                  <p class="stat-label">Drafts</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-xl-3 col-md-6">
+            <div class="stat-card featured">
+              <div class="stat-content">
+                <div class="stat-icon">
+                  <i class="fas fa-star"></i>
+                </div>
+                <div class="stat-info">
+                  <h3 class="stat-value">{{ stats.featured }}</h3>
+                  <p class="stat-label">Featured</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Connection Error Banner -->
+      <div *ngIf="connectionStatus === 'disconnected'" class="connection-error-banner">
+        <div class="error-content">
+          <i class="fas fa-exclamation-triangle"></i>
+          <div class="error-text">
+            <strong>Database Connection Lost</strong>
+            <span>Unable to connect to the database. Some features may not work properly.</span>
+          </div>
+          <button class="btn btn-sm btn-outline-light" (click)="retryConnection()">
+            <i class="fas fa-redo me-1"></i>Retry Connection
+          </button>
+        </div>
+      </div>
+
+      <!-- Filters Section -->
+      <div class="filters-section">
+        <div class="filter-card">
+          <div class="filter-header">
+            <h5 class="filter-title">
+              <i class="fas fa-filter me-2"></i>
+              Filter Solutions
+            </h5>
+          </div>
+          <div class="filter-body">
+            <div class="row g-3 align-items-end">
+              <div class="col-md-4">
+                <label class="form-label">Search Solutions</label>
+                <div class="search-input-group">
+                  <span class="search-icon">
+                    <i class="fas fa-search"></i>
+                  </span>
+                  <input
+                    type="text"
+                    class="form-control search-input"
+                    placeholder="Search by title, description, or tags..."
+                    [(ngModel)]="searchTerm"
+                    (input)="onSearchChange()"
+                  >
+                </div>
+              </div>
+              <div class="col-md-3">
+                <label class="form-label">Category</label>
+                <select class="form-select" [(ngModel)]="selectedCategory" (change)="onCategoryChange()">
+                  <option *ngFor="let cat of categories" [value]="cat.value">
+                    {{ cat.label }}
+                  </option>
+                </select>
+              </div>
+              <div class="col-md-3">
+                <label class="form-label">Status</label>
+                <select class="form-select" [(ngModel)]="selectedStatus" (change)="onStatusChange()">
+                  <option *ngFor="let status of statuses" [value]="status.value">
+                    {{ status.label }}
+                  </option>
+                </select>
+              </div>
+              <div class="col-md-2">
+                <button class="btn btn-clear-filters" (click)="clearFilters()">
+                  <i class="fas fa-times me-1"></i>Clear
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Solutions List -->
+      <div class="solutions-section">
+        <div class="solutions-card">
+          <div class="solutions-header">
+            <div class="solutions-title-section">
+              <h5 class="solutions-title">
+                <i class="fas fa-list me-2"></i>
+                Solutions
+              </h5>
+              <span class="solutions-count">{{ filteredSolutions.length }} items</span>
+            </div>
+          </div>
+          
+          <div class="solutions-body">
+            <!-- Loading State -->
+            <div *ngIf="isLoading" class="loading-state">
+              <div class="spinner-container">
+                <div class="spinner-border text-primary" role="status">
+                  <span class="visually-hidden">Loading...</span>
+                </div>
+                <p class="loading-text">Loading solutions...</p>
+              </div>
+            </div>
+
+            <!-- Empty State -->
+            <div *ngIf="!isLoading && filteredSolutions.length === 0" class="empty-state">
+              <div class="empty-icon">
+                <i class="fas fa-file-code"></i>
+              </div>
+              <h5 class="empty-title">No solutions found</h5>
+              <p class="empty-description">No solutions match your current filters.</p>
+              <button class="btn btn-primary" (click)="clearFilters()">
+                <i class="fas fa-times me-1"></i>Clear Filters
+              </button>
+            </div>
+
+            <!-- Solutions Table -->
+            <div *ngIf="!isLoading && filteredSolutions.length > 0" class="solutions-table-container">
+              <div class="table-responsive">
+                <table class="table solutions-table">
+                  <thead class="table-header">
+                    <tr>
+                      <th class="solution-col">Solution</th>
+                      <th class="category-col">Category</th>
+                      <th class="difficulty-col">Difficulty</th>
+                      <th class="status-col">Status</th>
+                      <th class="stats-col">Stats</th>
+                      <th class="updated-col">Last Updated</th>
+                      <th class="actions-col">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody class="table-body">
+                    <tr *ngFor="let solution of filteredSolutions" class="table-row">
+                      <td class="solution-cell" data-label="Solution">
+                        <div class="solution-info">
+                          <div class="solution-header">
+                            <h6 class="solution-title">
+                              {{ solution.title }}
+                              <span *ngIf="solution.featured" class="badge featured-badge">
+                                <i class="fas fa-star me-1"></i>Featured
+                              </span>
+                            </h6>
+                          </div>
+                          <p class="solution-description">
+                            {{ solution.description }}
+                          </p>
+                          <div class="solution-tags">
+                            <span *ngFor="let tag of solution.tags?.slice(0, 3)" class="tag-badge">
+                              #{{ tag }}
+                            </span>
+                            <span *ngIf="(solution.tags?.length || 0) > 3" class="tags-more">
+                              +{{ (solution.tags?.length || 0) - 3 }} more
+                            </span>
+                          </div>
+                        </div>
+                      </td>
+                      <td class="category-cell" data-label="Category">
+                        <span class="category-badge">
+                          <i [class]="getCategoryIcon(solution.category) + ' me-2'"></i>
+                          {{ getCategoryLabel(solution.category) }}
+                        </span>
+                      </td>
+                      <td class="difficulty-cell" data-label="Difficulty">
+                        <span class="difficulty-badge" [ngClass]="getDifficultyBadgeClass(solution.difficulty)">
+                          {{ solution.difficulty }}
+                        </span>
+                      </td>
+                      <td class="status-cell" data-label="Status">
+                        <span class="status-badge" [ngClass]="getPublishStatusClass(solution)">
+                          {{ getPublishStatus(solution) }}
+                        </span>
+                      </td>
+                      <td class="stats-cell" data-label="Stats">
+                        <div class="solution-stats">
+                          <div class="stat-item">
+                            <i class="fas fa-eye stat-icon"></i>
+                            <span class="stat-value">{{ getSolutionViews(solution) }}</span>
+                          </div>
+                          <div class="stat-item">
+                            <i class="fas fa-heart stat-icon"></i>
+                            <span class="stat-value">{{ getSolutionLikes(solution) }}</span>
+                          </div>
+                          <div class="stat-item">
+                            <i class="fas fa-clock stat-icon"></i>
+                            <span class="stat-value">{{ getSolutionReadTime(solution) }}min</span>
+                          </div>
+                        </div>
+                      </td>
+                      <td class="updated-cell" data-label="Last Updated">
+                        <span class="updated-time">
+                          {{ getTimeAgo(solution.updatedAt) }}
+                        </span>
+                      </td>
+                      <td class="actions-cell" data-label="Actions">
+                        <div class="action-buttons">
+                          <button class="btn btn-action btn-edit" (click)="editSolution(solution)" title="Edit Solution">
+                            <i class="fas fa-edit"></i>
+                          </button>
+                          <button class="btn btn-action" [ngClass]="getPublishButtonClass(solution)" (click)="togglePublish(solution)"
+                            [title]="getPublishButtonTitle(solution)">
+                            <i [class]="getPublishButtonIcon(solution)"></i>
+                          </button>
+                          <button class="btn btn-action" [ngClass]="getFeaturedButtonClass(solution)" (click)="toggleFeatured(solution)"
+                            [title]="getFeaturedButtonTitle(solution)">
+                            <i class="fas fa-star"></i>
+                          </button>
+                          <button class="btn btn-action btn-delete" (click)="deleteSolution(solution)" title="Delete Solution">
+                            <i class="fas fa-trash"></i>
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

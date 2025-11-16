@@ -1,0 +1,224 @@
+<!-- components/developer-solutions-editor/developer-solutions-editor.component.html -->
+<div class="container editor-container">
+  <div class="editor-header">
+    <div class="d-flex justify-content-between align-items-center">
+      <div>
+        <h2>
+          <i class="fas fa-edit me-2"></i>
+          {{ isEditMode ? 'Edit Solution' : 'Create New Solution' }}
+        </h2>
+        <p class="text-muted mb-0">Create developer solutions and coding guides</p>
+      </div>
+      <div class="d-flex gap-2">
+        <button class="btn btn-outline-secondary" (click)="cancel()" [disabled]="isSaving">
+          <i class="fas fa-times me-1"></i> Cancel
+        </button>
+        <button class="btn btn-primary" (click)="saveSolution()" [disabled]="isSaving">
+          <i class="fas fa-save me-1"></i>
+          {{ isSaving ? 'Saving...' : (isEditMode ? 'Update Solution' : 'Create Solution') }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="editor-content" *ngIf="!isLoading; else loadingTemplate">
+    <div class="row g-4">
+      <!-- Left Column - Content -->
+      <div class="col-lg-8">
+        <!-- Basic Information -->
+        <div class="card">
+          <div class="card-header">
+            <h6 class="card-title mb-0">
+              <i class="fas fa-heading me-2"></i>Basic Information
+            </h6>
+          </div>
+          <div class="card-body">
+            <div class="row g-3">
+              <div class="col-12">
+                <label class="form-label">Title *</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  [(ngModel)]="solution.title"
+                  placeholder="e.g., How to remove last commit from Git"
+                  maxlength="100"
+                >
+                <div class="form-text">Keep it clear and descriptive</div>
+              </div>
+
+              <div class="col-12">
+                <label class="form-label">Description *</label>
+                <textarea
+                  class="form-control"
+                  [(ngModel)]="solution.description"
+                  placeholder="Brief description of the solution and what problem it solves..."
+                  rows="3"
+                  maxlength="200"
+                ></textarea>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Content Editor -->
+        <div class="card mt-4">
+          <div class="card-header">
+            <h6 class="card-title mb-0">
+              <i class="fas fa-edit me-2"></i>Solution Content
+            </h6>
+          </div>
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <label class="form-label mb-0">Content *</label>
+              <div class="text-muted small">
+                Estimated read time: <strong>{{ getSolutionReadTime() }}</strong> minute{{ getSolutionReadTime() !== 1 ? 's' : '' }}
+              </div>
+            </div>
+
+            <!-- Rich Text Editor -->
+            <div class="rich-text-editor-container ">
+              <quill-editor [(ngModel)]="solution.content" [modules]="quillConfig" (onContentChanged)="onContentChange()"
+                placeholder="Write your solution here. Use the toolbar to format text, add code blocks, lists, and more. You can create step-by-step instructions directly in the editor using headings and lists."
+                class="rich-text-editor col-md-12"></quill-editor>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Column - Settings -->
+      <div class="col-lg-4">
+        <!-- Category & Difficulty -->
+        <div class="card">
+          <div class="card-header">
+            <h6 class="card-title mb-0">
+              <i class="fas fa-tags me-2"></i>Classification
+            </h6>
+          </div>
+          <div class="card-body">
+            <div class="mb-3">
+              <label class="form-label">Category *</label>
+              <select class="form-select" [(ngModel)]="solution.category">
+                <option *ngFor="let cat of categories" [value]="cat.value">
+                  <i [class]="cat.icon + ' me-2'"></i> {{ cat.label }}
+                </option>
+              </select>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Difficulty Level *</label>
+              <select class="form-select" [(ngModel)]="solution.difficulty">
+                <option *ngFor="let diff of difficulties" [value]="diff.value">
+                  {{ diff.label }}
+                </option>
+              </select>
+              <div class="form-text text-{{getDifficultyColor(solution.difficulty!)}}">
+                <i class="fas fa-info-circle me-1"></i>
+                {{ getDifficultyDescription(solution.difficulty!) }}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tags -->
+        <div class="card mt-4">
+          <div class="card-header">
+            <h6 class="card-title mb-0">
+              <i class="fas fa-hashtag me-2"></i>Tags
+            </h6>
+          </div>
+          <div class="card-body">
+            <div class="mb-2">
+              <label class="form-label">Add Tags</label>
+              <div class="input-group">
+                <input
+                  type="text"
+                  class="form-control"
+                  [(ngModel)]="newTag"
+                  placeholder="Enter a tag"
+                  (keyup.enter)="addTag()"
+                >
+                <button class="btn btn-outline-primary" type="button" (click)="addTag()">
+                  <i class="fas fa-plus"></i>
+                </button>
+              </div>
+              <div class="form-text">Press Enter or click + to add tags</div>
+            </div>
+
+            <div class="tags-container">
+              <span
+                *ngFor="let tag of getSolutionTags()"
+                class="badge bg-primary me-2 mb-2"
+              >
+                {{ tag }}
+                <i class="fas fa-times ms-1" (click)="removeTag(tag)"></i>
+              </span>
+              <div *ngIf="!hasSolutionTags()" class="text-muted small">
+                No tags added yet
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Publication Settings -->
+        <div class="card mt-4">
+          <div class="card-header">
+            <h6 class="card-title mb-0">
+              <i class="fas fa-cog me-2"></i>Publication Settings
+            </h6>
+          </div>
+          <div class="card-body">
+            <div class="form-check form-switch mb-3">
+              <input
+                class="form-check-input"
+                type="checkbox"
+                id="publishedSwitch"
+                [(ngModel)]="solution.published"
+              >
+              <label class="form-check-label" for="publishedSwitch">
+                <strong>Published</strong>
+                <div class="form-text">Make this solution visible to everyone</div>
+              </label>
+            </div>
+
+            <div class="form-check form-switch mb-3">
+              <input
+                class="form-check-input"
+                type="checkbox"
+                id="featuredSwitch"
+                [(ngModel)]="solution.featured"
+              >
+              <label class="form-check-label" for="featuredSwitch">
+                <strong>Featured Solution</strong>
+                <div class="form-text">Highlight this solution on the main page</div>
+              </label>
+            </div>
+
+            <div class="solution-stats">
+              <div class="stat-item">
+                <i class="fas fa-clock text-muted"></i>
+                <span>{{ getSolutionReadTime() }} min read</span>
+              </div>
+              <div class="stat-item" *ngIf="hasSolutionTags()">
+                <i class="fas fa-tags text-muted"></i>
+                <span>{{ getSolutionTagsCount() }} tags</span>
+              </div>
+              <div class="stat-item">
+                <i class="fas fa-file-alt text-muted"></i>
+                <span>{{ getContentWordCount() }} words</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <ng-template #loadingTemplate>
+    <div class="loading-state text-center py-5">
+      <div class="spinner-border text-primary mb-3" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+      <p>Loading solution...</p>
+    </div>
+  </ng-template>
+</div>

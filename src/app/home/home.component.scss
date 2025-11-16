@@ -453,7 +453,12 @@
 
 @media (max-width: 576px) {
   .hero-section {
+    padding: 0.5rem;
     .hero-content {
+      padding: 0;
+      .hero-description{
+        text-align: center;
+      }
       .hero-buttons {
         flex-direction: column;
         align-items: center;
