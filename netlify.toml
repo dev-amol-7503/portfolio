@@ -1,0 +1,6 @@
+[build]
+  command = "ng build --configuration production"
+  publish = "dist/amol-portfolio/browser"
+
+[build.environment]
+  NODE_VERSION = "18"
