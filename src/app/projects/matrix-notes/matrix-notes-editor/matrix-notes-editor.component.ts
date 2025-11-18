@@ -10,10 +10,10 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
-import { QuillModule } from 'ngx-quill';
+import { CKEditorModule } from '@ckeditor/ckeditor5-angular';
+import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 
 import { MatrixNotesService } from '../../../services/matrix-notes.service';
-import { QuillConfigService } from '../../../services/quill-config.service';
 import {
   RoadmapStep,
   Tutorial,
@@ -25,12 +25,59 @@ import { ThemeService } from '../../../services/theme.service';
 @Component({
   selector: 'app-matrix-notes-editor',
   standalone: true,
-  imports: [CommonModule, FormsModule, QuillModule],
+  imports: [CommonModule, FormsModule, CKEditorModule],
   templateUrl: './matrix-notes-editor.component.html',
   styleUrls: ['./matrix-notes-editor.component.scss'],
 })
 export class MatrixNotesEditorComponent implements OnInit, OnDestroy {
   @ViewChild('editor') editor!: ElementRef;
+
+  // CKEditor configuration
+  public Editor = ClassicEditor;
+  public editorConfig = {
+    toolbar: {
+      items: [
+        'heading',
+        '|',
+        'bold',
+        'italic',
+        'underline',
+        'strikethrough',
+        '|',
+        'link',
+        'bulletedList',
+        'numberedList',
+        '|',
+        'outdent',
+        'indent',
+        '|',
+        'blockQuote',
+        'insertTable',
+        '|',
+        'codeBlock',
+        '|',
+        'undo',
+        'redo',
+      ],
+      shouldNotGroupWhenFull: true,
+    },
+    placeholder:
+      'Write your solution here. Use the toolbar to format text, add code blocks, lists, and more.',
+    codeBlock: {
+      languages: [
+        { language: 'plaintext', label: 'Plain text' },
+        { language: 'javascript', label: 'JavaScript' },
+        { language: 'typescript', label: 'TypeScript' },
+        { language: 'java', label: 'Java' },
+        { language: 'html', label: 'HTML' },
+        { language: 'css', label: 'CSS' },
+        { language: 'scss', label: 'SCSS' },
+        { language: 'sql', label: 'SQL' },
+        { language: 'json', label: 'JSON' },
+        { language: 'xml', label: 'XML' },
+      ],
+    },
+  };
 
   tutorial: Tutorial = this.getEmptyTutorial();
   isEditMode = false;
@@ -43,9 +90,6 @@ export class MatrixNotesEditorComponent implements OnInit, OnDestroy {
   // Store main content separately for the single editor
   mainContent: string = '';
 
-  // Quill configuration
-  quillConfig: any;
-
   // Categories
   categories = [
     { value: 'git', label: 'Git & Version Control', icon: 'fab fa-git-alt' },
@@ -57,14 +101,29 @@ export class MatrixNotesEditorComponent implements OnInit, OnDestroy {
     { value: 'java', label: 'Java', icon: 'fab fa-java' },
     { value: 'database', label: 'Database', icon: 'fas fa-database' },
     { value: 'devops', label: 'DevOps', icon: 'fas fa-cloud' },
-    { value: 'general', label: 'General Programming', icon: 'fas fa-cogs' }
+    { value: 'general', label: 'General Programming', icon: 'fas fa-cogs' },
   ];
 
   // Difficulties
   difficulties = [
-    { value: 'beginner', label: 'Beginner', color: 'success', description: 'Easy to follow for newcomers' },
-    { value: 'intermediate', label: 'Intermediate', color: 'warning', description: 'Requires some programming knowledge' },
-    { value: 'advanced', label: 'Advanced', color: 'danger', description: 'For experienced developers' }
+    {
+      value: 'beginner',
+      label: 'Beginner',
+      color: 'success',
+      description: 'Easy to follow for newcomers',
+    },
+    {
+      value: 'intermediate',
+      label: 'Intermediate',
+      color: 'warning',
+      description: 'Requires some programming knowledge',
+    },
+    {
+      value: 'advanced',
+      label: 'Advanced',
+      color: 'danger',
+      description: 'For experienced developers',
+    },
   ];
 
   // Roadmap steps
@@ -74,15 +133,12 @@ export class MatrixNotesEditorComponent implements OnInit, OnDestroy {
 
   constructor(
     private matrixNotesService: MatrixNotesService,
-    private quillConfigService: QuillConfigService,
     public adminService: AdminService,
     public themeService: ThemeService,
     private router: Router,
     private route: ActivatedRoute,
     private toastr: ToastrService
-  ) {
-    this.quillConfig = this.quillConfigService.getQuillConfig();
-  }
+  ) {}
 
   ngOnInit() {
     this.adminService.isAdmin$.subscribe((isAdmin) => {
@@ -112,6 +168,32 @@ export class MatrixNotesEditorComponent implements OnInit, OnDestroy {
     if (this.autoSaveInterval) {
       clearInterval(this.autoSaveInterval);
     }
+  }
+
+  // CKEditor ready callback
+  onEditorReady(editor: any) {
+    console.log('CKEditor is ready to use!', editor);
+  }
+
+  // CKEditor change callback
+  onContentChange({ editor }: any) {
+    this.mainContent = editor.getData();
+    this.onContentChangeHandler();
+  }
+
+  private onContentChangeHandler() {
+    if (this.tutorial.content.length === 0) {
+      this.tutorial.content.push({
+        id: 'main-content',
+        type: 'text',
+        content: this.mainContent,
+        order: 0,
+        showPreview: false,
+      });
+    } else {
+      this.tutorial.content[0].content = this.mainContent;
+    }
+    this.calculateReadingTime();
   }
 
   private getEmptyTutorial(): Tutorial {
@@ -157,18 +239,22 @@ export class MatrixNotesEditorComponent implements OnInit, OnDestroy {
 
   // DEVELOPER SOLUTION INTEGRATION METHODS
   cancel() {
-    if (confirm('Are you sure you want to cancel? Any unsaved changes will be lost.')) {
+    if (
+      confirm(
+        'Are you sure you want to cancel? Any unsaved changes will be lost.'
+      )
+    ) {
       this.router.navigate(['/admin/tutorials']);
     }
   }
 
   getDifficultyColor(difficulty: string): string {
-    const diff = this.difficulties.find(d => d.value === difficulty);
+    const diff = this.difficulties.find((d) => d.value === difficulty);
     return diff?.color || 'secondary';
   }
 
   getDifficultyDescription(difficulty: string): string {
-    const diff = this.difficulties.find(d => d.value === difficulty);
+    const diff = this.difficulties.find((d) => d.value === difficulty);
     return diff?.description || 'Programming solution';
   }
 
@@ -178,22 +264,6 @@ export class MatrixNotesEditorComponent implements OnInit, OnDestroy {
 
   getContentWordCount(): number {
     return this.getWordCount(this.mainContent);
-  }
-
-  // CONTENT EDITOR METHODS FOR SINGLE EDITOR
-  onContentChange() {
-    if (this.tutorial.content.length === 0) {
-      this.tutorial.content.push({
-        id: 'main-content',
-        type: 'text',
-        content: this.mainContent,
-        order: 0,
-        showPreview: false,
-      });
-    } else {
-      this.tutorial.content[0].content = this.mainContent;
-    }
-    this.calculateReadingTime();
   }
 
   // SAVE METHODS
@@ -326,8 +396,13 @@ export class MatrixNotesEditorComponent implements OnInit, OnDestroy {
 
   calculateReadingTime(): number {
     const wordCount = this.getWordCount(this.mainContent);
-    const codeBlocks = (this.mainContent?.match(/<pre class="ql-syntax"/g) || []).length;
-    const readingTime = Math.max(1, Math.ceil((wordCount / 200) + (codeBlocks * 2)));
+    const codeBlocks = (
+      this.mainContent?.match(/<pre class="ql-syntax"/g) || []
+    ).length;
+    const readingTime = Math.max(
+      1,
+      Math.ceil(wordCount / 200 + codeBlocks * 2)
+    );
     this.tutorial.readingTime = readingTime;
     return readingTime;
   }
@@ -343,14 +418,14 @@ export class MatrixNotesEditorComponent implements OnInit, OnDestroy {
           prerequisites: tutorial.prerequisites || [],
           learningObjectives: tutorial.learningObjectives || [],
         };
-        
+
         // Load main content from the first content block
         if (this.tutorial.content.length > 0) {
           this.mainContent = this.tutorial.content[0].content;
         } else {
           this.initializeContent();
         }
-        
+
         this.isEditMode = true;
         this.toastr.success('Tutorial loaded successfully');
       }
@@ -465,8 +540,11 @@ export class MatrixNotesEditorComponent implements OnInit, OnDestroy {
   // Get word count for text
   getWordCount(text: string): number {
     if (!text || !text.trim()) return 0;
-    
-    const plainText = text.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+
+    const plainText = text
+      .replace(/<[^>]*>/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim();
     return plainText.split(/\s+/).length;
   }
 

@@ -1,22 +1,53 @@
-// components/developer-solutions-editor/developer-solutions-editor.component.ts
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
-import { QuillModule } from 'ngx-quill';
+import { CKEditorModule } from '@ckeditor/ckeditor5-angular';
+import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import { Timestamp } from '@angular/fire/firestore';
 import { DeveloperSolutionsService, DeveloperSolution } from '../../../services/developer-solutions.service';
-import { QuillConfigService } from '../../../services/quill-config.service';
 
 @Component({
   selector: 'app-developer-solutions-editor',
   standalone: true,
-  imports: [CommonModule, FormsModule, QuillModule],
+  imports: [CommonModule, FormsModule, CKEditorModule],
   templateUrl: './developer-solutions-editor.component.html',
   styleUrls: ['./developer-solutions-editor.component.scss']
 })
 export class DeveloperSolutionsEditorComponent implements OnInit {
+  // CKEditor configuration
+  public Editor = ClassicEditor;
+  public editorConfig = {
+    toolbar: {
+      items: [
+        'heading', '|',
+        'bold', 'italic', 'underline', 'strikethrough', '|',
+        'link', 'bulletedList', 'numberedList', '|',
+        'outdent', 'indent', '|',
+        'blockQuote', 'insertTable', '|',
+        'codeBlock', '|',
+        'undo', 'redo'
+      ],
+      shouldNotGroupWhenFull: true
+    },
+    placeholder: 'Write your solution here. Use the toolbar to format text, add code blocks, lists, and more.',
+    codeBlock: {
+      languages: [
+        { language: 'plaintext', label: 'Plain text' },
+        { language: 'javascript', label: 'JavaScript' },
+        { language: 'typescript', label: 'TypeScript' },
+        { language: 'java', label: 'Java' },
+        { language: 'html', label: 'HTML' },
+        { language: 'css', label: 'CSS' },
+        { language: 'scss', label: 'SCSS' },
+        { language: 'sql', label: 'SQL' },
+        { language: 'json', label: 'JSON' },
+        { language: 'xml', label: 'XML' }
+      ]
+    }
+  };
+
   solution: DeveloperSolution = {
     title: '',
     description: '',
@@ -40,9 +71,6 @@ export class DeveloperSolutionsEditorComponent implements OnInit {
   isLoading = false;
   isSaving = false;
 
-  // Use the service for Quill configuration
-  quillConfig: any;
-
   categories = [
     { value: 'git', label: 'Git & Version Control', icon: 'fab fa-git-alt' },
     { value: 'angular', label: 'Angular', icon: 'fab fa-angular' },
@@ -64,12 +92,20 @@ export class DeveloperSolutionsEditorComponent implements OnInit {
 
   constructor(
     private solutionsService: DeveloperSolutionsService,
-    private quillConfigService: QuillConfigService,
     private router: Router,
     private route: ActivatedRoute,
     private toastr: ToastrService
-  ) {
-    this.quillConfig = this.quillConfigService.getQuillConfig();
+  ) {}
+
+  // CKEditor ready callback
+  onEditorReady(editor: any) {
+    console.log('CKEditor is ready to use!', editor);
+  }
+
+  // CKEditor change callback
+  onContentChange({ editor }: any) {
+    this.solution.content = editor.getData();
+    this.calculateReadTime();
   }
 
   ngOnInit() {
@@ -191,10 +227,6 @@ export class DeveloperSolutionsEditorComponent implements OnInit {
   getDifficultyDescription(difficulty: string): string {
     const diff = this.difficulties.find(d => d.value === difficulty);
     return diff?.description || 'Programming solution';
-  }
-
-  onContentChange() {
-    this.calculateReadTime();
   }
 
   getSolutionTags(): string[] {

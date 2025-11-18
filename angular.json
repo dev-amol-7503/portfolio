@@ -33,12 +33,12 @@
               }
             ],
             "styles": [
-               "node_modules/quill/dist/quill.snow.css",
-              "node_modules/quill/dist/quill.bubble.css",
-              "node_modules/@fortawesome/fontawesome-free/css/all.min.css",
+               "node_modules/@fortawesome/fontawesome-free/css/all.min.css",
+              "node_modules/ngx-toastr/toastr.css",
+              "src/assets/ckeditor-styles.css",
               "src/styles.scss"
             ],
-            "scripts": ["node_modules/quill/dist/quill.js"]
+            "scripts": []
           },
           "configurations": {
             "production": {
@@ -95,12 +95,12 @@
               }
             ],
             "styles": [
-               "node_modules/quill/dist/quill.snow.css",
-              "node_modules/quill/dist/quill.bubble.css",
-              "node_modules/@fortawesome/fontawesome-free/css/all.min.css",
+               "node_modules/@fortawesome/fontawesome-free/css/all.min.css",
+              "node_modules/ngx-toastr/toastr.css",
+              "src/assets/ckeditor-styles.css",
               "src/styles.scss"
             ],
-            "scripts": ["node_modules/quill/dist/quill.js"]
+            "scripts": []
           }
         }
       }
