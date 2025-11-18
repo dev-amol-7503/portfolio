@@ -1,7 +1,10 @@
 {
-  "buildCommand": "npm install --legacy-peer-deps && npm run build",
+  "buildCommand": "npm install --include=optional --legacy-peer-deps && npm run build",
   "outputDirectory": "dist/amol-portfolio",
   "framework": "angular",
+  "env": {
+    "NPM_FLAGS": "--include=optional"
+  },
   "rewrites": [
     { "source": "/(.*)", "destination": "/index.html" }
   ]
