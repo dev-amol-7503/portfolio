@@ -7,7 +7,8 @@
     "start": "ng serve",
     "build": "ng build --configuration production",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test"
+    "test": "ng test",
+    "postinstall": "npm rebuild esbuild"
   },
   "dependencies": {
     "@angular/animations": "^17.3.12",
