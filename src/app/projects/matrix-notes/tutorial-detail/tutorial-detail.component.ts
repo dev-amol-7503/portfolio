@@ -5,6 +5,8 @@ import {
   OnDestroy,
   AfterViewInit,
   ChangeDetectorRef,
+  Pipe,
+  PipeTransform
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
@@ -13,6 +15,24 @@ import { MatrixNotesService } from '../../../services/matrix-notes.service';
 import { RoadmapStep, Tutorial } from '../../../interfaces/tutorial.model';
 import { ToastrService } from 'ngx-toastr';
 import { ThemeService } from '../../../services/theme.service';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
+import { SafeHtmlPipe } from "../../../pipes/safe-html.pipe";
+
+// Add this pipe at the component level or create a separate pipe file
+
+
+
+@Pipe({
+  name: 'truncate',
+  standalone: true
+})
+export class TruncatePipe implements PipeTransform {
+  transform(value: string, limit: number = 80): string {
+    if (!value) return '';
+    if (value.length <= limit) return value;
+    return value.substring(0, limit) + '...';
+  }
+}
 
 interface TableOfContentsItem {
   title: string;
@@ -23,7 +43,7 @@ interface TableOfContentsItem {
 @Component({
   selector: 'app-tutorial-detail',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule],
+  imports: [CommonModule, RouterModule, FormsModule, TruncatePipe, SafeHtmlPipe], // Add TruncatePipe here
   templateUrl: './tutorial-detail.component.html',
   styleUrls: ['./tutorial-detail.component.scss'],
 })
@@ -38,6 +58,9 @@ export class TutorialDetailComponent
   showComments = false;
   showBackToTop = false;
   activeSectionId: string = '';
+
+  // Add the missing mainContent property
+  mainContent: string = '';
 
   // Topic navigation properties
   currentTopicIndex: number = 0;
@@ -57,7 +80,8 @@ export class TutorialDetailComponent
     private route: ActivatedRoute,
     private router: Router,
     private toastr: ToastrService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private sanitizer: DomSanitizer
   ) {}
 
   async ngOnInit() {
@@ -74,6 +98,22 @@ export class TutorialDetailComponent
       await this.checkLikeStatus(tutorialId);
 
       this.setupScrollListener();
+    }
+  }
+
+    // Add this method to extract main content
+  private extractMainContent(): void {
+    if (this.tutorial?.content?.length) {
+      // Extract text content from all content blocks
+      this.mainContent = this.tutorial.content
+        .filter(item => item.type === 'text')
+        .map(item => item.content)
+        .join('');
+      
+      // If no text content found, try to get from the first content block
+      if (!this.mainContent && this.tutorial.content[0]) {
+        this.mainContent = this.tutorial.content[0].content || '';
+      }
     }
   }
 
@@ -288,6 +328,9 @@ export class TutorialDetailComponent
         return;
       }
 
+      // Extract main content after loading tutorial
+      this.extractMainContent();
+
       if (this.tutorial.published) {
         await this.matrixNotesService.incrementViews(tutorialId);
         this.tutorial.views = (this.tutorial.views || 0) + 1;
@@ -298,6 +341,60 @@ export class TutorialDetailComponent
     } finally {
       this.isLoading = false;
     }
+  }
+
+  // Enhanced Table of Contents method
+  getEnhancedTableOfContents(): TableOfContentsItem[] {
+    if (!this.tutorial) return [];
+
+    const toc: TableOfContentsItem[] = [];
+    let sectionCounter = 0;
+
+    // Parse CKEditor HTML content for headings
+    this.tutorial.content.forEach((content, index) => {
+      if (content.type === 'text' && content.content) {
+        // Create a temporary DOM element to parse HTML
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = content.content;
+        
+        // Find all headings in the content
+        const headings = tempDiv.querySelectorAll('h1, h2, h3, h4, h5, h6');
+        
+        headings.forEach((heading, headingIndex) => {
+          const level = parseInt(heading.tagName.substring(1));
+          const title = heading.textContent?.trim() || `Section ${sectionCounter + 1}`;
+          const id = `section-${sectionCounter}`;
+
+          toc.push({
+            title: title,
+            level: Math.min(level, 3), // Limit to max level 3 for TOC
+            id: id,
+          });
+
+          sectionCounter++;
+        });
+      }
+    });
+
+    // If no headings found, create basic TOC from content blocks
+    if (toc.length === 0) {
+      this.tutorial.content.forEach((content, index) => {
+        if (content.type === 'text' && content.content) {
+          const tempDiv = document.createElement('div');
+          tempDiv.innerHTML = content.content;
+          const firstParagraph = tempDiv.querySelector('p');
+          const title = firstParagraph?.textContent?.substring(0, 50) + '...' || `Section ${index + 1}`;
+
+          toc.push({
+            title: title,
+            level: 1,
+            id: `section-${index}`,
+          });
+        }
+      });
+    }
+
+    return toc;
   }
 
   async checkLikeStatus(tutorialId: string) {
@@ -692,5 +789,16 @@ export class TutorialDetailComponent
   @HostListener('window:scroll')
   onWindowScroll() {
     this.showBackToTop = window.pageYOffset > 400;
+  }
+
+renderEnhancedContent(content: string): string {
+  if (!content) return '';
+
+  // CKEditor already outputs proper HTML, so we just need to ensure proper styling
+  return content;
+}
+
+transform(value: string): SafeHtml {
+    return this.sanitizer.bypassSecurityTrustHtml(value);
   }
 }
