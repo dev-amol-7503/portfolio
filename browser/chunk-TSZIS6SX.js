@@ -1,1 +1,0 @@
-import{a}from"./chunk-3PTMUUC3.js";import"./chunk-2GYTXYUE.js";import"./chunk-WWQOZGKC.js";import"./chunk-E7DVTR2J.js";import"./chunk-DIH7HWWK.js";import"./chunk-CWTPBX7D.js";export{a as SkillsComponent};
