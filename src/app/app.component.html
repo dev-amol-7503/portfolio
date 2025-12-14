@@ -7,8 +7,10 @@
       <a class="navbar-brand d-flex align-items-center" routerLink="/">
         <div class="brand-logo me-2">A</div>
         <span class="brand-name">Amol Works</span>
-        <span *ngIf="isAdmin" class="badge bg-success ms-2">Admin</span>
+        <!-- Green dot for admin -->
+        <span *ngIf="isAdmin" class="admin-indicator ms-1"></span>
       </a>
+
 
       <!-- Desktop navigation -->
       <div class="desktop-nav d-none d-lg-flex align-items-center">
@@ -21,7 +23,7 @@
           </li>
         </ul>
         <div class="desktop-actions d-flex align-items-center">
-          <a href="/assets/docs/resume.pdf" download="Amol_Nagare_JavaAngular_Full_Stack_Developer.pdf"
+          <a href="/assets/docs/amol_nagare_resume.pdf" download="Amol_Nagare_JavaAngular_Full_Stack_Developer.pdf"
             class="btn btn-primary btn-sm me-2">
             <fa-icon [icon]="faDownload" class="me-1"></fa-icon>Download CV
           </a>
@@ -31,7 +33,7 @@
       <!-- Right side controls -->
       <div class="header-controls d-flex align-items-center">
         <!-- Mobile Download Button (Visible only on mobile) -->
-        <a href="/assets/docs/resume.pdf" download="Amol_Nagare_JavaAngular_Full_Stack_Developer.pdf"
+        <a href="/assets/docs/amol_nagare_resume.pdf" download="Amol_Nagare_JavaAngular_Full_Stack_Developer.pdf"
            class="btn mobile-download-btn d-lg-none me-2">
           <fa-icon [icon]="faDownload"></fa-icon>
         </a>
